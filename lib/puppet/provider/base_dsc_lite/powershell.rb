@@ -61,6 +61,12 @@ EOT
     end
   end
 
+  def dsc_property_param
+    resource.parameters_with_value.select{ |pr| pr.name == :dsc_properties }.each do |p|
+      p.name.to_s =~ /dsc_/
+    end
+  end
+
   def self.template_path
     File.expand_path(Pathname.new(__FILE__).dirname)
   end
@@ -83,6 +89,7 @@ EOT
     version = Facter.value(:powershell_version)
     Puppet.debug "PowerShell Version: #{version}"
     script_content = ps_script_content('test')
+    require 'pry';binding.pry
     Puppet.debug "\n" + script_content
 
     fail DSC_MODULE_POWERSHELL_UPGRADE_MSG if !PuppetX::DscLite::PowerShellManager.compatible_version_of_powershell?
@@ -184,6 +191,15 @@ EOT
     end
   end
 
+  def self.format_dsc_lite(dsc_value)
+    case
+    when dsc_value.class.name == 'Hash'
+      dsc_value.collect{|k, v| format_dsc_value(k) + ' = ' + format_dsc_value(v) + ';' }.join("\n")
+    else
+      fail "unsupported type #{dsc_value.class} of value '#{dsc_value}'"
+    end
+  end
+
   def self.escape_quotes(text)
     text.gsub("'", "''")
   end
@@ -195,7 +211,11 @@ EOT
   def self.ps_script_content(mode, resource, provider)
     dsc_invoke_method = mode
     @param_hash = resource
-    template = ERB.new(File.new(template_path + "/invoke_dsc_resource.ps1.erb").read, nil, '-')
+    # TODO: double-check that 'type' is the right thing to check
+    template_name = resource.type == 'dsc' ?
+      'invoke_generic_dsc_resource.ps1.erb' :
+      'invoke_dsc_resource.ps1.erb'
+    template = ERB.new(File.new(template_path + "/#{template_name}").read, nil, '-')
     template.result(binding)
   end
 end
