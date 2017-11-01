@@ -11,10 +11,10 @@ describe Puppet::Type.type(:base_dsc).provider(:powershell) do
 
 end
 
-describe Puppet::Type.type(:dsc_file).provider(:powershell) do
+describe Puppet::Type.type(:dsc).provider(:powershell) do
 
   it "should be an instance of Puppet::Type::Base_dsc::ProviderPowershell" do
-    subject.must be_an_instance_of Puppet::Type::Dsc_file::ProviderPowershell
+    subject.must be_an_instance_of Puppet::Type::Dsc::ProviderPowershell
   end
 
   describe "when quotes are present" do
