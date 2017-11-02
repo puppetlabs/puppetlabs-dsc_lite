@@ -1,11 +1,11 @@
 require 'pathname'
 require 'json'
 if Puppet::Util::Platform.windows?
-  require_relative '../../../puppet_x/puppetlabs/powershell_manager'
-  require_relative '../../../puppet_x/puppetlabs/compatible_powershell_version'
+  require_relative '../../../puppet_x/puppetlabs/dsc_lite/powershell_manager'
+  require_relative '../../../puppet_x/puppetlabs/dsc_lite/compatible_powershell_version'
 end
 
-Puppet::Type.type(:base_dsc).provide(:powershell) do
+Puppet::Type.type(:base_dsc_lite).provide(:powershell) do
   confine :operatingsystem => :windows
   defaultfor :operatingsystem => :windows
 
@@ -67,14 +67,14 @@ EOT
 
   def self.powershell_args
     ps_args = ['-NoProfile', '-NonInteractive', '-NoLogo', '-ExecutionPolicy', 'Bypass']
-    ps_args << '-Command' if !PuppetX::Dsc::PowerShellManager.supported?
+    ps_args << '-Command' if !PuppetX::DscLite::PowerShellManager.supported?
     ps_args
   end
 
   def ps_manager
     debug_output = Puppet::Util::Log.level == :debug
     manager_args = "#{command(:powershell)} #{self.class.powershell_args().join(' ')}"
-    PuppetX::Dsc::PowerShellManager.instance(manager_args, debug_output)
+    PuppetX::DscLite::PowerShellManager.instance(manager_args, debug_output)
   end
 
   COMMAND_TIMEOUT = 1200000 # 20 minutes
@@ -85,9 +85,9 @@ EOT
     script_content = ps_script_content('test')
     Puppet.debug "\n" + script_content
     
-    fail DSC_MODULE_POWERSHELL_UPGRADE_MSG if !PuppetX::Dsc::PowerShellManager.compatible_version_of_powershell?
+    fail DSC_MODULE_POWERSHELL_UPGRADE_MSG if !PuppetX::DscLite::PowerShellManager.compatible_version_of_powershell?
 
-    if !PuppetX::Dsc::PowerShellManager.supported?
+    if !PuppetX::DscLite::PowerShellManager.supported?
       self.class.upgrade_message
       output = powershell(self.class.powershell_args, script_content)
     else
@@ -107,9 +107,9 @@ EOT
     script_content = ps_script_content('set')
     Puppet.debug "\n" + script_content
 
-    fail DSC_MODULE_POWERSHELL_UPGRADE_MSG if !PuppetX::Dsc::PowerShellManager.compatible_version_of_powershell?
+    fail DSC_MODULE_POWERSHELL_UPGRADE_MSG if !PuppetX::DscLite::PowerShellManager.compatible_version_of_powershell?
 
-    if !PuppetX::Dsc::PowerShellManager.supported?
+    if !PuppetX::DscLite::PowerShellManager.supported?
       self.class.upgrade_message
       output = powershell(self.class.powershell_args, script_content)
     else
@@ -129,9 +129,9 @@ EOT
     script_content = ps_script_content('set')
     Puppet.debug "\n" + script_content
 
-    fail DSC_MODULE_POWERSHELL_UPGRADE_MSG if !PuppetX::Dsc::PowerShellManager.compatible_version_of_powershell?
+    fail DSC_MODULE_POWERSHELL_UPGRADE_MSG if !PuppetX::DscLite::PowerShellManager.compatible_version_of_powershell?
 
-    if !PuppetX::Dsc::PowerShellManager.supported?
+    if !PuppetX::DscLite::PowerShellManager.supported?
       self.class.upgrade_message
       output = powershell(self.class.powershell_args, script_content)
     else

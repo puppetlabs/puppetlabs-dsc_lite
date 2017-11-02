@@ -1,6 +1,6 @@
 module PuppetX
   module PuppetLabs
-    module Dsc
+    module DscLite
       class PowerShellVersion
       end
     end
@@ -11,7 +11,7 @@ if Puppet::Util::Platform.windows?
   require 'win32/registry'
   module PuppetX
     module PuppetLabs
-      module Dsc
+      module DscLite
         class PowerShellVersion
           ACCESS_TYPE       = Win32::Registry::KEY_READ | 0x100
           HKLM              = Win32::Registry::HKEY_LOCAL_MACHINE
