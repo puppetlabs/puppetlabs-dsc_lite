@@ -62,7 +62,7 @@ EOT
   end
 
   def self.template_path
-    File.expand_path('../../templates/dsc', __FILE__)
+    File.expand_path('../../templates/dsc_lite', __FILE__)
   end
 
   def self.powershell_args
