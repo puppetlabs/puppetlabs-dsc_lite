@@ -2,10 +2,10 @@ require File.join(File.dirname(__FILE__), 'powershell_version')
 
 module PuppetX
   module PuppetLabs
-    module Dsc
+    module DscLite
       class CompatiblePowerShellVersion
         def self.compatible_version?
-          powershell_version = PuppetX::PuppetLabs::Dsc::PowerShellVersion.version
+          powershell_version = PuppetX::PuppetLabs::DscLite::PowerShellVersion.version
 
           return false if powershell_version.nil?
 

@@ -1,11 +1,11 @@
 #! /usr/bin/env ruby
 require 'spec_helper'
 require 'puppet/type'
-require 'puppet_x/puppetlabs/compatible_powershell_version'
+require 'puppet_x/puppetlabs/dsc_lite/compatible_powershell_version'
 
-describe PuppetX::PuppetLabs::Dsc::CompatiblePowerShellVersion, :if => Puppet::Util::Platform.windows? do
+describe PuppetX::PuppetLabs::DscLite::CompatiblePowerShellVersion, :if => Puppet::Util::Platform.windows? do
   before(:each) do
-    @ps = PuppetX::PuppetLabs::Dsc::CompatiblePowerShellVersion
+    @ps = PuppetX::PuppetLabs::DscLite::CompatiblePowerShellVersion
   end
 
   describe "when powershell is installed" do

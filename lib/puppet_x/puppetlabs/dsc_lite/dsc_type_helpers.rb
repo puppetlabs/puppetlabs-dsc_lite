@@ -1,5 +1,5 @@
 module PuppetX
-  module Dsc
+  module DscLite
     class TypeHelpers
       def self.munge_boolean(value)
         return true if value =~ (/^(true|t|yes|y|1)$/i)
