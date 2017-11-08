@@ -5,15 +5,10 @@ function new-pscredential
 {
   [CmdletBinding()]
   param (
-    [parameter(Mandatory=$true,
-      ValueFromPipelineByPropertyName=$true)]
-    [string]
-    $user,
-
-    [parameter(Mandatory=$true,
-      ValueFromPipelineByPropertyName=$true)]
-    [string]
-    $password
+    [parameter(Mandatory=$true, ValueFromPipelineByPropertyName=$true)]
+    [string]$user,
+    [parameter(Mandatory=$true, ValueFromPipelineByPropertyName=$true)]
+    [string]$password
   )
 
   $secpasswd   = ConvertTo-SecureString $password -AsPlainText -Force
@@ -28,46 +23,19 @@ $response = @{
 }
 
 $invokeParams = @{
-  Name          = '<%= resource.dscmeta_resource_friendly_name %>'
-  Method        = '<%= dsc_invoke_method %>'
-  Property      = @{
-<% provider.dsc_parameters.each do |p| -%>
-    <%- name = p.name.to_s.gsub(/^dsc_/,'')
-    if name == 'ensure' && dsc_invoke_method == 'test'
-      value = "\'#{resource.parameters[:ensure].default.to_s}\'"
-    elsif p.mof_type == 'MSFT_Credential'
-      value = "[PSCustomObject]#{format_dsc_value(p.value)} | new-pscredential"
-    elsif p.mof_is_embedded? && p.mof_type != 'MSFT_KeyValuePair'
-      vals = p.value.is_a?(Hash) ? [p.value] : p.value
-      vals = vals.collect do |v|
-        "(New-CimInstance -ClassName '#{p.mof_type.gsub('[]','')}' -ClientOnly -Property #{format_dsc_value(v)})"
-      end
-      # Ensure that we pass a single CimInstance or array correctly based on MOF schema definition
-      if p.value.is_a?(Hash)
-        value = "[CimInstance]#{vals.first}"
-      else
-        value = "[CimInstance[]]@(#{vals.join(',')})"
-      end
-    else
-      value = format_dsc_value(p.value)
-    end
-    -%>
-    <%= name %> = <%= value %>
+Name       = '<%= resource.name %>'
+ModuleName = '<%= resource.parameters[:module_name].value %>'
+Method     = '<%= dsc_invoke_method %>'
+Property   = @{
+<% provider.dsc_property_param.each do |p| -%><%= format_dsc_lite(p.value) %>
 <% end -%>
-  }<% if resource.respond_to?(:dscmeta_module_version) %>
-  ModuleName = @{
-    ModuleName      = <%= "\"#{vendored_modules_path}/#{resource.dscmeta_module_name}/#{resource.dscmeta_module_name}.psd1\"" %>
-    RequiredVersion = <%= "\"#{resource.dscmeta_module_version}\"" %>
-  }
-<% else %>
-  ModuleName = <%= "\"#{resource.dscmeta_module_name}\"" %>
-<% end -%>
+}
 }
 
 try{
-    $result = Invoke-DscResource @invokeParams
+  $result = Invoke-DscResource @invokeParams
 }catch{
-  $response.errormessage   = $_.Exception.Message
+  $response.errormessage = $_.Exception.Message
   return ($response | ConvertTo-Json -Compress)
 }
 

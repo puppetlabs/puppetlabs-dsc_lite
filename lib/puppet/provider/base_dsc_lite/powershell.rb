@@ -60,6 +60,12 @@ EOT
       p.name.to_s =~ /dsc_/
     end
   end
+  
+  def dsc_property_param
+    resource.parameters_with_value.select{ |pr| pr.name == :dsc_properties }.each do |p|
+      p.name.to_s =~ /dsc_/
+    end
+  end
 
   def self.template_path
     File.expand_path('../../templates/dsc_lite', __FILE__)
@@ -83,6 +89,7 @@ EOT
     version = Facter.value(:powershell_version)
     Puppet.debug "PowerShell Version: #{version}"
     script_content = ps_script_content('test')
+    require 'pry';binding.pry
     Puppet.debug "\n" + script_content
     
     fail DSC_MODULE_POWERSHELL_UPGRADE_MSG if !PuppetX::DscLite::PowerShellManager.compatible_version_of_powershell?
@@ -179,6 +186,15 @@ EOT
       "@(" + dsc_value.collect{|m| format_dsc_value(m)}.join(', ') + ")"
     when dsc_value.class.name == 'Hash'
       "@{" + dsc_value.collect{|k, v| format_dsc_value(k) + ' = ' + format_dsc_value(v)}.join('; ') + "}"
+    else
+      fail "unsupported type #{dsc_value.class} of value '#{dsc_value}'"
+    end
+  end
+
+  def self.format_dsc_lite(dsc_value)
+    case
+    when dsc_value.class.name == 'Hash'
+      dsc_value.collect{|k, v| format_dsc_value(k) + ' = ' + format_dsc_value(v) + ';' }.join("\n")
     else
       fail "unsupported type #{dsc_value.class} of value '#{dsc_value}'"
     end

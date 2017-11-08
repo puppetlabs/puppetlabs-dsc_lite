@@ -159,6 +159,50 @@ module PuppetX
 
         pending_relationships
       end
+
+      def self.validate_MSFT_xWebBindingInformation(mof_type_map, name, value)
+        required = ['protocol']
+        allowed = ['bindinginformation','ipaddress','port','hostname','certificatethumbprint','certificatestorename','sslflags']
+        lowkey_hash = Hash[value.map { |k, v| [k.to_s.downcase, v] }]
+
+        missing = required - lowkey_hash.keys
+        unless missing.empty?
+          fail "#{name} is missing the following required keys: #{missing.join(',')}"
+        end
+
+        extraneous = lowkey_hash.keys - required - allowed
+        unless extraneous.empty?
+          fail "#{name} includes invalid keys: #{extraneous.join(',')}"
+        end
+
+        lowkey_hash.keys.each do |key|
+          if lowkey_hash[key]
+            validate_mof_type(mof_type_map[key], 'MSFT_xWebBindingInformation', key, lowkey_hash[key])
+          end
+        end
+      end
+      
+      def self.validate_MSFT_xWebAuthenticationInformation(mof_type_map, name, value)
+        required = []
+        allowed = ['anonymous','basic','digest','windows']
+        lowkey_hash = Hash[value.map { |k, v| [k.to_s.downcase, v] }]
+
+        missing = required - lowkey_hash.keys
+        unless missing.empty?
+          fail "#{name} is missing the following required keys: #{missing.join(',')}"
+        end
+
+        extraneous = lowkey_hash.keys - required - allowed
+        unless extraneous.empty?
+          fail "#{name} includes invalid keys: #{extraneous.join(',')}"
+        end
+
+        lowkey_hash.keys.each do |key|
+          if lowkey_hash[key]
+            validate_mof_type(mof_type_map[key], 'MSFT_xWebAuthenticationInformation', key, lowkey_hash[key])
+          end
+        end
+      end
     end
   end
 end
