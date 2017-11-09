@@ -62,7 +62,7 @@ EOT
   end
 
   def self.template_path
-    File.expand_path('../../templates/dsc', __FILE__)
+    File.expand_path(Pathname.new(__FILE__).dirname)
   end
 
   def self.powershell_args
@@ -84,7 +84,7 @@ EOT
     Puppet.debug "PowerShell Version: #{version}"
     script_content = ps_script_content('test')
     Puppet.debug "\n" + script_content
-    
+
     fail DSC_MODULE_POWERSHELL_UPGRADE_MSG if !PuppetX::DscLite::PowerShellManager.compatible_version_of_powershell?
 
     if !PuppetX::DscLite::PowerShellManager.supported?
