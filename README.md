@@ -514,16 +514,11 @@ We want to keep it as easy as possible to contribute changes so that our modules
 
 For more information, see our [module contribution guide.](https://docs.puppet.com/forge/contributing.html)
 
-* The Puppet types are built from the source code of each DSC Resources MOF schema files. If you want to build the types, read the [Building DSC Resources readme](https://github.com/puppetlabs/puppetlabs-dsc/blob/master/README_BUILD.md).
-* If you want the build Puppet types for your own custom DSC Resources, read [Building Puppet Types from Custom DSC Resources](https://github.com/puppetlabs/puppetlabs-dsc/blob/master/README_BUILD.md#building-puppet-types-from-custom-dsc-resources) readme.
-
 ### Version Strategy
 
 This module generally follows [Semantic Versioning](http://semver.org/) for choosing an appropriate release version number with the following exception:
 
 * Minor, for example from version 2.0.0 to 2.1.0
-
-A minor change may also include [rebuilding the DSC resource types](https://github.com/puppetlabs/puppetlabs-dsc/blob/master/README_BUILD.md). Puppet wants to keep pace with the released DSC Resources from the PowerShell team repository, but this engenders risk as Puppet adopts third party code. Normally this would mean making major version bumps, but since this is anticipated to be frequent that would be too much churn.
 
 ### Contributors
 
