@@ -1,8 +1,8 @@
 require 'pathname'
 
 Puppet::Type.newtype(:dsc_xservice) do
-  require Pathname.new(__FILE__).dirname + '../../' + 'puppet/type/base_dsc'
-  require Pathname.new(__FILE__).dirname + '../../puppet_x/puppetlabs/dsc_type_helpers'
+  require Pathname.new(__FILE__).dirname + '../../' + 'puppet/type/base_dsc_lite'
+  require Pathname.new(__FILE__).dirname + '../../puppet_x/puppetlabs/dsc_lite/dsc_type_helpers'
 
 
   @doc = %q{
@@ -51,7 +51,7 @@ Puppet::Type.newtype(:dsc_xservice) do
       unless value.kind_of?(Hash)
         fail("Invalid value '#{value}'. Should be a hash")
       end
-      PuppetX::Dsc::TypeHelpers.validate_MSFT_Credential("Credential", value)
+      PuppetX::DscLite::TypeHelpers.validate_MSFT_Credential("Credential", value)
     end
   end
 
@@ -153,7 +153,7 @@ Puppet::Type.newtype(:dsc_xservice) do
       unless value.kind_of?(Hash)
         fail("Invalid value '#{value}'. Should be a hash")
       end
-      PuppetX::Dsc::TypeHelpers.validate_MSFT_Credential("Credential", value)
+      PuppetX::DscLite::TypeHelpers.validate_MSFT_Credential("Credential", value)
     end
   end
 
@@ -169,7 +169,7 @@ Puppet::Type.newtype(:dsc_xservice) do
     end
     newvalues(true, false)
     munge do |value|
-      PuppetX::Dsc::TypeHelpers.munge_boolean(value.to_s)
+      PuppetX::DscLite::TypeHelpers.munge_boolean(value.to_s)
     end
   end
 
@@ -253,7 +253,7 @@ Puppet::Type.newtype(:dsc_xservice) do
       end
     end
     munge do |value|
-      PuppetX::Dsc::TypeHelpers.munge_integer(value)
+      PuppetX::DscLite::TypeHelpers.munge_integer(value)
     end
   end
 
@@ -271,18 +271,18 @@ Puppet::Type.newtype(:dsc_xservice) do
       end
     end
     munge do |value|
-      PuppetX::Dsc::TypeHelpers.munge_integer(value)
+      PuppetX::DscLite::TypeHelpers.munge_integer(value)
     end
   end
 
 
   def builddepends
     pending_relations = super()
-    PuppetX::Dsc::TypeHelpers.ensure_reboot_relationship(self, pending_relations)
+    PuppetX::DscLite::TypeHelpers.ensure_reboot_relationship(self, pending_relations)
   end
 end
 
-Puppet::Type.type(:dsc_xservice).provide :powershell, :parent => Puppet::Type.type(:base_dsc).provider(:powershell) do
+Puppet::Type.type(:dsc_xservice).provide :powershell, :parent => Puppet::Type.type(:base_dsc_lite).provider(:powershell) do
   confine :true => (Gem::Version.new(Facter.value(:powershell_version)) >= Gem::Version.new('5.0.10586.117'))
   defaultfor :operatingsystem => :windows
 

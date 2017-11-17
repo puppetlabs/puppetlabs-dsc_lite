@@ -1,10 +1,10 @@
 require 'spec_helper'
 require 'puppet/type'
-require 'puppet_x/puppetlabs/powershell_manager'
-require 'puppet_x/puppetlabs/compatible_powershell_version'
+require 'puppet_x/puppetlabs/dsc_lite/powershell_manager'
+require 'puppet_x/puppetlabs/dsc_lite/compatible_powershell_version'
 
 module PuppetX
-  module Dsc
+  module DscLite
     class PowerShellManager; end
     if Puppet::Util::Platform.windows?
       module WindowsAPI
@@ -31,17 +31,17 @@ module PuppetX
   end
 end
 
-describe PuppetX::Dsc::PowerShellManager,
-  :if => Puppet::Util::Platform.windows? && PuppetX::Dsc::PowerShellManager.supported? do
+describe PuppetX::DscLite::PowerShellManager,
+  :if => Puppet::Util::Platform.windows? && PuppetX::DscLite::PowerShellManager.supported? do
 
   let (:manager_args) {
-    powershell = Puppet::Type.type(:base_dsc).defaultprovider.command(:powershell)
-    cli_args = Puppet::Type.type(:base_dsc).defaultprovider.powershell_args
+    powershell = Puppet::Type.type(:base_dsc_lite).defaultprovider.command(:powershell)
+    cli_args = Puppet::Type.type(:base_dsc_lite).defaultprovider.powershell_args
     "#{powershell} #{cli_args.join(' ')}"
   }
 
   def create_manager
-    PuppetX::Dsc::PowerShellManager.instance(manager_args, true)
+    PuppetX::DscLite::PowerShellManager.instance(manager_args, true)
   end
 
   let (:manager) { create_manager() }
@@ -113,8 +113,8 @@ describe PuppetX::Dsc::PowerShellManager,
         if style == :inprocess
           stream.close
         else style == :viahandle
-          handle = PuppetX::Dsc::WindowsAPI.get_osfhandle(stream.fileno)
-          PuppetX::Dsc::WindowsAPI.CloseHandle(handle)
+          handle = PuppetX::DscLite::WindowsAPI.get_osfhandle(stream.fileno)
+          PuppetX::DscLite::WindowsAPI.CloseHandle(handle)
         end
       end
 
@@ -455,7 +455,7 @@ try {
     end
 
     def current_powershell_major_version
-      provider = Puppet::Type.type(:base_dsc).defaultprovider
+      provider = Puppet::Type.type(:base_dsc_lite).defaultprovider
       powershell = provider.command(:powershell)
 
       begin

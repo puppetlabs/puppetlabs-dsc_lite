@@ -5,7 +5,7 @@ require 'base64'
 require File.join(File.dirname(__FILE__), 'compatible_powershell_version')
 
 module PuppetX
-  module Dsc
+  module DscLite
     class PowerShellManager
       @@instances = {}
 
@@ -29,7 +29,7 @@ module PuppetX
       end
 
       def self.compatible_version_of_powershell?
-        @compatible_powershell_version ||= PuppetX::PuppetLabs::Dsc::CompatiblePowerShellVersion.compatible_version?
+        @compatible_powershell_version ||= PuppetX::PuppetLabs::DscLite::CompatiblePowerShellVersion.compatible_version?
       end
 
       def self.supported?
@@ -120,8 +120,9 @@ module PuppetX
       end
 
       def self.init_path
+
         # a PowerShell -File compatible path to bootstrap the instance
-        path = File.expand_path('../../templates/dsc', __FILE__)
+        path = File.expand_path('../../dsc_lite/templates', __FILE__)
         path = File.join(path, 'init_ps.ps1').gsub('/', '\\')
         "\"#{path}\""
       end

@@ -27,7 +27,7 @@ Puppet::Type.newtype(:dsc_<%= resource.friendlyname.downcase %>) do
       end
     end
   -%>
-    class PuppetX::Dsc::TypeHelpers
+    class PuppetX::DscLite::TypeHelpers
       def self.validate_<%= class_name %>(mof_type_map, name, value)
 <%# emit required or allowed fields based on embeddedinstance definition -%>
         required = [<%= required.join(',') %>]
@@ -107,7 +107,7 @@ Puppet::Type.newtype(:dsc_<%= resource.friendlyname.downcase %>) do
       unless value.kind_of?(Hash)
         fail("Invalid value '#{value}'. Should be a hash")
       end
-      PuppetX::Dsc::TypeHelpers.validate_MSFT_Credential("Credential", value)
+      PuppetX::DscLite::TypeHelpers.validate_MSFT_Credential("Credential", value)
     end
   end
 
@@ -161,7 +161,7 @@ Puppet::Type.newtype(:dsc_<%= resource.friendlyname.downcase %>) do
       (value.kind_of?(Hash) ? [value] : value).each_with_index do |v, i|
         fail "<%= property.name %> value at index #{i} should be a Hash" unless v.is_a? Hash
 
-        PuppetX::Dsc::TypeHelpers.validate_<%= property.embeddedinstance_class_name %>(<%= !property.credential? ? 'mof_type_map, ' : '' %>"<%= property.name %>", v)
+        PuppetX::DscLite::TypeHelpers.validate_<%= property.embeddedinstance_class_name %>(<%= !property.credential? ? 'mof_type_map, ' : '' %>"<%= property.name %>", v)
       end
 <%      end -%>
 <%    when property.embeddedinstance? && !property.embeddedinstance_array? -%>
@@ -171,7 +171,7 @@ Puppet::Type.newtype(:dsc_<%= resource.friendlyname.downcase %>) do
 <%      if property.keyvaluepair? -%>
       fail '<%= property.name %> may only have a single key / value pair' unless value.length == 1
 <%      else -%>
-      PuppetX::Dsc::TypeHelpers.validate_<%= property.embeddedinstance_class_name %>(<%= !property.credential? ? 'mof_type_map, ' : '' %>"<%= property.name %>", value)
+      PuppetX::DscLite::TypeHelpers.validate_<%= property.embeddedinstance_class_name %>(<%= !property.credential? ? 'mof_type_map, ' : '' %>"<%= property.name %>", value)
 <%      end -%>
 <%    when property.array? -%>
 <%      if property.int_array? -%>
@@ -229,10 +229,10 @@ Puppet::Type.newtype(:dsc_<%= resource.friendlyname.downcase %>) do
     munge do |value|
 <%      if property.embeddedinstance_array? -%>
       value.kind_of?(Hash) ?
-        [PuppetX::Dsc::TypeHelpers.munge_embeddedinstance(mof_type_map, value)] :
-        value.map { |v| PuppetX::Dsc::TypeHelpers.munge_embeddedinstance(mof_type_map, v) }
+        [PuppetX::DscLite::TypeHelpers.munge_embeddedinstance(mof_type_map, value)] :
+        value.map { |v| PuppetX::DscLite::TypeHelpers.munge_embeddedinstance(mof_type_map, v) }
 <%      elsif (property.int_array? || property.uint_array?) -%>
-      v = PuppetX::Dsc::TypeHelpers.munge_integer(value)
+      v = PuppetX::DscLite::TypeHelpers.munge_integer(value)
       v.is_a?(Array) ? v : Array(v)
 <%      else -%>
       Array(value)
@@ -240,15 +240,15 @@ Puppet::Type.newtype(:dsc_<%= resource.friendlyname.downcase %>) do
     end
 <%    when property.embeddedinstance? && !property.keyvaluepair? && !property.credential? -%>
     munge do |value|
-      PuppetX::Dsc::TypeHelpers.munge_embeddedinstance(mof_type_map, value)
+      PuppetX::DscLite::TypeHelpers.munge_embeddedinstance(mof_type_map, value)
     end
 <%    when property.bool? -%>
     munge do |value|
-      PuppetX::Dsc::TypeHelpers.munge_boolean(value.to_s)
+      PuppetX::DscLite::TypeHelpers.munge_boolean(value.to_s)
     end
 <%    when (property.int? || property.uint?) -%>
     munge do |value|
-      PuppetX::Dsc::TypeHelpers.munge_integer(value)
+      PuppetX::DscLite::TypeHelpers.munge_integer(value)
     end
 <%    else -%>
 <%    end -%>
@@ -257,7 +257,7 @@ Puppet::Type.newtype(:dsc_<%= resource.friendlyname.downcase %>) do
 <%  end %>
   def builddepends
     pending_relations = super()
-    PuppetX::Dsc::TypeHelpers.ensure_reboot_relationship(self, pending_relations)
+    PuppetX::DscLite::TypeHelpers.ensure_reboot_relationship(self, pending_relations)
   end
 end
 
