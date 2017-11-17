@@ -8,6 +8,9 @@ require 'pry' if Bundler.rubygems.find_name('pry').any?
 
 Bundler.require(:rake)
 
+Dir.glob('build/*.rb').each { |r| import r }
+Dir.glob('build/*.rake').each { |r| import r }
+
 require 'puppetlabs_spec_helper/rake_tasks'
 require 'puppet-lint/tasks/puppet-lint'
 

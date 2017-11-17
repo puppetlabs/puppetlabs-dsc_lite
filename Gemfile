@@ -64,6 +64,13 @@ group :system_tests do
   gem "puppet-blacksmith", '~> 3.4',                                             :require => false
 end
 
+group :build do
+  gem "cim",               :require => false
+  gem "mof",               :require => false, :git => 'https://github.com/puppetlabs/mof.git', :ref => 'f50581901c53ff6a40c54b72ef5f4fcaed9679a1'
+  gem "charlock_holmes",   :require => false
+  gem "iconv", '~> 1.0.4', :require => false if Gem::Version.new(RUBY_VERSION.dup) >= Gem::Version.new('2.0')
+end
+
 gem 'puppet', *location_for(ENV['PUPPET_GEM_VERSION'])
 
 # Only explicitly specify Facter/Hiera if a version has been specified.
