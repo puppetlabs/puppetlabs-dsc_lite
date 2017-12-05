@@ -38,6 +38,9 @@ install:
 
     gem list openssl
     ruby -ropenssl -e 'puts \"OpenSSL Version - #{OpenSSL::OPENSSL_VERSION}\"; puts \"OpenSSL Library Version - #{OpenSSL::OPENSSL_LIBRARY_VERSION}\"'
+
+    Install-PackageProvider -Name NuGet -Force
+    Install-Module PsScriptAnalyzer -Force
 - bundle install --jobs 4 --retry 2 --without system_tests build
 - type Gemfile.lock
 build: off
@@ -45,6 +48,18 @@ test_script:
 - bundle exec puppet -V
 - ruby -v
 - bundle exec rspec spec/unit spec/integration -fd -b
+- ps: |
+    Add-AppveyorTest -Name 'PsScriptAnalyzer' -Outcome Running
+    $results = Invoke-ScriptAnalyzer -Path $PWD -Recurse -Settings $PWD/PSScriptAnalyzerSettings.psd1 -ErrorAction SilentlyContinue
+    if (-not $results)
+    {
+      Update-AppveyorTest -Name 'PsScriptAnalyzer' -Outcome Passed
+      return
+    }
+
+    # $results | Out-String | Write-Warning
+    $failMessage = "PsScriptAnalyzer failed with one or more Error(s):`n`n$($results | Out-String)"
+    Update-AppveyorTest -Name 'PsScriptAnalyzer' -Outcome Failed -ErrorMessage $failMessage
 notifications:
 - provider: Email
   to:
