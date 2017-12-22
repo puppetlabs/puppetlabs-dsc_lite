@@ -4,7 +4,6 @@ require 'dsc_utils'
 test_name 'MODULES-2843 - C96007 - Apply DSC Resource that Does not Require a Reboot with Autonotify "reboot" Resource'
 
 # Init
-local_files_root_path = ENV['FILES'] || 'tests/files'
 dsc_type = 'Directory'
 test_directory = 'C:/test'
 
@@ -38,7 +37,7 @@ teardown do
 end
 
 # Setup
-install_fake_reboot_resource(master, "#{local_files_root_path}/reboot")
+install_fake_reboot_resource(master)
 
 step 'Inject "site.pp" on Master'
 site_pp = create_site_pp(master, :manifest => dsc_manifest)
