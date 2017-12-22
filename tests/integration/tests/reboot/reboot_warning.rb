@@ -6,7 +6,8 @@ test_name 'MODULES-2843 - C96005 - Apply DSC Resource that Requires Reboot witho
 # Manifest
 dsc_manifest = <<-MANIFEST
 dsc_puppetfakeresource { 'reboot_test':
-  dsc_importantstuff => 'reboot'
+  dsc_importantstuff => 'reboot',
+  dsc_requirereboot => true,
 }
 MANIFEST
 

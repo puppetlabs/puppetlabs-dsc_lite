@@ -4,5 +4,6 @@ class PuppetFakeResource : OMI_BaseResource
 {
     [Write, Description("Ensure Present or Absent"), ValueMap{"Present","Absent"}, Values{"Present","Absent"}] String Ensure;
     [Key, Description("Important Stuff")] String ImportantStuff;
+    [Write, Description("RequireReboot")] Boolean RequireReboot;
 };
 

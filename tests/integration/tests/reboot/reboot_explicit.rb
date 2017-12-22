@@ -10,6 +10,7 @@ reboot { 'dsc_reboot':
 }
 dsc_puppetfakeresource { 'reboot_test':
   dsc_importantstuff => 'reboot',
+  dsc_requirereboot => true,
   notify => Reboot['dsc_reboot']
 }
 MANIFEST

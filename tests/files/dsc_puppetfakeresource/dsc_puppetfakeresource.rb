@@ -73,6 +73,22 @@ Puppet::Type.newtype(:dsc_puppetfakeresource) do
     end
   end
 
+  # Name:         RequireReboot
+  # Type:         boolean
+  # IsMandatory:  False
+  # Values:       None
+  newparam(:dsc_requirereboot) do
+    def mof_type; 'boolean' end
+    def mof_is_embedded?; false end
+    desc "RequireReboot"
+    validate do |value|
+    end
+    newvalues(true, false)
+    munge do |value|
+      PuppetX::DscLite::TypeHelpers.munge_boolean(value.to_s)
+    end
+  end
+
   def builddepends
     pending_relations = super()
     PuppetX::DscLite::TypeHelpers.ensure_reboot_relationship(self, pending_relations)

@@ -6,7 +6,11 @@
     (
         [parameter(Mandatory = $true)]
         [System.String]
-        $ImportantStuff
+        $ImportantStuff,
+
+        [parameter(Mandatory = $false)]
+        [System.Boolean]
+        $RequireReboot
     )
 
     #Write-Verbose "Use this cmdlet to deliver information about command processing."
@@ -37,7 +41,11 @@ function Set-TargetResource
 
         [parameter(Mandatory = $true)]
         [System.String]
-        $ImportantStuff
+        $ImportantStuff,
+
+        [parameter(Mandatory = $false)]
+        [System.Boolean]
+        $RequireReboot = $false
     )
 
     #Write-Verbose "Use this cmdlet to deliver information about command processing."
@@ -45,8 +53,11 @@ function Set-TargetResource
     #Write-Debug "Use this cmdlet to write debug information while troubleshooting."
 
     #Include this line if the resource requires a system reboot.
-    $global:DSCMachineStatus = 1
-    Write-Verbose "We require reboot always!"
+    if ($RequireReboot)
+    {
+        $global:DSCMachineStatus = 1
+        Write-Verbose "We require reboot always!"
+    }
 }
 
 
@@ -62,7 +73,11 @@ function Test-TargetResource
 
         [parameter(Mandatory = $true)]
         [System.String]
-        $ImportantStuff
+        $ImportantStuff,
+
+        [parameter(Mandatory = $false)]
+        [System.Boolean]
+        $RequireReboot
     )
 
     #Write-Verbose "Use this cmdlet to deliver information about command processing."
@@ -72,7 +87,7 @@ function Test-TargetResource
 
     <#
     $result = [System.Boolean]
-    
+
     $result
     #>
     return $false

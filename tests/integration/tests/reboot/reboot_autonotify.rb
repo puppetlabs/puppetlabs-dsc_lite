@@ -9,7 +9,8 @@ reboot { 'dsc_reboot':
   when => pending
 }
 dsc_puppetfakeresource { 'reboot_test':
-  dsc_importantstuff => 'reboot'
+  dsc_importantstuff => 'reboot',
+  dsc_requirereboot => true,
 }
 MANIFEST
 
