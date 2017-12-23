@@ -58,6 +58,15 @@ function Set-TargetResource
         $global:DSCMachineStatus = 1
         Write-Verbose "We require reboot always!"
     }
+
+    if ($Ensure -ieq 'Present')
+    {
+        $ImportantStuff | Out-File -FilePath c:\fakeresource.txt -Encoding ASCII -Force
+    }
+    else
+    {
+        Remove-Item -Path c:\fakeresource.txt -Force
+    }
 }
 
 
@@ -84,6 +93,19 @@ function Test-TargetResource
 
     #Write-Debug "Use this cmdlet to write debug information while troubleshooting."
 
+    $exists = Test-Path -Path c:\fakeresource.txt -PathType leaf
+    switch ($Ensure)
+    {
+        'Present'
+        {
+            if (!$exists) { return $false }
+            return ((Get-Content c:\fakeresource.txt) -eq $ImportantStuff)
+        }
+        'Absent'
+        {
+            return !$exists
+        }
+    }
 
     <#
     $result = [System.Boolean]
