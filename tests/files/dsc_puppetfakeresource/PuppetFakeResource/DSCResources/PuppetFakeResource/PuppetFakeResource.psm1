@@ -10,7 +10,11 @@
 
         [parameter(Mandatory = $false)]
         [System.Boolean]
-        $RequireReboot
+        $RequireReboot,
+
+        [parameter(Mandatory = $false)]
+        [System.String]
+        $ThrowMessage
     )
 
     #Write-Verbose "Use this cmdlet to deliver information about command processing."
@@ -45,7 +49,11 @@ function Set-TargetResource
 
         [parameter(Mandatory = $false)]
         [System.Boolean]
-        $RequireReboot = $false
+        $RequireReboot = $false,
+
+        [parameter(Mandatory = $false)]
+        [System.String]
+        $ThrowMessage = $null
     )
 
     #Write-Verbose "Use this cmdlet to deliver information about command processing."
@@ -67,6 +75,11 @@ function Set-TargetResource
     {
         Remove-Item -Path c:\fakeresource.txt -Force
     }
+
+    if (($ThrowMessage -ne $null) -and ($ThrowMessage -ne ''))
+    {
+        throw $ThrowMessage
+    }
 }
 
 
@@ -86,7 +99,11 @@ function Test-TargetResource
 
         [parameter(Mandatory = $false)]
         [System.Boolean]
-        $RequireReboot
+        $RequireReboot,
+
+        [parameter(Mandatory = $false)]
+        [System.String]
+        $ThrowMessage
     )
 
     #Write-Verbose "Use this cmdlet to deliver information about command processing."

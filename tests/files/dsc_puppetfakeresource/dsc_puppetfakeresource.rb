@@ -89,6 +89,21 @@ Puppet::Type.newtype(:dsc_puppetfakeresource) do
     end
   end
 
+  # Name:         ThrowMessage
+  # Type:         string
+  # IsMandatory:  False
+  # Values:       None
+  newparam(:dsc_throwmessage) do
+    def mof_type; 'string' end
+    def mof_is_embedded?; false end
+    desc "ThrowMessage - If set to non-empty causes PowerShell to throw an error on set"
+    validate do |value|
+      unless value.kind_of?(String)
+        fail("Invalid value '#{value}'. Should be a string")
+      end
+    end
+  end
+
   def builddepends
     pending_relations = super()
     PuppetX::DscLite::TypeHelpers.ensure_reboot_relationship(self, pending_relations)
