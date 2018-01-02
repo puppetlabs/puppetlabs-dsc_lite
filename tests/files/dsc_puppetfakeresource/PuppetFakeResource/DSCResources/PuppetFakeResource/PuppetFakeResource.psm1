@@ -1,4 +1,4 @@
-﻿function Get-TargetResource
+function Get-TargetResource
 {
     [CmdletBinding()]
     [OutputType([System.Collections.Hashtable])]
@@ -7,6 +7,10 @@
         [parameter(Mandatory = $true)]
         [System.String]
         $ImportantStuff,
+
+        [parameter(Mandatory = $false)]
+        [System.String]
+        $DestinationPath,
 
         [parameter(Mandatory = $false)]
         [System.Boolean]
@@ -48,6 +52,10 @@ function Set-TargetResource
         $ImportantStuff,
 
         [parameter(Mandatory = $false)]
+        [System.String]
+        $DestinationPath = 'c:\fakeresource.txt',
+
+        [parameter(Mandatory = $false)]
         [System.Boolean]
         $RequireReboot = $false,
 
@@ -69,11 +77,11 @@ function Set-TargetResource
 
     if ($Ensure -ieq 'Present')
     {
-        $ImportantStuff | Out-File -FilePath c:\fakeresource.txt -Encoding ASCII -Force
+        $ImportantStuff | Out-File -FilePath $DestinationPath -Encoding ASCII -Force
     }
     else
     {
-        Remove-Item -Path c:\fakeresource.txt -Force
+        Remove-Item -Path $DestinationPath -Force
     }
 
     if (($ThrowMessage -ne $null) -and ($ThrowMessage -ne ''))
@@ -98,6 +106,10 @@ function Test-TargetResource
         $ImportantStuff,
 
         [parameter(Mandatory = $false)]
+        [System.String]
+        $DestinationPath = 'c:\fakeresource.txt',
+
+        [parameter(Mandatory = $false)]
         [System.Boolean]
         $RequireReboot,
 
@@ -110,13 +122,13 @@ function Test-TargetResource
 
     #Write-Debug "Use this cmdlet to write debug information while troubleshooting."
 
-    $exists = Test-Path -Path c:\fakeresource.txt -PathType leaf
+    $exists = Test-Path -Path $DestinationPath -PathType leaf
     switch ($Ensure)
     {
         'Present'
         {
             if (!$exists) { return $false }
-            return ((Get-Content c:\fakeresource.txt) -eq $ImportantStuff)
+            return ((Get-Content $DestinationPath) -eq $ImportantStuff)
         }
         'Absent'
         {

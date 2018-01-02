@@ -4,6 +4,7 @@ class PuppetFakeResource : OMI_BaseResource
 {
     [Write, Description("Ensure Present or Absent"), ValueMap{"Present","Absent"}, Values{"Present","Absent"}] String Ensure;
     [Key, Description("Important Stuff")] String ImportantStuff;
+    [Write, Description("DestinationPath - Write the ImportantStuff string to this file")] String DestinationPath;
     [Write, Description("RequireReboot")] Boolean RequireReboot;
     [Write, Description("ThrowMessage - If set to non-empty causes PowerShell to throw an error on set")] String ThrowMessage;
 };

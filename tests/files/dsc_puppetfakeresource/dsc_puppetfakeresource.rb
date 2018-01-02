@@ -1,4 +1,4 @@
-require 'pathname'
+﻿require 'pathname'
 
 Puppet::Type.newtype(:dsc_puppetfakeresource) do
   require Pathname.new(__FILE__).dirname + '../../' + 'puppet/type/base_dsc_lite'
@@ -66,6 +66,21 @@ Puppet::Type.newtype(:dsc_puppetfakeresource) do
     def mof_is_embedded?; false end
     desc "ImportantStuff - Important Stuff"
     isrequired
+    validate do |value|
+      unless value.kind_of?(String)
+        fail("Invalid value '#{value}'. Should be a string")
+      end
+    end
+  end
+
+  # Name:         DestinationPath
+  # Type:         string
+  # IsMandatory:  False
+  # Values:       None
+  newparam(:dsc_destinationpath) do
+    def mof_type; 'string' end
+    def mof_is_embedded?; false end
+    desc "DestinationPath - Write the ImportantStuff string to this file"
     validate do |value|
       unless value.kind_of?(String)
         fail("Invalid value '#{value}'. Should be a string")
