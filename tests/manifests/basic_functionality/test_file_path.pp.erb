@@ -1,12 +1,9 @@
-dsc_file {'tmp_folder':
-  dsc_ensure          => 'present',
-  dsc_type            => 'Directory',
-  dsc_destinationpath => '<%= test_dir_path %>',
+file { 'C:/<%= test_dir_path %>' :
+   ensure => 'directory'
 }
 ->
-dsc_file {'tmp_file':
+dsc_puppetfakeresource {'<%= fake_name %>':
   dsc_ensure          => 'present',
-  dsc_type            => 'File',
-  dsc_destinationpath => '<%= test_file_path %>',
-  dsc_contents        => '<%= test_file_contents %>'
+  dsc_importantstuff  => '<%= test_file_contents %>',
+  dsc_destinationpath => '<%= defined?(test_file_path) ? test_file_path : "C:\\" + test_dir_path + "\\" + fake_name %>',
 }
