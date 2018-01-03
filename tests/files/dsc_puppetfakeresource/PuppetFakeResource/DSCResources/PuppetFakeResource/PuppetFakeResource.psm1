@@ -45,7 +45,7 @@ function Set-TargetResource
     (
         [ValidateSet("Present","Absent")]
         [System.String]
-        $Ensure,
+        $Ensure = 'Present',
 
         [parameter(Mandatory = $true)]
         [System.String]
