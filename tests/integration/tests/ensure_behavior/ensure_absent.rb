@@ -6,33 +6,30 @@ test_name 'MODULES-2965 - C96624 - Apply DSC Manifest with "ensure" Set to "abse
 # Init
 local_files_root_path = ENV['MANIFESTS'] || 'tests/manifests'
 
-# ERB Manifest
-dsc_type = 'file'
-dsc_module = 'PSDesiredStateConfiguration'
-dsc_props = {
-  :ensure              => 'present',
-  :dsc_destinationpath => 'C:\test.file',
-  :dsc_contents        => 'Oh the humanity!',
+# Manifest
+fake_name = SecureRandom.uuid
+test_file_contents = SecureRandom.uuid
+dsc_manifest = <<-MANIFEST
+dsc_puppetfakeresource {'#{fake_name}':
+  dsc_ensure          => 'present',
+  dsc_importantstuff  => '#{test_file_contents}',
+  dsc_destinationpath => 'C:\\#{fake_name}'
 }
-
-dsc_manifest_template_path = File.join(local_files_root_path, 'basic_dsc_resources', 'dsc_single_resource.pp.erb')
-dsc_manifest = ERB.new(File.read(dsc_manifest_template_path), 0, '>').result(binding)
+MANIFEST
 
 # Teardown
 teardown do
   confine_block(:to, :platform => 'windows') do
     step 'Remove Test Artifacts'
-    set_dsc_resource(
-      agents,
-      dsc_type,
-      dsc_module,
-      :Ensure          => 'Absent',
-      :DestinationPath => dsc_props[:dsc_destinationpath]
-    )
+    on(agents, "rm -rf /cygdrive/c/#{fake_name}")
   end
+
+  uninstall_fake_reboot_resource(master)
 end
 
 # Setup
+step 'Copy Test Type Wrappers'
+install_fake_reboot_resource(master)
 step 'Inject "site.pp" on Master'
 site_pp = create_site_pp(master, :manifest => dsc_manifest)
 inject_site_pp(master, get_site_pp_path(master), site_pp)
@@ -42,14 +39,20 @@ confine_block(:to, :platform => 'windows') do
   agents.each do |agent|
     step 'Apply Manifest to Create File'
     on(agent, puppet('agent -t --environment production'), :acceptable_exit_codes => [0,2]) do |result|
+      assert_match(/Stage\[main\]\/Main\/Node\[default\]\/Dsc_puppetfakeresource\[#{fake_name}\]\/ensure\: created/, result.stdout, 'DSC Resource missing!')
       assert_no_match(/Error:/, result.stderr, 'Unexpected error was detected!')
     end
   end
 end
 
 # New manifest to remove value.
-dsc_props[:ensure] = 'absent'
-dsc_remove_manifest = ERB.new(File.read(dsc_manifest_template_path), 0, '>').result(binding)
+dsc_remove_manifest = <<-MANIFEST
+dsc_puppetfakeresource {'#{fake_name}':
+  dsc_ensure          => 'absent',
+  dsc_importantstuff  => '#{test_file_contents}',
+  dsc_destinationpath => 'C:\\#{fake_name}'
+}
+MANIFEST
 
 step 'Inject "site.pp" on Master'
 site_pp = create_site_pp(master, :manifest => dsc_remove_manifest)
@@ -63,15 +66,7 @@ confine_block(:to, :platform => 'windows') do
     end
 
     step 'Verify Results'
-    expect_failure('Expected to fail because of MODULES-2966') do
-      assert_dsc_resource(
-        agent,
-        dsc_type,
-        dsc_module,
-        :Ensure          => dsc_props[:ensure],
-        :DestinationPath => dsc_props[:dsc_destinationpath],
-        :Contents        => dsc_props[:dsc_contents],
-      )
-    end
+    # if this file exists, 'absent' didn't work
+    on(agent, "test -f /cygdrive/c/#{fake_name}", :acceptable_exit_codes => [1])
   end
 end
