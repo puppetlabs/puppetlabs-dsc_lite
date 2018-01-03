@@ -3,19 +3,17 @@ require 'master_manipulator'
 require 'dsc_utils'
 test_name 'MODULES-2843 - C96007 - Apply DSC Resource that Does not Require a Reboot with Autonotify "reboot" Resource'
 
-# Init
-dsc_type = 'Directory'
-test_directory = 'C:/test'
-
 # Manifest
+fake_name = SecureRandom.uuid
+test_file_contents = SecureRandom.uuid
 dsc_manifest = <<-MANIFEST
 reboot { 'dsc_reboot':
   when => pending
 }
-dsc_file { 'reboot_test':
+dsc_puppetfakeresource { '#{fake_name}':
   dsc_ensure          => present,
-  dsc_type            => '#{dsc_type}',
-  dsc_destinationpath => '#{test_directory}'
+  dsc_importantstuff  => '#{test_file_contents}',
+  dsc_destinationpath => 'C:\\#{fake_name}'
 }
 MANIFEST
 
@@ -25,14 +23,7 @@ teardown do
 
   confine_block(:to, :platform => 'windows') do
     step 'Remove Test Artifacts'
-    set_dsc_resource(
-      agents,
-      'File',
-      'PSDesiredStateConfiguration',
-      :Ensure          => 'Absent',
-      :Type            => dsc_type,
-      :DestinationPath => test_directory
-    )
+    on(agents, "rm -rf /cygdrive/c/#{fake_name}")
   end
 end
 
@@ -52,6 +43,7 @@ confine_block(:to, :platform => 'windows') do
 
     step 'Run Puppet Agent'
     on(agent, puppet('agent -t --environment production'), :acceptable_exit_codes => [0,2]) do |result|
+      assert_match(/Stage\[main\]\/Main\/Node\[default\]\/Dsc_puppetfakeresource\[#{fake_name}\]\/ensure\: created/, result.stdout, 'DSC Resource missing!')
       assert_no_match(/Error:/, result.stderr, 'Unexpected error was detected!')
       assert_no_match(/Warning:/, result.stderr, 'Unexpected warning was detected!')
     end
