@@ -20,9 +20,9 @@ module PuppetX
           else
             fail "unsupported type #{dsc_value.class} of value '#{dsc_value}'"
           end
-
         end
 
+        private
         def self.format_string(value)
           "'#{escape_quotes(value)}'"
         end
@@ -36,19 +36,43 @@ module PuppetX
         end
 
         def self.format_array(value)
-          output = []
-          output << "@("
-          value.collect do |m|
-            output << format(m)
-          end
-          output.join(', ')
-          output << ")"
+          "@(" + value.collect{|m| format(m) }.join(', ') + ")"
         end
 
         def self.format_hash(value)
+          if !value.has_key?('dsc_type')
+            format_hash_to_string(value)
+          else
+            case value['dsc_type']
+            when 'MSFT_Credential'
+              "([PSCustomObject]#{format_hash(value['dsc_properties'])} | new-pscredential)"
+            else
+              format_ciminstance(value)
+            end
+          end
+        end
+
+        def self.format_hash_to_string(value)
           "@{\n" + value.collect{|k, v| format(k) + ' = ' + format(v)}.join(";\n") + "\n" + "}"
         end
-        
+
+        def self.format_ciminstance(value)
+          type       = value['dsc_type'].gsub('[]','')
+          properties = [value['dsc_properties']].flatten
+
+          output = properties.map do |p|
+            "(New-CimInstance -ClassName '#{type}' -ClientOnly -Property #{format_hash_to_string(p)})"
+          end
+
+          if value['dsc_type'].end_with?('[]')
+            output = output.join(",\n")
+            "[CimInstance[]]@(\n" + output +  "\n)"
+          else
+            "[CimInstance]#{output.first}"
+          end
+
+        end
+
         def self.escape_quotes(text)
           text.gsub("'", "''")
         end

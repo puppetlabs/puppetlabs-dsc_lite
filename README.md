@@ -11,14 +11,11 @@
 2. [Prerequisites](#windows-system-prerequisites)
 3. [Setup](#setup)
 4. [Usage](#usage)
-  * [Using DSC Resources with Puppet](#using-dsc-resources-with-puppet)
+  * [Using PSCredential or MSFT_Credential](#using-dsc-resources-with-puppet)
+  * [Using EmbeddedInstance or CimInstance](#using-dsc-resources-with-puppet)
   * [Handling Reboots with DSC](#handling-reboots-with-dsc)
-  * [Installing Packages with DSC](#installing-packages-with-dsc)
-  * [Using Credentials](#using-credentials)
-  * [Setting Registry Values](#setting-registry-values)
-  * [Adding or Removing Windows Features](#adding-or-removing-windows-features)
-  * [Website Installation Example](#website-installation-example)
 5. [Reference](#reference)
+  * [Types and Providers](#types-and-providers)
 6. [Limitations](#limitations)
   * [Known Issues](#known-issues)
   * [Running Puppet and DSC without Administrative Privileges](#running-puppet-and-dsc-without-administrative-privileges)
@@ -52,9 +49,9 @@ See [known issues](#known-issues) for troubleshooting setup.
 
 ## Usage
 
-### Using DSC Resources with Puppet
+### Using PSCredential or MSFT_Credential
 
-You can use a DSC Resource by prefixing each DSC Resource name and parameter with 'dsc_' and lowercasing the values.
+The generic `dsc` type is a streamlined and minimal representation of a DSC Resource declaration in Puppet syntax. You can use a DSC Resource by supplying the same properties you would set in a DSC Configuration script inside the `dsc_resource_properties` parameter. For most use cases the `dsc_resource_properties` parameter accepts the same structure as the PowerShell syntax, with the substituion of Puppet syntax for arrays, hashes and other data structures.
 
 So a DSC resource specified in PowerShell...
 
@@ -68,19 +65,121 @@ WindowsFeature IIS {
 ...would look like this in Puppet:
 
 ~~~puppet
-dsc_windowsfeature {'IIS':
-  dsc_ensure => 'present',
-  dsc_name   => 'Web-Server',
+dsc {'iis':
+  dsc_resource_name        => 'WindowsFeature',
+  dsc_resource_module_name => 'PSDesiredStateConfiguration',
+  dsc_resource_properties  => {
+    ensure => 'present',
+    name   => 'Web-Server',
+  }
 }
 ~~~
 
-All DSC Resource names and parameters have to be in lowercase, for example: `dsc_windowsfeature` or `dsc_name`.
+For the simplest cases, the above example is enough. However there are more advanced use cases in DSC that require more custom syntax in the `dsc` Puppet type. Since the `dsc` Puppet type has no prior knowledge of the type for each property in a DSC Resource, it can't format the hash correctly without some hints.
 
-You can use either `ensure =>` (Puppet's `ensure`) or `dsc_ensure =>` (DSC's `Ensure`) in your manifests for Puppet DSC resource types. If you use both in a Puppet DSC resource, `dsc_ensure` overrides the value in `ensure`, so the value for `ensure` is essentially ignored.
+The `dsc_resource_properties` parameter will recognize any key with a hash value that contains two keys: `dsc_type` and `dsc_properties`, as a indication of how to format the data supplied. The `dsc_type` contains the CimInstance name to use, and the `dsc_properties` contains a hash or an array of hashes representing the data for the CimInstances.
 
-We recommend that you use `dsc_ensure` instead of `ensure`, as it is a closer match for converting the DSC properties to Puppet DSC resources. It also overrides `ensure`, so there is less confusion if both are accidentally included.
+A contrived, but simple example follows:
 
-> Note: While you can use either `ensure =>` (Puppet's `ensure`) or `dsc_ensure =>` (DSC's `Ensure`) in your manifests, there is currently a known issue where `ensure => absent` reports success but does nothing. See [MODULES-2966](https://tickets.puppet.com/browse/MODULES-2966) for details. **Until this issue is resolved, we recommend using `dsc_ensure` exclusively.**
+~~~puppet
+dsc{'foo':
+  dsc_resource_name        => 'xFoo',
+  dsc_resource_module_name => 'xFooBar',
+  dsc_resource_properties  => {
+    ensure  => 'present',
+    fooinfo => {
+      'dsc_type'       => 'FooBarBaz',
+      'dsc_properties' => {
+        "wakka" => "woot",
+        "number"     => 8090
+      }
+    }
+  }
+}
+~~~
+
+### Using PSCredential or MSFT_Credential
+
+Specifying credentials in DSC Resources requires using a PSCredential object. The `dsc` type will automatically create a PSCredential if the `dsc_type` has `MSFT_Credential` as a value.
+
+~~~puppet
+dsc{'foouser':
+  dsc_resource_name        => 'User',
+  dsc_resource_module_name => 'PSDesiredStateConfiguration',
+  dsc_resource_properties  => {
+    'username'    => 'jane-doe',
+    'description' => 'Jane Doe user',
+    'ensure'      => 'present',
+    'password'    => {
+      'dsc_type' => 'MSFT_Credential',
+      'dsc_properties' => {
+        'user'     => 'jane-doe',
+        'password' => 'StartFooo123&^!'
+      }
+    },
+    'passwordneverexpires' => false,
+    'disabled'             => true,
+  }
+}
+~~~
+
+### Using CimInstance
+
+A DSC Resource may need a more complex type that a simple key value pair, so an EmbeddedInstance is used. An EmbeddedInstance is serialized as CimInstance over the wire. In order to represent a CimInstance in the `dsc` type, we will use the `dsc_type` key to specify which CimInstance to use. If the CimInstance is an array, we append a `[]` to the end of the name.
+
+For example, we'll create a new IIS website using the xWebSite DSC Resource, bound to port 80. We use `dsc_type` to specify a `MSFT_xWebBindingInformation` CimInstance, and append `[]` to indicate that it is an array. Note that we do this even if we are only putting a single value in `dsc_properties`.
+
+~~~puppet
+dsc{'NewWebsite':
+  dsc_resource_name        => 'xWebsite',
+  dsc_resource_module_name => 'xWebAdministration',
+  dsc_resource_properties  => {
+    ensure       => 'Present',
+    state        => 'Started',
+    name         => 'TestSite',
+    physicalpath => 'C:\testsite',
+    bindinginfo  => {
+      'dsc_type'       => 'MSFT_xWebBindingInformation[]',
+      'dsc_properties' => {
+        "protocol" => "HTTP",
+        "port"     => 80
+      }
+    }
+  }
+}
+~~~
+
+To show using more than one value in `dsc_properties`, let's create the same site but now bound to both port 80 and 443.
+
+~~~puppet
+dsc{'NewWebsite':
+  dsc_resource_name        => 'xWebsite',
+  dsc_resource_module_name => 'xWebAdministration',
+  dsc_resource_properties  => {
+    ensure       => 'Present',
+    state        => 'Started',
+    name         => 'TestSite',
+    physicalpath => 'C:\testsite',
+    bindinginfo  => {
+      'dsc_type'       => 'MSFT_xWebBindingInformation[]',
+      'dsc_properties' => [
+        {
+          "protocol" => "HTTP",
+          "port"     => 80
+        },
+        {
+          'protocol'             => 'HTTPS',
+          'port'                 => 443,
+          'certificatethumbprint' => 'F94B4CC4C445703388E418F82D1BBAA6F3E9E512',
+          'certificatestorename'  => 'My',
+          'ipaddress'            => '*'
+        }
+      ]
+    }
+  }
+}
+~~~
+
 
 ### Handling Reboots with DSC
 
@@ -93,257 +192,35 @@ reboot { 'dsc_reboot' :
 }
 ~~~
 
-### Installing Packages with DSC
-
-Install MSIs or EXEs with DSC using the Puppet type `dsc_package`, which maps to the `Package` DSC Resource.
-
-~~~puppet
-dsc_package{'installpython'
-  dsc_ensure    => 'Present',
-  dsc_name      => 'Python 2.7.10',
-  dsc_productid => 'E2B51919-207A-43EB-AE78-733F9C6797C2'
-  dsc_path      => 'C:\\python.msi',
-}
-~~~
-
-The `Package` DSC Resource requires the following information to install an MSI:
-
-- ProductName: The `Name` of product being installed.
-- ProductId: The `ProductCode` property of the MSI, which is a unique identifier for the particular product release, represented as a GUID string. For more information see the [MSDN ProductCode property](https://msdn.microsoft.com/en-us/library/aa370854.aspx) documentation page.
-
-You can obtain this information in a variety of ways.
-
-- Use a tool such as Orca to open the MSI file and inspect the `Name` and `ProductCode`.
-- Install the product on a test system, and inspect the `Name` and `ProductCode` in the Windows Add/Remove Programs Control Panel.
-- Use a script to query the MSI file for the `Name` and `ProductCode`, as in the example PowerShell script below, which was adapted from [Stack Overflow](http://stackoverflow.com/a/8743878/1083).
-
-~~~powershell
-function Get-MsiDatabaseInfo{
-  param ([IO.FileInfo]$FilePath)
-
-  $productName = Invoke-MSIQuery -FilePath $filePath.FullName -Query "SELECT Value FROM Property WHERE Property = 'ProductName'"
-  $productCode = Invoke-MSIQuery -FilePath $filePath.FullName -Query "SELECT Value FROM Property WHERE Property = 'ProductCode'"
-
-  return [PSCustomObject]@{
-    FullName    = $FilePath.FullName
-    ProductName = ([string]$productName).TrimStart()
-    ProductCode = ([string]$productCode).Replace("{","").Replace("}","").TrimStart()
-  }
-}
-
-function Invoke-MSIQuery{
-  param($FilePath, $Query)
-  try{
-    $windowsInstaller = New-Object -com WindowsInstaller.Installer
-    $database = $windowsInstaller.GetType().InvokeMember("OpenDatabase", "InvokeMethod", $Null, $windowsInstaller, @($FilePath, 0))
-  }catch{
-    throw "Failed to open MSI file. The error was: {0}." -f $_
-  }
-
-  try{
-    $View = $database.GetType().InvokeMember("OpenView", "InvokeMethod", $Null, $database, ($query))
-    $View.GetType().InvokeMember("Execute", "InvokeMethod", $Null, $View, $Null)
-
-    $record = $View.GetType().InvokeMember("Fetch", "InvokeMethod", $Null, $View, $Null)
-    $property = $record.GetType().InvokeMember("StringData", "GetProperty", $Null, $record, 1)
-
-    $View.GetType().InvokeMember("Close", "InvokeMethod", $Null, $View, $Null)
-
-    return $property
-  }catch{
-    throw "Failed to read MSI file. The error was: {0}." -f $_
-  }
-}
-~~~
-
-### Using Hashes
-
-Supply a hash to any parameter that accepts PowerShell hashes, and Puppet handles creating the appropriate values for you.
-
-~~~puppet
-dsc_example_resource { 'examplefoo':
-  dsc_ensure         => present,
-  dsc_hash_parameter => {
-    'key1' => 'value1',
-    'key2' => 'value2'
-  },
-}
-~~~
-
-### Using Credentials
-
-DSC uses `MSFT_Credential` objects to pass credentials to DSC Resources. Supply a hash to any `credential` parameter, and Puppet handles creating the `credential` object for you.
-
-~~~puppet
-dsc_user { 'jane-doe':
-  dsc_username             => 'jane-doe',
-  dsc_description          => 'Jane Doe user',
-  dsc_ensure               => present,
-  dsc_password             => {
-    'user' => 'jane-doe',
-    'password' => 'jane-password'
-  },
-  dsc_passwordneverexpires => false,
-  dsc_disabled             => true,
-}
-~~~
-
-### Setting Registry Values
-
-Creating and modifying Registry keys and values is done with the `dsc_registry` Puppet type which maps to the `Registry` DSC Resource.
-
-#### Registry Example: Simple
-
-Set simple values by specifying key-value pairs.
-
-~~~puppet
-dsc_registry {'registry_test':
-  dsc_ensure    => 'Present'
-  dsc_key       => 'HKEY_LOCAL_MACHINE\SOFTWARE\ExampleKey'
-  dsc_valuename => 'TestValue'
-  dsc_valuedata => 'TestData'
-}
-~~~
-
-#### Registry Example: Binary
-
-The 'Binary' data type expects hexadecimal in a single string.
-
-~~~puppet
-dsc_registry {'registry_test':
-  dsc_ensure => 'Present',
-  dsc_key => 'HKEY_LOCAL_MACHINE\SOFTWARE\TestKey',
-  dsc_valuename => 'TestBinaryValue',
-  dsc_valuedata => 'BEEF',
-  dsc_valuetype => 'Binary',
-}
-~~~
-
-#### Registry Example: Dword and Qword
-
-The 'Dword' and 'Qword' data types expect signed integer values, as opposed to hexadecimal or unsigned.
-
-~~~puppet
-dsc_registry {'registry_test':
-  dsc_ensure => 'Present',
-  dsc_key => 'HKEY_LOCAL_MACHINE\SOFTWARE\TestKey',
-  dsc_valuename => 'TestDwordValue',
-  dsc_valuedata => '-2147483648',
-  dsc_valuetype => 'Dword',
-}
-~~~
-
-*Note*: DSC Resources are executed under the SYSTEM context by default, which means you are unable to access any user level Registry key without providing alternate credentials.
-
-### Adding or Removing Windows Features
-
-You can add or remove Windows Features using Puppet type `dsc_windowsfeature` which maps to the `WindowsFeature` DSC Resource.
-
-#### Add a Windows Feature
-
-~~~puppet
-dsc_windowsfeature {'featureexample':
-  dsc_ensure = 'present'
-  dsc_name = 'Web-Server'
-}
-~~~
-
-#### Remove a Windows Feature
-
-~~~puppet
-dsc_windowsfeature {'featureexample':
-  dsc_ensure = 'absent'
-  dsc_name = 'Web-Server'
-}
-~~~
-
-#### Finding Windows Feature Names
-
-You can find the name to use when adding or removing Windows Features by executing the `Get-WindowsFeature` cmdlet and using the `Name` property.
-
-~~~powershell
-[PS]> Get-WindowsFeature
-~~~
-
-### Website Installation Example
-
-An end-to-end example installation of a test website.
-
-~~~puppet
-class fourthcoffee(
-  $websitename        = 'FourthCoffee',
-  $zipname            = 'FourthCoffeeWebSiteContent.zip',
-  $sourcerepo         = 'https://github.com/msutter/fourthcoffee/raw/master',
-  $destinationpath    = 'C:\inetpub\FourthCoffee',
-  $defaultwebsitepath = 'C:\inetpub\wwwroot',
-  $zippath            = 'C:\tmp'
-){
-
-  $zipuri  = "${sourcerepo}/${zipname}"
-  $zipfile = "${zippath}\\${zipname}"
-
-  # Install the IIS role
-  dsc_windowsfeature {'IIS':
-    dsc_ensure => 'present',
-    dsc_name   => 'Web-Server',
-  } ->
-
-  # Install the ASP .NET 4.5 role
-  dsc_windowsfeature {'AspNet45':
-    dsc_ensure => 'present',
-    dsc_name   => 'Web-Asp-Net45',
-  } ->
-
-  # Stop an existing website (set up in Sample_xWebsite_Default)
-  dsc_xwebsite {'Stop DefaultSite':
-    dsc_ensure       => 'present',
-    dsc_name         => 'Default Web Site',
-    dsc_state        => 'Stopped',
-    dsc_physicalpath => $defaultwebsitepath,
-  } ->
-
-  # Create tmp folder
-  dsc_file {'tmp folder':
-    dsc_ensure          => 'present',
-    dsc_type            => 'Directory',
-    dsc_destinationpath => $zippath,
-  } ->
-
-  # Download the site content
-  dsc_xremotefile {'Download WebContent Zip':
-    dsc_destinationpath => $zipfile,
-    dsc_uri             => $zipuri,
-  } ->
-
-  # Extract the website content 
-  dsc_archive {'Unzip and Copy the WebContent':
-    dsc_ensure      => 'present',
-    dsc_path        => $zipfile,
-    dsc_destination => $destinationpath,
-  } ->
-
-  # Create a new website
-  dsc_xwebsite {'BackeryWebSite':
-    dsc_ensure       => 'present',
-    dsc_name         => $websitename,
-    dsc_state        => 'Started',
-    dsc_physicalpath => $destinationpath,
-  }
-}
-~~~
-
-As you can see, you can mix and match DSC resources with common Puppet resources.
-All [Puppet metaparameters](https://docs.puppet.com/references/latest/metaparameter.html) are also supported.
-
 ## Reference
 
-### Types
+### Types and Providers
 
-A comprehensive list of all types included in the dsc module is available in the [types document](https://github.com/puppetlabs/puppetlabs-dsc/blob/master/types.md). This list maps each Puppet resource (for example, `dsc_xcertreq`) to the corresponding DSC resource.
+* [dsc](#dsc)
 
-Because types are built from the source code of each DSC Resources MOF schema files, the name of the DSC resource in the types document links to a local copy of that resource code (in this case, `xCertReq`), so that you can see how the code is applied to your system.
+### dsc
 
-Where available, a link to the external GitHub repo of each resource is also included. The DSC resources are third-party resources that may or may not be documented in their repositories. Available DSC resources and parameters are subject to change.
+The `dsc` type allows specifying any DSC Resource declaration as a minimal Puppet declaration.
+
+#### Properties/Parameters
+
+#### name
+
+The name of the declaration. This has no affect on the DSC Resource declaration and is not used by the DSC Resource.
+
+#### dsc_resource_name
+
+The name of the DSC Resource to use. For example, the xRemoteFile DSC Resource.
+
+#### dsc_resource_module_name
+
+The name of the DSC Resource module to use. For example, the xPSDesiredStateConfiguration DSC Resource module contains the xRemoteFile DSC Resource.
+
+#### dsc_resource_properties
+
+The hash of properties to pass to the DSC Resource.
+
+To express EmbeddedInstances, the `dsc_resource_properties` parameter will recognize any key with a hash value that contains two keys: `dsc_type` and `dsc_properties`, as a indication of how to format the data supplied. The `dsc_type` contains the CimInstance name to use, and the `dsc_properties` contains a hash or an array of hashes representing the data for the CimInstances. If the CimInstance is an array, we append a `[]` to the end of the name.
 
 ## Limitations
 
