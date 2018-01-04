@@ -3,6 +3,7 @@ require 'json'
 if Puppet::Util::Platform.windows?
   require_relative '../../../puppet_x/puppetlabs/dsc_lite/powershell_manager'
   require_relative '../../../puppet_x/puppetlabs/dsc_lite/compatible_powershell_version'
+  require_relative '../../../puppet_x/puppetlabs/dsc_lite/powershell_hash_formatter'
 end
 
 Puppet::Type.type(:base_dsc_lite).provide(:powershell) do
@@ -57,6 +58,12 @@ EOT
 
   def dsc_parameters
     resource.parameters_with_value.select do |p|
+      p.name.to_s =~ /dsc_/
+    end
+  end
+  
+  def dsc_property_param
+    resource.parameters_with_value.select{ |pr| pr.name == :dsc_resource_properties }.each do |p|
       p.name.to_s =~ /dsc_/
     end
   end
@@ -183,6 +190,10 @@ EOT
       fail "unsupported type #{dsc_value.class} of value '#{dsc_value}'"
     end
   end
+  
+  def self.format_dsc_lite(dsc_value)
+    PuppetX::PuppetLabs::DscLite::PowerShellHashFormatter.format(dsc_value)
+  end
 
   def self.escape_quotes(text)
     text.gsub("'", "''")
@@ -195,7 +206,10 @@ EOT
   def self.ps_script_content(mode, resource, provider)
     dsc_invoke_method = mode
     @param_hash = resource
-    template = ERB.new(File.new(template_path + "/invoke_dsc_resource.ps1.erb").read, nil, '-')
+    template_name = resource.type == :dsc ?
+      '/invoke_generic_dsc_resource.ps1.erb' :
+      '/invoke_dsc_resource.ps1.erb'
+    template = ERB.new(File.new(template_path + template_name).read, nil, '-')
     template.result(binding)
   end
 end
