@@ -152,7 +152,6 @@ end
 # ==== Attributes
 #
 # * +host+ - A Beaker host with the DSC module already installed.
-# * +fake_reboot_path+ - The path on the test runner that contains the "PuppetFakeResource".
 #
 # ==== Returns
 #
@@ -165,10 +164,10 @@ end
 # ==== Examples
 #
 # install_fake_reboot_resource(agent, '/dsc/tests/files/reboot')
-def install_fake_reboot_resource(host, fake_reboot_path)
+def install_fake_reboot_resource(host)
   # Init
-  fake_reboot_resource_source_path = "#{fake_reboot_path}/PuppetFakeResource"
-  fake_reboot_type_source_path = "#{fake_reboot_path}/dsc_puppetfakeresource.rb"
+  fake_reboot_resource_source_path = "tests/files/dsc_puppetfakeresource/PuppetFakeResource"
+  fake_reboot_type_source_path = "tests/files/dsc_puppetfakeresource/dsc_puppetfakeresource.rb"
 
   dsc_resource_target_path = 'lib/puppet_x/dsc_resources'
   puppet_type_target_path = 'lib/puppet/type'

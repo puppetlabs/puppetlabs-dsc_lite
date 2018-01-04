@@ -3,13 +3,11 @@ require 'master_manipulator'
 require 'dsc_utils'
 test_name 'MODULES-2843 - C96005 - Apply DSC Resource that Requires Reboot without "reboot" Resource'
 
-# Init
-local_files_root_path = ENV['FILES'] || 'tests/files'
-
 # Manifest
 dsc_manifest = <<-MANIFEST
 dsc_puppetfakeresource { 'reboot_test':
-  dsc_importantstuff => 'reboot'
+  dsc_importantstuff => 'reboot',
+  dsc_requirereboot => true,
 }
 MANIFEST
 
@@ -22,7 +20,7 @@ teardown do
 end
 
 # Setup
-install_fake_reboot_resource(master, "#{local_files_root_path}/reboot")
+install_fake_reboot_resource(master)
 
 step 'Inject "site.pp" on Master'
 site_pp = create_site_pp(master, :manifest => dsc_manifest)

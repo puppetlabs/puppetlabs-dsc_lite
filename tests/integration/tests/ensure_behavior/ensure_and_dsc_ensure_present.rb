@@ -6,34 +6,31 @@ test_name 'MODULES-2965 - C96625 - Apply DSC Manifest with "ensure" and "dsc_ens
 # Init
 local_files_root_path = ENV['MANIFESTS'] || 'tests/manifests'
 
-# ERB Manifest
-dsc_type = 'file'
-dsc_module = 'PSDesiredStateConfiguration'
-dsc_props = {
-  :ensure              => 'present',
-  :dsc_ensure          => 'present',
-  :dsc_destinationpath => 'C:\test.file',
-  :dsc_contents        => 'Ensure the ensurance.',
+# Manifest
+fake_name = SecureRandom.uuid
+test_file_contents = SecureRandom.uuid
+dsc_manifest = <<-MANIFEST
+dsc_puppetfakeresource {'#{fake_name}':
+  ensure              => 'present',
+  dsc_ensure          => 'present',
+  dsc_importantstuff  => '#{test_file_contents}',
+  dsc_destinationpath => 'C:\\#{fake_name}'
 }
-
-dsc_manifest_template_path = File.join(local_files_root_path, 'basic_dsc_resources', 'dsc_single_resource.pp.erb')
-dsc_manifest = ERB.new(File.read(dsc_manifest_template_path), 0, '>').result(binding)
+MANIFEST
 
 # Teardown
 teardown do
   confine_block(:to, :platform => 'windows') do
     step 'Remove Test Artifacts'
-    set_dsc_resource(
-      agents,
-      dsc_type,
-      dsc_module,
-      :Ensure          => 'Absent',
-      :DestinationPath => dsc_props[:dsc_destinationpath]
-    )
+    on(agents, "rm -rf /cygdrive/c/#{fake_name}")
   end
+
+  uninstall_fake_reboot_resource(master)
 end
 
 # Setup
+step 'Copy Test Type Wrappers'
+install_fake_reboot_resource(master)
 step 'Inject "site.pp" on Master'
 site_pp = create_site_pp(master, :manifest => dsc_manifest)
 inject_site_pp(master, get_site_pp_path(master), site_pp)
@@ -47,13 +44,9 @@ confine_block(:to, :platform => 'windows') do
     end
 
     step 'Verify Results'
-    assert_dsc_resource(
-      agent,
-      dsc_type,
-      dsc_module,
-      :Ensure          => dsc_props[:dsc_ensure],
-      :DestinationPath => dsc_props[:dsc_destinationpath],
-      :Contents        => dsc_props[:dsc_contents],
-    )
+    # PuppetFakeResource always overwrites file at this path
+    on(agent, "cat /cygdrive/c/#{fake_name}", :acceptable_exit_codes => [0]) do |result|
+      assert_match(/#{test_file_contents}/, result.stdout, 'PuppetFakeResource File contents incorrect!')
+    end
   end
 end
