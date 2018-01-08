@@ -398,40 +398,6 @@ end
 module Beaker
   module DSL
     module Assertions
-      # Verify the expected state of a DSC resource on a given host.
-      #
-      # ==== Attributes
-      #
-      # * +hosts+ - The target Windows host(s) for verification.
-      # * +dsc_resource_type+ - The DSC resource type name to verify.
-      # * +dsc_module+ - The DSC module for the specified resource type.
-      # * +dsc_properties+ - DSC properties to verify on resource.
-      #
-      # ==== Returns
-      #
-      # +nil+
-      #
-      # ==== Raises
-      #
-      # +Minitest::Assertion+ - DSC resource not in desired state.
-      #
-      # ==== Examples
-      #
-      # assert_dsc_resource(agents,
-      #                     'File',
-      #                     'PSDesiredStateConfiguration',
-      #                     :DestinationPath=>'C:\test.txt',
-      #                     :Contents=>'catcat')
-      def assert_dsc_resource(hosts, dsc_resource_type, dsc_module, dsc_properties)
-        # Init
-        dsc_full_module_path = get_dsc_vendor_resource_abs_path(hosts, dsc_module)
-        ps_script = _build_dsc_command('Test', dsc_resource_type, dsc_full_module_path, dsc_properties)
-
-        _exec_dsc_script(hosts, ps_script) do |result|
-          assert(0 == result.exit_code, 'DSC resource not in desired state!')
-        end
-      end
-
       # Verify that the PowerShell script.
       #
       # ==== Attributes
