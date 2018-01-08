@@ -338,58 +338,6 @@ end
 module Beaker
   module DSL
     module Assertions
-      # Verify that the PowerShell script.
-      #
-      # ==== Attributes
-      #
-      # * +host+ - The target Windows host(s) for verification.
-      # * +user+ - A valid user account on target Windows host(s).
-      # * +password+ - The password for the associated user account.
-      # * +dsc_resource_type+ - The DSC resource type name to verify.
-      # * +dsc_module+ - The DSC module for the specified resource type.
-      # * +dsc_cred_param+ - The DSC resource parameter that requires a 'PSCredential' object.
-      # * +dsc_properties+ - DSC properties to verify on resource.
-      #
-      # ==== Returns
-      #
-      # +nil+
-      #
-      # ==== Raises
-      #
-      # +Minitest::Assertion+ - DSC resource not in desired state.
-      #
-      # ==== Examples
-      #
-      # assert_dsc_cred_resource(agents,
-      #                          'user1',
-      #                          'secret',
-      #                          'User',
-      #                          'PSDesiredStateConfiguration',
-      #                          'Password',
-      #                          :UserName=>'user1',
-      #                          :FullName=>'User One')
-      def assert_dsc_cred_resource(hosts,
-                                   user,
-                                   password,
-                                   dsc_resource_type,
-                                   dsc_module,
-                                   dsc_cred_param,
-                                   dsc_properties)
-        #Init
-        dsc_full_module_path = get_dsc_vendor_resource_abs_path(hosts, dsc_module)
-        ps_script = <<-SCRIPT
-$secpasswd = ConvertTo-SecureString '#{password}' -AsPlainText -Force
-$credentials = New-Object System.Management.Automation.PSCredential ('#{user}', $secpasswd)\n
-SCRIPT
-
-        #Add credential to DSC properties
-        dsc_properties[dsc_cred_param] = '$credentials'
-        ps_script << _build_dsc_command('Test', dsc_resource_type, dsc_full_module_path, dsc_properties)
-        _exec_dsc_script(hosts, ps_script) do |result|
-          assert(0 == result.exit_code, 'DSC resource not in desired state!')
-        end
-      end
-
       # Verify that a reboot is pending on the system.
       #
       # ==== Attributes
