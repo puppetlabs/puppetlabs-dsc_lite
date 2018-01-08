@@ -230,62 +230,6 @@ def uninstall_fake_reboot_resource(host)
   end
 end
 
-# Build a PowerShell DSC command string.
-#
-# ==== Attributes
-#
-# * +dsc_method+ - The method (set, test) to use for the DSC command.
-# * +dsc_resource_type+ - The DSC resource type name to verify.
-# * +dsc_module+ - The DSC module for the specified resource type.
-# * +dsc_properties+ - DSC properties to verify on resource.
-#
-# ==== Returns
-#
-# +nil+
-#
-# ==== Raises
-#
-# +nil+
-#
-# ==== Examples
-#
-# _build_dsc_command('Set',
-#                    'File',
-#                    'PSDesiredStateConfiguration',
-#                    :DestinationPath=>'C:\test.txt',
-#                    :Contents=>'catcat')
-def _build_dsc_command(dsc_method, dsc_resource_type, dsc_module, dsc_properties)
-  #Flatten hash into formatted string.
-  dsc_prop_merge = '@{'
-  dsc_properties.each do |k, v|
-    dsc_prop_merge << "\"#{k}\"="
-
-    if v =~ /^\$/
-      dsc_prop_merge << "#{v};"
-    elsif v =~ /^@/
-      dsc_prop_merge << "#{v};"
-    elsif v =~ /^(-|\[)?\d+$/
-      dsc_prop_merge << "#{v};"
-    elsif v =~ /^\[.+\].+$/     #This is for wacky type conversions
-      dsc_prop_merge << "#{v};"
-    else
-      dsc_prop_merge << "\"#{v}\";"
-    end
-  end
-
-  dsc_prop_merge.chop!
-  dsc_prop_merge << '}'
-
-  #Compose strings for PS command.
-  dsc_command = "Invoke-DscResource -Name #{dsc_resource_type} " \
-                "-Method #{dsc_method} " \
-                "-ModuleName #{dsc_module} " \
-                "-Verbose " \
-                "-Property #{dsc_prop_merge}"
-
-  return "try { if ( #{dsc_command} ) { exit 0 } else { exit 1 } } catch { Write-Host $_.Exception.Message; exit 1 }"
-end
-
 module Beaker
   module DSL
     module Assertions
