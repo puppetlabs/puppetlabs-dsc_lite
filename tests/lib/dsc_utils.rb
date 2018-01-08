@@ -46,58 +46,6 @@ def locate_dsc_module(host)
   return ''
 end
 
-# Discover the path to the DSC module's vendored resources.
-#
-# ==== Attributes
-#
-# * +host+ - A host with the DSC module installed. If an array of hosts is provided then
-#   then only the first host will be used to determine the DSC module path.
-#
-# ==== Returns
-#
-# +string+ - The fully qualified path to the DSC module on the host. Empty string if
-#   the DSC module is not installed on the host.
-#
-# ==== Raises
-#
-# +nil+
-#
-# ==== Examples
-#
-# locate_dsc_vendor_resources(agent)
-def locate_dsc_vendor_resources(host)
-  # Init
-  host = host.kind_of?(Array) ? host[0] : host
-  libdir_path = on(host, puppet('config print libdir')).stdout.rstrip.gsub('\\', '/')
-  dsc_module_path = locate_dsc_module(host)
-
-  vendor_resource_path = 'puppet_x/dsc_resources'
-  dsc_vendor_paths = ["#{libdir_path}/#{vendor_resource_path}",
-                      "#{dsc_module_path}/lib/#{vendor_resource_path}"]
-
-  # Search the available vendor paths.
-  dsc_vendor_paths.each do |dsc_vendor_path|
-    ps_command = "Test-Path -Type Container -Path #{dsc_vendor_path}"
-
-    if host.is_powershell?
-      on(host, powershell("if ( #{ps_command} ) { exit 0 } else { exit 1 }"), :accept_all_exit_codes => true) do |result|
-        if result.exit_code == 0
-          return dsc_vendor_path
-        end
-      end
-    else
-      on(host, "test -d #{dsc_vendor_path}", :accept_all_exit_codes => true) do |result|
-        if result.exit_code == 0
-          return dsc_vendor_path
-        end
-      end
-    end
-  end
-
-  # Return nothing if module is not installed.
-  return ''
-end
-
 # Copy the "PuppetFakeResource" module to target host. This resource is used for invoking
 # a reboot event from DSC and consumed by the "reboot" module.
 #
