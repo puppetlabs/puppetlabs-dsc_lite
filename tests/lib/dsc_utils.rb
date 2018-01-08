@@ -167,6 +167,7 @@ end
 def install_fake_reboot_resource(host)
   # Init
   fake_reboot_resource_source_path = "tests/files/dsc_puppetfakeresource/PuppetFakeResource"
+  fake_reboot_resource_source_path2 = "tests/files/dsc_puppetfakeresource/PuppetFakeResource2"
   fake_reboot_type_source_path = "tests/files/dsc_puppetfakeresource/dsc_puppetfakeresource.rb"
 
   dsc_resource_target_path = 'lib/puppet_x/dsc_resources'
@@ -179,6 +180,7 @@ def install_fake_reboot_resource(host)
 
   step 'Copy DSC Fake Reboot Resource to Host'
   scp_to(host, fake_reboot_resource_source_path, dsc_resource_path)
+  scp_to(host, fake_reboot_resource_source_path2, dsc_resource_path)
   scp_to(host, fake_reboot_type_source_path, dsc_type_path)
 end
 
@@ -207,17 +209,21 @@ def uninstall_fake_reboot_resource(host)
   step 'Determine Correct DSC Module Path'
   dsc_module_path = locate_dsc_module(host)
   dsc_resource_path = "#{dsc_module_path}/#{dsc_resource_target_path}/PuppetFakeResource"
+  dsc_resource_path2 = "#{dsc_module_path}/#{dsc_resource_target_path}/PuppetFakeResource2"
   dsc_type_path = "#{dsc_module_path}/#{puppet_type_target_path}/dsc_puppetfakeresource.rb"
 
   step 'Remove DSC Fake Reboot Resource from Host'
   if host.is_powershell?
-    ps_rm_dsc_resource = "Remove-Item -Recurse -Path #{dsc_resource_path}/PuppetFakeResource"
+    ps_rm_dsc_resource = "Remove-Item -Recurse -Path #{dsc_resource_path}"
+    ps_rm_dsc_resource2 = "Remove-Item -Recurse -Path #{dsc_resource_path2}"
     ps_rm_dsc_type = "Remove-Item -Path #{dsc_type_path}/dsc_puppetfakeresource.rb"
 
     on(host, powershell("if ( #{ps_rm_dsc_resource} ) { exit 0 } else { exit 1 }"))
+    on(host, powershell("if ( #{ps_rm_dsc_resource2} ) { exit 0 } else { exit 1 }"))
     on(host, powershell("if ( #{ps_rm_dsc_type} ) { exit 0 } else { exit 1 }"))
   else
     on(host, "rm -rf #{dsc_resource_path}")
+    on(host, "rm -rf #{dsc_resource_path2}")
     on(host, "rm -rf #{dsc_type_path}")
   end
 end
