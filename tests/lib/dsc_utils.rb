@@ -98,54 +98,6 @@ def locate_dsc_vendor_resources(host)
   return ''
 end
 
-# Get the absolute path to a vendored module's "pds1" file. If the module requested is
-#   not found or has not been vendored then the requested DSC module name will be
-#   returned.
-#
-# ==== Attributes
-#
-# * +host+ - A host with the DSC module installed. If an array of hosts is provided then
-#     then only the first host will be used to determine the DSC module path.
-# * +dsc_module+ - The DSC module for the specified resource type.
-#
-# ==== Returns
-#
-# +string+ - The fully qualified path to the DSC module on the host. Empty string if
-#   the DSC module is not installed on the host.
-#
-# ==== Raises
-#
-# +nil+
-#
-# ==== Examples
-#
-# get_dsc_vendor_resource_abs_path(agent, dsc_module)
-def get_dsc_vendor_resource_abs_path(host, dsc_module)
-  # Init
-  host = host.kind_of?(Array) ? host[0] : host
-  dsc_vendor_path = locate_dsc_vendor_resources(host)
-  dsc_vendor_module_path = "#{dsc_vendor_path}/#{dsc_module}/#{dsc_module}.psd1"
-
-  ps_command = "Test-Path -Type Leaf -Path #{dsc_vendor_module_path}"
-
-  if host.is_powershell?
-    on(host, powershell("if ( #{ps_command} ) { exit 0 } else { exit 1 }"), :accept_all_exit_codes => true) do |result|
-      if result.exit_code == 0
-        return dsc_vendor_module_path
-      end
-    end
-  else
-    on(host, "test -f #{dsc_vendor_module_path}", :accept_all_exit_codes => true) do |result|
-      if result.exit_code == 0
-        return dsc_vendor_module_path
-      end
-    end
-  end
-
-  # If the vendored module is not found just return the DSC module name.
-  return dsc_module
-end
-
 # Copy the "PuppetFakeResource" module to target host. This resource is used for invoking
 # a reboot event from DSC and consumed by the "reboot" module.
 #
