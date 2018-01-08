@@ -286,55 +286,6 @@ def _build_dsc_command(dsc_method, dsc_resource_type, dsc_module, dsc_properties
   return "try { if ( #{dsc_command} ) { exit 0 } else { exit 1 } } catch { Write-Host $_.Exception.Message; exit 1 }"
 end
 
-# Execute a PowerShell script on a remote machine.
-#
-# ==== Attributes
-#
-# * +hosts+ - A Windows Beaker host(s) running PowerShell.
-# * +ps_script+ - A PowerShell script to execute on the remote host.
-#
-# ==== Returns
-#
-# +Beaker::Result+
-#
-# ==== Raises
-#
-# +nil+
-#
-# ==== Examples
-#
-# _exec_dsc_script(master, 'Write-Host Hello')
-def _exec_dsc_script(hosts, ps_script, &block)
-  #Init
-  temp_script = 'temp.ps1'
-  utf8_ps_script = "\xEF\xBB\xBF".force_encoding('UTF-8') + ps_script.force_encoding('UTF-8')
-  ps_launch = 'powershell.exe -ExecutionPolicy Bypass ' \
-              '-NoLogo ' \
-              '-NoProfile ' \
-              "-File C:/#{temp_script}"
-
-  block_on(hosts) do |host|
-    #Create remote file with UTF-8 BOM
-    create_remote_file(host, "/cygdrive/c/#{temp_script}", utf8_ps_script)
-
-    #Execute PowerShell script on host
-    @result = on(host, ps_launch, :accept_all_exit_codes => true)
-
-    #Also, let additional checking be performed by the caller.
-    if block_given?
-      case block.arity
-        #block with arity of 0, just hand back yourself
-        when 0
-          yield self
-        #block with arity of 1 or greater, hand back the result object
-        else
-          yield @result
-      end
-    end
-    @result
-  end
-end
-
 module Beaker
   module DSL
     module Assertions
