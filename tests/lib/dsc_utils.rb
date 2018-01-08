@@ -179,6 +179,8 @@ def install_fake_reboot_resource(host)
   dsc_type_path = "#{dsc_module_path}/#{puppet_type_target_path}"
 
   step 'Copy DSC Fake Reboot Resource to Host'
+  # without vendored content, must ensure dir created for desired structure
+  on(host, "mkdir -p #{dsc_resource_path}")
   scp_to(host, fake_reboot_resource_source_path, dsc_resource_path)
   scp_to(host, fake_reboot_resource_source_path2, dsc_resource_path)
   scp_to(host, fake_reboot_type_source_path, dsc_type_path)
