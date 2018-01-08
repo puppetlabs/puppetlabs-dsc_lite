@@ -339,41 +339,6 @@ end
 #
 # ==== Attributes
 #
-# * +hosts+ - The target Windows host(s) for verification.
-# * +dsc_resource_type+ - The DSC resource type name to verify.
-# * +dsc_module+ - The DSC module for the specified resource type.
-# * +dsc_properties+ - DSC properties to set on resource.
-#
-# ==== Returns
-#
-# +nil+
-#
-# ==== Raises
-#
-# +Minitest::Assertion+ - DSC failed to be set.
-#
-# ==== Examples
-#
-# set_dsc_resource('agents'
-#                  'File',
-#                  'PSDesiredStateConfiguration',
-#                  :DestinationPath=>'C:\test.txt',
-#                  :Contents=>'catcat')
-def set_dsc_resource(hosts, dsc_resource_type, dsc_module, dsc_properties)
-  # Init
-  dsc_full_module_path = get_dsc_vendor_resource_abs_path(hosts, dsc_module)
-  ps_script = _build_dsc_command('Set', dsc_resource_type, dsc_full_module_path, dsc_properties)
-
-  _exec_dsc_script(hosts, ps_script)
-
-  # Verify State
-  assert_dsc_resource(hosts, dsc_resource_type, dsc_module, dsc_properties)
-end
-
-# Set a DSC resource on a host machine.
-#
-# ==== Attributes
-#
 # * +host+ - The target Windows host(s) for verification.
 # * +user+ - A valid user account on target Windows host(s).
 # * +password+ - The password for the associated user account.
