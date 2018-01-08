@@ -77,7 +77,7 @@ function Set-TargetResource
 
     if ($Ensure -ieq 'Present')
     {
-        $ImportantStuff | Out-File -FilePath $DestinationPath -Encoding ASCII -Force
+        "v2$ImportantStuff" | Out-File -FilePath $DestinationPath -Encoding ASCII -Force
     }
     else
     {
@@ -128,7 +128,7 @@ function Test-TargetResource
         'Present'
         {
             if (!$exists) { return $false }
-            return ((Get-Content $DestinationPath) -eq $ImportantStuff)
+            return ((Get-Content $DestinationPath) -eq "v2$ImportantStuff")
         }
         'Absent'
         {
