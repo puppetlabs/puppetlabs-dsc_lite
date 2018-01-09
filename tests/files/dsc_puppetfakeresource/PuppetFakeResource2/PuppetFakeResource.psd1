@@ -24,7 +24,7 @@ Author = 'vagrant'
 CompanyName = 'Unknown'
 
 # Copyright statement for this module
-Copyright = '(c) 2015 vagrant. All rights reserved.'
+Copyright = '(c) 2015 - Present Puppet Inc.'
 
 # Description of the functionality provided by this module
 # Description = ''
