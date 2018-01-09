@@ -1,8 +1,7 @@
 $script:ErrorActionPreference = 'Stop'
 $script:WarningPreference     = 'SilentlyContinue'
 
-function new-pscredential
-{
+function new-pscredential{
   [CmdletBinding()]
   param (
     [parameter(Mandatory=$true, ValueFromPipelineByPropertyName=$true)]
@@ -39,12 +38,12 @@ try{
 }
 
 # keep the switch for when Test passes back changed properties
-switch ($invokeParams.Method) {
-  'Test' {
+switch($invokeParams.Method){
+  'Test'{
     $response.indesiredstate = $result.InDesiredState
     return ($response | ConvertTo-Json -Compress)
   }
-  'Set' {
+  'Set'{
     $response.indesiredstate = $true
     $response.rebootrequired = $result.RebootRequired
     return ($response | ConvertTo-Json -Compress)
