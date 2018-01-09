@@ -44,7 +44,7 @@ confine_block(:to, :platform => 'windows') do
 
     step 'Verify Results'
     on(agent, "cat /cygdrive/c/#{fake_name}", :acceptable_exit_codes => [0]) do |result|
-      assert_match(/#{test_file_contents}/, result.stdout, 'PuppetFakeResource File contents incorrect!')
+      assert_match(/#{test_file_contents}/, result.stdout, 'File contents incorrect!')
     end
   end
 end
