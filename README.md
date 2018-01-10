@@ -1,4 +1,4 @@
-# dsc
+# dsc_lite
 
 [wmf-5.0]: https://www.microsoft.com/en-us/download/details.aspx?id=50395
 [DSCResources]: https://github.com/powershell/DSCResources
