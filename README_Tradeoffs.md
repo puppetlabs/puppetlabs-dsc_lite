@@ -53,7 +53,7 @@ Use `dsc_lite` if one or more of the following apply to you:
 You should consider continuing to use the existing Puppet `dsc` module if one or more of the following apply to you:
 
 + You want [earlier feedback about the validity of manifest code](#validation)
-+ You're only using Microsoft-provided DSC Resources - ie, not using custom, community-maintained, or class-based DSC Resources
++ You're only using Microsoft-provided DSC Resources - i.e., not using custom, community-maintained, or class-based DSC Resources
 + You've already got a good [workflow for building an internal release of the Puppet `dsc` module with custom resources](https://github.com/puppetlabs/puppetlabs-dsc/blob/master/README_BUILD.md)
 + You don't want to manage installing DSC Resources on your nodes
 + You need the granularity of reporting in the Puppet Enterprise (PE) console which is based on each resource type being different - allowing you to filter and group on DSC Resources
@@ -77,8 +77,9 @@ The `dsc_lite` module does not vendor the DSC Resources for you, but neither doe
 Any DSC Resource available on the machine can be used by the `dsc_lite` module.
 
 #### Pluginsync impact
-Because the Puppet `dsc` module vendors many different DSC Resources it also has a large footprint and includes thousands of files.
-Because pluginsync downloads files from _every_ module in the agent's environment modulepath, regardless of whether the node uses them, this means that every machine using an environment that includes the Puppet `dsc` module will get these thousands of files synced to it.
+The Puppet `dsc` module vendors many different DSC Resources, and therefore has a large footprint and includes thousands of files.
+The pluginsync downloads files from every module in the agent's environment modulepath, regardless of whether the node uses them.
+This means that _every_ machine using an environment that includes the Puppet `dsc` module will get thousands of files synced to them.
 This can be very slow and has the most noticeable impact amongst short-lived machines.
 
 ### Validation
