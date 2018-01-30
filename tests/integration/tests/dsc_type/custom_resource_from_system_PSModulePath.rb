@@ -4,8 +4,6 @@ require 'dsc_utils'
 # this scenario works properly with only a single PuppetFakeResource in module path
 test_name 'Loads a custom DSC resource from system PSModulePath by ModuleName'
 
-# Init
-local_files_root_path = ENV['MANIFESTS'] || 'tests/manifests'
 # DSC runs in system context / can't use users module path
 pshome_modules_path = 'Windows/system32/WindowsPowerShell/v1.0/Modules'
 
