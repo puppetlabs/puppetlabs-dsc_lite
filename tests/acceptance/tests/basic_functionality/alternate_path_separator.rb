@@ -11,7 +11,6 @@ fake_name = SecureRandom.uuid
 
 test_file_path = "C:\\#{test_dir_path}\\#{fake_name}.txt"
 original_contents = SecureRandom.uuid
-test_file_contents = original_contents
 
 dsc_manifest = <<-MANIFEST
 file { 'C:/<%= test_dir_path %>' :
@@ -20,15 +19,13 @@ file { 'C:/<%= test_dir_path %>' :
 ->
 dsc_puppetfakeresource {'<%= fake_name %>':
   dsc_ensure          => 'present',
-  dsc_importantstuff  => '<%= test_file_contents %>',
-  dsc_destinationpath => '<%= defined?(test_file_path) ? test_file_path : "C:\\" + test_dir_path + "\\" + fake_name %>',
+  dsc_importantstuff  => '<%= original_contents %>',
+  dsc_destinationpath => '<%= test_file_path %>',
 }
 MANIFEST
 
 # create another manifest, with new contents and reversed separators
-test_file_path = test_file_path.gsub("\\", '/')
 updated_contents = SecureRandom.uuid
-test_file_contents = updated_contents
 
 dsc_manifest2 = <<-MANIFEST
 file { 'C:/<%= test_dir_path %>' :
@@ -37,8 +34,8 @@ file { 'C:/<%= test_dir_path %>' :
 ->
 dsc_puppetfakeresource {'<%= fake_name %>':
   dsc_ensure          => 'present',
-  dsc_importantstuff  => '<%= test_file_contents %>',
-  dsc_destinationpath => '<%= defined?(test_file_path) ? test_file_path : "C:\\" + test_dir_path + "\\" + fake_name %>',
+  dsc_importantstuff  => '<%= updated_contents %>',
+  dsc_destinationpath => '<%= test_file_path.gsub("\\", "/") %>',
 }
 MANIFEST
 
