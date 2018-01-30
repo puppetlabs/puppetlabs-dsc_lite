@@ -4,9 +4,6 @@ require 'dsc_utils'
 require 'securerandom'
 test_name 'FM-2623 - C68790 - Attempt to Run DSC Manifest on a Linux Agent'
 
-# Init
-local_files_root_path = ENV['MANIFESTS'] || 'tests/manifests'
-
 # Manifest
 fake_name = SecureRandom.uuid
 test_file_contents = SecureRandom.uuid

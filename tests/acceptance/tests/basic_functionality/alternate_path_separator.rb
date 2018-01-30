@@ -5,9 +5,6 @@ test_name 'FM-2623 - C68680 - Apply DSC Resource Manifest Containing Alternate P
 
 confine(:to, :platform => 'windows')
 
-# Init
-local_files_root_path = ENV['MANIFESTS'] || 'tests/manifests'
-
 # ERB Manifests
 test_dir_path = SecureRandom.uuid
 fake_name = SecureRandom.uuid
@@ -15,7 +12,7 @@ fake_name = SecureRandom.uuid
 test_file_path = "C:\\#{test_dir_path}\\#{fake_name}.txt"
 original_contents = SecureRandom.uuid
 test_file_contents = original_contents
-dsc_manifest_template_path = File.join(local_files_root_path, 'basic_functionality', 'test_file_path.pp.erb')
+dsc_manifest_template_path = File.join('tests/manifests', 'basic_functionality', 'test_file_path.pp.erb')
 dsc_manifest = ERB.new(File.read(dsc_manifest_template_path)).result(binding)
 
 # create another manifest, with new contents and reversed separators

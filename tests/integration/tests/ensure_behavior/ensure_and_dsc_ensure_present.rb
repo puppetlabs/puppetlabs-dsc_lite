@@ -3,9 +3,6 @@ require 'master_manipulator'
 require 'dsc_utils'
 test_name 'MODULES-2965 - C96625 - Apply DSC Manifest with "ensure" and "dsc_ensure" Set to "present"'
 
-# Init
-local_files_root_path = ENV['MANIFESTS'] || 'tests/manifests'
-
 # Manifest
 fake_name = SecureRandom.uuid
 test_file_contents = SecureRandom.uuid

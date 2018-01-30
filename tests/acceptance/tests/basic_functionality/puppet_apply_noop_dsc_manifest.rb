@@ -5,15 +5,12 @@ test_name 'FM-2623 - C68509 - Apply DSC Resource Manifest in "noop" Mode Using "
 
 confine(:to, :platform => 'windows')
 
-# Init
-local_files_root_path = ENV['MANIFESTS'] || 'tests/manifests'
-
 # ERB Manifest
 test_dir_path = SecureRandom.uuid
 fake_name = SecureRandom.uuid
 test_file_contents = SecureRandom.uuid
 
-dsc_manifest_template_path = File.join(local_files_root_path, 'basic_functionality', 'test_file_path.pp.erb')
+dsc_manifest_template_path = File.join('tests/manifests', 'basic_functionality', 'test_file_path.pp.erb')
 dsc_manifest = ERB.new(File.read(dsc_manifest_template_path)).result(binding)
 
 # Teardown
