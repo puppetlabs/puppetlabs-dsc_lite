@@ -3,6 +3,8 @@ require 'master_manipulator'
 require 'dsc_utils'
 test_name 'Cannot load a DSC resource from PSModulePath by ModuleName when multiple versions exist'
 
+# Init
+local_files_root_path = ENV['MANIFESTS'] || 'tests/manifests'
 # DSC runs in system context / cannot use users module path
 pshome_modules_path = 'Windows/system32/WindowsPowerShell/v1.0/Modules'
 program_files_modules_path = 'Program\ Files/WindowsPowerShell/Modules'

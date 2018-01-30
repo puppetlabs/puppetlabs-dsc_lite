@@ -3,6 +3,9 @@ require 'master_manipulator'
 require 'dsc_utils'
 test_name 'Apply generic DSC Manifest to create a puppetfakeresource'
 
+# Init
+local_files_root_path = ENV['MANIFESTS'] || 'tests/manifests'
+
 # Manifest
 fake_name = SecureRandom.uuid
 test_file_contents = SecureRandom.uuid
