@@ -17,7 +17,7 @@ file { 'C:/#{ test_dir_path }' :
 dsc_puppetfakeresource {'#{ fake_name }':
   dsc_ensure          => 'present',
   dsc_importantstuff  => '#{ test_file_contents }',
-  dsc_destinationpath => '#{ defined?(test_file_path) ? test_file_path : "C:\\" + test_dir_path + "\\" + fake_name }',
+  dsc_destinationpath => '#{ "C:\\" + test_dir_path + "\\" + fake_name }',
 }
 MANIFEST
 

@@ -8,7 +8,6 @@ confine(:to, :platform => 'windows')
 # ERB Manifest
 test_dir_path = SecureRandom.uuid
 fake_name = SecureRandom.uuid
-test_file_contents = SecureRandom.uuid
 
 dsc_manifest = <<-MANIFEST
 file { 'C:/#{ test_dir_path }' :
@@ -17,8 +16,8 @@ file { 'C:/#{ test_dir_path }' :
 ->
 dsc_puppetfakeresource {'#{ fake_name }':
   dsc_ensure          => 'present',
-  dsc_importantstuff  => '#{ test_file_contents }',
-  dsc_destinationpath => '#{ defined?(test_file_path) ? test_file_path : "C:\\" + test_dir_path + "\\" + fake_name }',
+  dsc_importantstuff  => '#{ SecureRandom.uuid }',
+  dsc_destinationpath => '#{ "C:\\" + test_dir_path + "\\" + fake_name }',
 }
 MANIFEST
 
