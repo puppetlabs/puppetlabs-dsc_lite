@@ -4,16 +4,22 @@ require 'dsc_utils'
 require 'securerandom'
 test_name 'FM-2623 - C68535 - Apply DSC Resource Manifest via "puppet agent" with Debug Enabled'
 
-# Init
-local_files_root_path = ENV['MANIFESTS'] || 'tests/manifests'
-
 # ERB Manifest
 test_dir_path = SecureRandom.uuid
 fake_name = SecureRandom.uuid
 test_file_contents = SecureRandom.uuid
 
-dsc_manifest_template_path = File.join(local_files_root_path, 'basic_functionality', 'test_file_path.pp.erb')
-dsc_manifest = ERB.new(File.read(dsc_manifest_template_path)).result(binding)
+dsc_manifest = <<-MANIFEST
+file { 'C:/#{ test_dir_path }' :
+   ensure => 'directory'
+}
+->
+dsc_puppetfakeresource {'#{ fake_name }':
+  dsc_ensure          => 'present',
+  dsc_importantstuff  => '#{ test_file_contents }',
+  dsc_destinationpath => '#{ "C:\\" + test_dir_path + "\\" + fake_name }',
+}
+MANIFEST
 
 # Verify
 debug_msg = /Debug:.*Dsc_puppetfakeresource\[#{fake_name}\]: The container Node\[default\] will propagate my refresh event/

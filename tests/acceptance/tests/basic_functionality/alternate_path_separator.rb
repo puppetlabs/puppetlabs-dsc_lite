@@ -5,24 +5,39 @@ test_name 'FM-2623 - C68680 - Apply DSC Resource Manifest Containing Alternate P
 
 confine(:to, :platform => 'windows')
 
-# Init
-local_files_root_path = ENV['MANIFESTS'] || 'tests/manifests'
-
 # ERB Manifests
 test_dir_path = SecureRandom.uuid
 fake_name = SecureRandom.uuid
 
 test_file_path = "C:\\#{test_dir_path}\\#{fake_name}.txt"
 original_contents = SecureRandom.uuid
-test_file_contents = original_contents
-dsc_manifest_template_path = File.join(local_files_root_path, 'basic_functionality', 'test_file_path.pp.erb')
-dsc_manifest = ERB.new(File.read(dsc_manifest_template_path)).result(binding)
+
+dsc_manifest = <<-MANIFEST
+file { 'C:/#{ test_dir_path }' :
+   ensure => 'directory'
+}
+->
+dsc_puppetfakeresource {'#{ fake_name }':
+  dsc_ensure          => 'present',
+  dsc_importantstuff  => '#{ original_contents }',
+  dsc_destinationpath => '#{ test_file_path }',
+}
+MANIFEST
 
 # create another manifest, with new contents and reversed separators
-test_file_path = test_file_path.gsub("\\", '/')
 updated_contents = SecureRandom.uuid
-test_file_contents = updated_contents
-dsc_manifest2 = ERB.new(File.read(dsc_manifest_template_path)).result(binding)
+
+dsc_manifest2 = <<-MANIFEST
+file { 'C:/#{ test_dir_path }' :
+   ensure => 'directory'
+}
+->
+dsc_puppetfakeresource {'#{ fake_name }':
+  dsc_ensure          => 'present',
+  dsc_importantstuff  => '#{ updated_contents }',
+  dsc_destinationpath => '#{ test_file_path.gsub("\\", "/") }',
+}
+MANIFEST
 
 # Teardown
 teardown do
