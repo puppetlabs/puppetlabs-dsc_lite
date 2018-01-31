@@ -32,14 +32,20 @@ Puppet::Type.newtype(:dsc) do
     end
   end
 
-  newparam(:dsc_resource_module_name) do
-    desc "DSC Resource Module Name"
+  newparam(:dsc_resource_module) do
+    desc "DSC Resource Module"
     isrequired
     validate do |value|
       if value.nil? or value.empty?
         raise ArgumentError, "A non-empty #{self.name.to_s} must be specified."
       end
-      fail "#{self.name.to_s} should be a String" unless value.is_a? ::String
+      fail "#{self.name.to_s} should be a Hash or String" unless value.is_a?(Hash) || value.is_a?(String)
+      if value.is_a?(Hash)
+        valid_keys = ['name','version']
+        unless (value.keys & valid_keys) == value.keys
+          fail("Must specify name and version if using ModuleSpecification")
+        end
+      end
     end
   end
 

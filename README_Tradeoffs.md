@@ -24,7 +24,7 @@ You'll write a simplified declaration that looks like this:
 ```puppet
 dsc {'fruit_file':
   dsc_resource_name => 'File',
-  dsc_resource_module_name => 'PSDesiredStateConfiguration',
+  dsc_resource_module => 'PSDesiredStateConfiguration',
   dsc_resource_properties => {
     ensure          => 'present',
     content         => 'Apple, Banana, Cherry.',
@@ -109,7 +109,7 @@ If we do the same with the new `dsc_lite` module:
 ```puppet
 dsc {'fruit_file':
   dsc_resource_name => 'File',
-  dsc_resource_module_name => 'PSDesiredStateConfiguration',
+  dsc_resource_module => 'PSDesiredStateConfiguration',
   dsc_resource_properties => {
     ensure          => 'present',
     destinationpath => 1,

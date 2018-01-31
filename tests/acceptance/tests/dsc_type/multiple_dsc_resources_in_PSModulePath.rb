@@ -63,7 +63,7 @@ dsc_ambiguous_manifest = <<-MANIFEST
 dsc {'#{fake_name}':
   dsc_resource_name => 'PuppetFakeResource',
   # NOTE: relies on finding resource in system parts of $ENV:PSModulePath
-  dsc_resource_module_name => 'PuppetFakeResource',
+  dsc_resource_module => 'PuppetFakeResource',
   dsc_resource_properties => {
     ensure          => 'present',
     importantstuff  => '#{test_file_contents}',
@@ -94,8 +94,10 @@ dsc_versioned_manifest = <<-MANIFEST
 dsc {'#{fake_name}':
   dsc_resource_name => 'PuppetFakeResource',
   # NOTE: relies on finding resource in system parts of $ENV:PSModulePath
-  dsc_resource_module_name => 'PuppetFakeResource',
-  dsc_resource_module_version => '2.0',
+  dsc_resource_module => {
+    name    => 'PuppetFakeResource',
+    version => '2.0',
+  },
   dsc_resource_properties => {
     ensure          => 'present',
     importantstuff  => '#{test_file_contents}',
@@ -108,20 +110,15 @@ MANIFEST
 confine_block(:to, :platform => 'windows') do
   agents.each do |agent|
     step 'Run Puppet Apply'
-    # this scenario expectedly fails as DSC doesn't know which version to use
-    on(agent, puppet('apply'), :stdin => dsc_versioned_manifest, :acceptable_exit_codes => [1]) do |result|
-      expect_failure('Cannot yet specify module version until MODULES-5845 implemented') do
-        assert_no_match(/Error:/, result.stderr, 'Unexpected error was detected!')
-      end
+    on(agent, puppet('apply'), :stdin => dsc_versioned_manifest, :acceptable_exit_codes => [0]) do |result|
+      assert_no_match(/Error:/, result.stderr, 'Unexpected error was detected!')
     end
 
     step 'Verify Results'
     # PuppetFakeResource always overwrites file at this path
     # PuppetFakeResourc2 2.0 appends "v2" to the written file before "ImportantStuff"
-    on(agent, "cat /cygdrive/c/#{fake_name}", :acceptable_exit_codes => [1]) do |result|
-      expect_failure('Cannot yet execute PuppetFakeResource 2.0 until MODULES-5845 implemented') do
-        assert_match(/^v2#{test_file_contents}/, result.stdout, 'PuppetFakeResource File contents incorrect!')
-      end
+    on(agent, "cat /cygdrive/c/#{fake_name}", :acceptable_exit_codes => [0]) do |result|
+      assert_match(/^v2#{test_file_contents}/, result.stdout, 'PuppetFakeResource File contents incorrect!')
     end
   end
 end

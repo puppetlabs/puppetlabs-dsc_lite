@@ -11,7 +11,7 @@ test_file_contents = SecureRandom.uuid
 dsc_manifest = <<-MANIFEST
 dsc { '#{fake_name}':
   dsc_resource_name => 'puppetfakeresource',
-  dsc_resource_module_name => '#{installed_path}/PuppetFakeResource',
+  dsc_resource_module => '#{installed_path}/PuppetFakeResource',
   dsc_resource_properties => {
     ensure          => 'present',
     importantstuff  => '#{test_file_contents}',

@@ -12,7 +12,7 @@ dsc_manifest = <<-MANIFEST
 dsc {'#{fake_name}':
   dsc_resource_name => 'puppetfakeresource',
   # NOTE: install_fake_reboot_resource installs on master, which pluginsyncs here
-  dsc_resource_module_name => '#{installed_path}/PuppetFakeResource',
+  dsc_resource_module => '#{installed_path}/PuppetFakeResource',
   dsc_resource_properties => {
     ensure          => 'present',
     importantstuff  => '#{test_file_contents}',
@@ -55,7 +55,7 @@ end
 dsc_remove_manifest = <<-MANIFEST
 dsc {'#{fake_name}':
   dsc_resource_name => 'puppetfakeresource',
-  dsc_resource_module_name => '#{installed_path}/PuppetFakeResource',
+  dsc_resource_module => '#{installed_path}/PuppetFakeResource',
   dsc_resource_properties => {
     ensure          => 'absent',
     importantstuff  => '#{test_file_contents}',
