@@ -1,7 +1,7 @@
 require 'erb'
 require 'master_manipulator'
 require 'dsc_utils'
-test_name 'MODULES-2965 - C96624 - Apply DSC Manifest with "ensure" Set to "absent"'
+test_name 'MODULES-2965 - C96629 - Apply DSC Manifest with "ensure" and "dsc_ensure" Set to "absent"'
 
 # Manifest
 fake_name = SecureRandom.uuid
@@ -17,26 +17,23 @@ MANIFEST
 # Teardown
 teardown do
   confine_block(:to, :platform => 'windows') do
+    agents.each do |agent|
+      uninstall_fake_reboot_resource(agent)
+    end
+
     step 'Remove Test Artifacts'
     on(agents, "rm -rf /cygdrive/c/#{fake_name}")
   end
-
-  uninstall_fake_reboot_resource(master)
 end
-
-# Setup
-step 'Copy Test Type Wrappers'
-install_fake_reboot_resource(master)
-step 'Inject "site.pp" on Master'
-site_pp = create_site_pp(master, :manifest => dsc_manifest)
-inject_site_pp(master, get_site_pp_path(master), site_pp)
 
 # Tests
 confine_block(:to, :platform => 'windows') do
   agents.each do |agent|
+    step 'Copy Test Type Wrappers'
+    install_fake_reboot_resource(agent)
+
     step 'Apply Manifest to Create File'
-    on(agent, puppet('agent -t --environment production'), :acceptable_exit_codes => [0,2]) do |result|
-      assert_match(/Stage\[main\]\/Main\/Node\[default\]\/Dsc_puppetfakeresource\[#{fake_name}\]\/ensure\: created/, result.stdout, 'DSC Resource missing!')
+    on(agent, puppet('apply'), :stdin => dsc_manifest, :acceptable_exit_codes => [0,2]) do |result|
       assert_no_match(/Error:/, result.stderr, 'Unexpected error was detected!')
     end
   end
@@ -45,20 +42,17 @@ end
 # New manifest to remove value.
 dsc_remove_manifest = <<-MANIFEST
 dsc_puppetfakeresource {'#{fake_name}':
+  ensure              => 'absent',
   dsc_ensure          => 'absent',
   dsc_importantstuff  => '#{test_file_contents}',
   dsc_destinationpath => 'C:\\#{fake_name}'
 }
 MANIFEST
 
-step 'Inject "site.pp" on Master'
-site_pp = create_site_pp(master, :manifest => dsc_remove_manifest)
-inject_site_pp(master, get_site_pp_path(master), site_pp)
-
 confine_block(:to, :platform => 'windows') do
   agents.each do |agent|
     step 'Apply Manifest to Remove File'
-    on(agent, puppet('agent -t --environment production'), :acceptable_exit_codes => [0,2]) do |result|
+    on(agent, puppet('apply'), :stdin => dsc_remove_manifest, :acceptable_exit_codes => [0,2]) do |result|
       assert_no_match(/Error:/, result.stderr, 'Unexpected error was detected!')
     end
 
