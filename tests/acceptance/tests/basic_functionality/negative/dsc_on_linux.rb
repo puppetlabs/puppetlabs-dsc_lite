@@ -21,22 +21,21 @@ error_msg = /Could not find a suitable provider for dsc_puppetfakeresource/
 
 # Teardown
 teardown do
-  uninstall_fake_reboot_resource(master)
+  step 'Remove Test Artifacts'
+  agents.each do |agent|
+    uninstall_fake_reboot_resource(agent)
+  end
 end
 
-# Setup
-step 'Copy Test Type Wrappers'
-install_fake_reboot_resource(master)
-step 'Inject "site.pp" on Master'
-site_pp = create_site_pp(master, :manifest => dsc_manifest)
-inject_site_pp(master, get_site_pp_path(master), site_pp)
-
 # Tests
+# NOTE: this test only runs when in a master / agent setup with more than Windows hosts
 confine_block(:except, :platform => 'windows') do
   agents.each do |agent|
+    step 'Copy Test Type Wrappers'
+    install_fake_reboot_resource(agent)
 
-    step 'Run Puppet Agent'
-    on(agent, puppet('agent -t --environment production'), :acceptable_exit_codes => 4) do |result|
+    step 'Run Puppet Apply'
+    on(agent, puppet('apply'), :stdin => dsc_manifest, :acceptable_exit_codes => 4) do |result|
       assert_match(error_msg, result.stderr, 'Expected error was not detected!')
     end
 
