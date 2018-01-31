@@ -32,11 +32,7 @@ confine_block(:to, :platform => 'windows') do
 
   step 'Copy PuppetFakeResource implementations to system PSModulePath locations'
   # sourced from different directory
-  is_pluginsync = hosts.any? { |h| h['roles'].include?('master') }
-  install_base = '/cygdrive/c/ProgramData/PuppetLabs/' +
-    (is_pluginsync ? 'puppet/cache' : 'code/modules/dsc')
-
-  installed_path = "#{install_base}/lib/puppet_x/dsc_resources"
+  installed_path = get_fake_reboot_resource_install_path(usage = :cygwin)
 
   # put PuppetFakeResource v1 in $PSHome\Modules
   on(agents, <<-CYGWIN)

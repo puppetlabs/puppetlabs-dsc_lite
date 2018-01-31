@@ -3,12 +3,7 @@ require 'master_manipulator'
 require 'dsc_utils'
 test_name 'Apply generic DSC Manifest to create a puppetfakeresource'
 
-# Master or masterless determine content locations
-is_pluginsync = hosts.any? { |h| h['roles'].include?('master') }
-install_base = 'C:/ProgramData/PuppetLabs/' +
-  (is_pluginsync ? 'puppet/cache' : 'code/modules/dsc')
-
-installed_path = "#{install_base}/lib/puppet_x/dsc_resources"
+installed_path = get_fake_reboot_resource_install_path(usage = :manifest)
 
 # Manifest
 fake_name = SecureRandom.uuid

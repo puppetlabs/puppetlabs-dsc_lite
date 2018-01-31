@@ -92,6 +92,18 @@ def install_fake_reboot_resource(host)
   end
 end
 
+def get_fake_reboot_resource_install_path(usage = :manifest)
+  # Master or masterless determine content locations
+  is_pluginsync = hosts.any? { |h| h['roles'].include?('master') }
+
+  install_root = usage == :manifest ? 'C:/' : '/cygdrive/c'
+
+  install_base = "#{install_root}/ProgramData/PuppetLabs/" +
+    (is_pluginsync ? 'puppet/cache' : 'code/modules/dsc')
+
+  installed_path = "#{install_base}/lib/puppet_x/dsc_resources"
+end
+
 # Remove the "PuppetFakeResource" module on target host.
 #
 # ==== Attributes
