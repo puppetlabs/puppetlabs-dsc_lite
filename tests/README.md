@@ -15,22 +15,6 @@ At Puppet Labs we define an "acceptance" test as:
 What this means for this project is that we will install and configure some infrastructure needed for a "puppetlabs-dsc"
 environment. (Puppet agent only.)
 
-## Integration Folder
-
-These tests were originally written by the QA team at Puppet Labs and is actively maintained by the QA team.
-Feel free to contribute tests to this folder as long as they are written with [Beaker](https://github.com/puppetlabs/beaker)
-and follow the guidelines below.
-
-The "puppetlabs-dsc" project already contains RSpec and acceptance tests and you might be wondering why there
-is a need to have a set of tests separate from those tests. At Puppet Labs we define an "integration" test as:
-
-> Validating the system state and/or side effects while completing a complete life cycle of user stories using a
-> system. This type of test crosses the boundary of a discrete tool in the process of testing a defined user
-> objective that utilizes a system composed of integrated components.
-
-What this means for this project is that we will install and configure all infrastructure needed in a real-world
-"puppetlabs-dsc" environment. (Puppet master and agent.)
-
 ## Configs Folder
 
 The "configs" folder contains Beaker host configuration files for the various test platforms used by the "acceptance"
@@ -71,25 +55,6 @@ To run acceptance tests use the "acceptance_tests.sh" test run script.
 **Example: Run with Puppet Agent 1.2.2 on Windows 2012 R2 with local module code (No Forge)**
 ```
 ./acceptance_tests.sh windows-2012r2-64a 1.2.2 local
-```
-
-### Running Integration Tests
-
-To run integration tests use the "integration_tests.sh" test run script.
-
-**Example: Run with defaults on Windows 2012 R2**
-```
-./integration_tests.sh
-```
-
-**Example: Run with alternate PE package repo on Windows 2008 R2 using Forge**
-```
-./integration_tests.sh windows-2008r2-64mda http://alt.address.local/3.8.2/preview forge
-```
-
-**Example: Run with alternate PE package repo on Windows 2012 R2 with local module code (No Forge)**
-```
-./integration_tests.sh windows-2012r2-64mda http://alt.address.local/3.8.2/preview local
 ```
 
 ## Documentation
