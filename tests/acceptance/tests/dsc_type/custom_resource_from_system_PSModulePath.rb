@@ -27,28 +27,26 @@ MANIFEST
 teardown do
   confine_block(:to, :platform => 'windows') do
     step 'Remove Test Artifacts'
+    agents.each do |agent|
+      uninstall_fake_reboot_resource(agent)
+    end
     on(agents, <<-CYGWIN)
 rm -rf /cygdrive/c/#{pshome_modules_path}/PuppetFakeResource
 rm -rf /cygdrive/c/#{fake_name}
 CYGWIN
   end
-
-  uninstall_fake_reboot_resource(master)
 end
 
-# Setup
-step 'Copy Test Type DSC resources'
-install_fake_reboot_resource(master)
-
-step 'Clear "site.pp" on Master'
-inject_site_pp(master, get_site_pp_path(master), create_site_pp(master))
-
 confine_block(:to, :platform => 'windows') do
-  step 'Sync DSC resource implementations to agents'
-  on(agents, puppet('agent -t --environment production'), :acceptable_exit_codes => [0,2])
+  step 'Copy Test Type Wrappers'
+  install_fake_reboot_resource(agent)
 
   step 'Copy PuppetFakeResource implementation to system PSModulePath'
-  installed_path = '/cygdrive/c/ProgramData/PuppetLabs/puppet/cache/lib/puppet_x/dsc_resources'
+  is_pluginsync = hosts.any? { |h| h['roles'].include?('master') }
+  install_base = '/cygdrive/c/ProgramData/PuppetLabs/' +
+    (is_pluginsync ? 'puppet/cache' : 'code/modules/dsc')
+
+  installed_path = "#{install_base}/lib/puppet_x/dsc_resources"
 
   # put PuppetFakeResource in $PSHome\Modules
   on(agents, <<-CYGWIN)
@@ -58,15 +56,11 @@ icacls "C:\\#{pshome_modules_path.gsub('/', '\\')}\\PuppetFakeResource" /reset /
 CYGWIN
 end
 
-step 'Inject "site.pp" on Master'
-site_pp = create_site_pp(master, :manifest => dsc_manifest)
-inject_site_pp(master, get_site_pp_path(master), site_pp)
-
 # Tests
 confine_block(:to, :platform => 'windows') do
   agents.each do |agent|
-    step 'Run Puppet Agent'
-    on(agent, puppet('agent -t --environment production'), :acceptable_exit_codes => [0,2]) do |result|
+    step 'Run Puppet Apply'
+    on(agent, puppet('apply'), :stdin => dsc_manifest, :acceptable_exit_codes => [0,2]) do |result|
       assert_no_match(/Error:/, result.stderr, 'Unexpected error was detected!')
     end
 

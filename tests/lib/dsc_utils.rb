@@ -84,6 +84,12 @@ def install_fake_reboot_resource(host)
   scp_to(host, fake_reboot_resource_source_path, dsc_resource_path)
   scp_to(host, fake_reboot_resource_source_path2, dsc_resource_path)
   scp_to(host, fake_reboot_type_source_path, dsc_type_path)
+
+  # if installing to a master, then agents must pluginsync
+  if (host['roles'].include?('master'))
+    step 'Sync DSC resource implementations from master to agents'
+    on(agents, puppet('agent -t --environment production'), :acceptable_exit_codes => [0,2])
+  end
 end
 
 # Remove the "PuppetFakeResource" module on target host.

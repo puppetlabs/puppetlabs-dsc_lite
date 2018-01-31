@@ -21,21 +21,23 @@ MANIFEST
 # Teardown
 teardown do
   confine_block(:to, :platform => 'windows') do
+    agents.each do |agent|
+      uninstall_fake_reboot_resource(agent)
+    end
+
     step 'Remove Test Artifacts'
     on(agents, "rm -rf /cygdrive/c/#{fake_name}")
   end
 end
 
-# Setup
-step 'Inject "site.pp" on Master'
-site_pp = create_site_pp(master, :manifest => dsc_manifest)
-inject_site_pp(master, get_site_pp_path(master), site_pp)
-
 # Tests
 confine_block(:to, :platform => 'windows') do
   agents.each do |agent|
-    step 'Run Puppet Agent'
-    on(agent, puppet('agent -t --environment production'), :acceptable_exit_codes => [0,2]) do |result|
+    step 'Copy Test Type Wrappers'
+    install_fake_reboot_resource(agent)
+
+    step 'Run Puppet Apply'
+    on(agent, puppet('apply'), :stdin => dsc_manifest, :acceptable_exit_codes => [0,2]) do |result|
       assert_no_match(/Error:/, result.stderr, 'Unexpected error was detected!')
     end
 
@@ -59,14 +61,10 @@ dsc {'#{fake_name}':
 }
 MANIFEST
 
-step 'Inject "site.pp" on Master'
-site_pp = create_site_pp(master, :manifest => dsc_remove_manifest)
-inject_site_pp(master, get_site_pp_path(master), site_pp)
-
 confine_block(:to, :platform => 'windows') do
   agents.each do |agent|
     step 'Apply Manifest to Remove File'
-    on(agent, puppet('agent -t --environment production'), :acceptable_exit_codes => [0,2]) do |result|
+    on(agent, puppet('apply'), :stdin => dsc_remove_manifest, :acceptable_exit_codes => [0,2]) do |result|
       assert_no_match(/Error:/, result.stderr, 'Unexpected error was detected!')
     end
 
@@ -75,4 +73,3 @@ confine_block(:to, :platform => 'windows') do
     on(agent, "test -f /cygdrive/c/#{fake_name}", :acceptable_exit_codes => [1])
   end
 end
-
