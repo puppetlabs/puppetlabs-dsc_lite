@@ -3,6 +3,13 @@ require 'master_manipulator'
 require 'dsc_utils'
 test_name 'Apply generic DSC Manifest to create a puppetfakeresource'
 
+# Master or masterless determine content locations
+is_pluginsync = hosts.any? { |h| h['roles'].include?('master') }
+install_base = 'C:/ProgramData/PuppetLabs/' +
+  (is_pluginsync ? 'puppet/cache' : 'code/modules/dsc')
+
+installed_path = "#{install_base}/lib/puppet_x/dsc_resources"
+
 # Manifest
 fake_name = SecureRandom.uuid
 test_file_contents = SecureRandom.uuid
@@ -10,7 +17,7 @@ dsc_manifest = <<-MANIFEST
 dsc {'#{fake_name}':
   dsc_resource_name => 'puppetfakeresource',
   # NOTE: install_fake_reboot_resource installs on master, which pluginsyncs here
-  dsc_resource_module_name => 'C:/ProgramData/PuppetLabs/puppet/cache/lib/puppet_x/dsc_resources/PuppetFakeResource',
+  dsc_resource_module_name => '#{installed_path}/PuppetFakeResource',
   dsc_resource_properties => {
     ensure          => 'present',
     importantstuff  => '#{test_file_contents}',
@@ -23,24 +30,21 @@ MANIFEST
 teardown do
   confine_block(:to, :platform => 'windows') do
     step 'Remove Test Artifacts'
+    agents.each do |agent|
+      uninstall_fake_reboot_resource(agent)
+    end
     on(agents, "rm -rf /cygdrive/c/#{fake_name}")
   end
-
-  uninstall_fake_reboot_resource(master)
 end
-
-# Setup
-step 'Copy Test Type Wrappers'
-install_fake_reboot_resource(master)
-step 'Inject "site.pp" on Master'
-site_pp = create_site_pp(master, :manifest => dsc_manifest)
-inject_site_pp(master, get_site_pp_path(master), site_pp)
 
 # Tests
 confine_block(:to, :platform => 'windows') do
   agents.each do |agent|
-    step 'Run Puppet Agent'
-    on(agent, puppet('agent -t --environment production'), :acceptable_exit_codes => [0,2]) do |result|
+    step 'Copy Test Type Wrappers'
+    install_fake_reboot_resource(agent)
+
+    step 'Run Puppet Apply'
+    on(agent, puppet('apply'), :stdin => dsc_manifest, :acceptable_exit_codes => [0,2]) do |result|
       assert_no_match(/Error:/, result.stderr, 'Unexpected error was detected!')
     end
 
@@ -56,7 +60,7 @@ end
 dsc_remove_manifest = <<-MANIFEST
 dsc {'#{fake_name}':
   dsc_resource_name => 'puppetfakeresource',
-  dsc_resource_module_name => 'C:/ProgramData/PuppetLabs/puppet/cache/lib/puppet_x/dsc_resources/PuppetFakeResource',
+  dsc_resource_module_name => '#{installed_path}/PuppetFakeResource',
   dsc_resource_properties => {
     ensure          => 'absent',
     importantstuff  => '#{test_file_contents}',
@@ -65,14 +69,10 @@ dsc {'#{fake_name}':
 }
 MANIFEST
 
-step 'Inject "site.pp" on Master'
-site_pp = create_site_pp(master, :manifest => dsc_remove_manifest)
-inject_site_pp(master, get_site_pp_path(master), site_pp)
-
 confine_block(:to, :platform => 'windows') do
   agents.each do |agent|
     step 'Apply Manifest to Remove File'
-    on(agent, puppet('agent -t --environment production'), :acceptable_exit_codes => [0,2]) do |result|
+    on(agent, puppet('apply'), :stdin => dsc_remove_manifest, :acceptable_exit_codes => [0,2]) do |result|
       assert_no_match(/Error:/, result.stderr, 'Unexpected error was detected!')
     end
 

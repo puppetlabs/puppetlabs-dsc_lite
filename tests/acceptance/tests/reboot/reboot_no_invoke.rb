@@ -19,7 +19,10 @@ MANIFEST
 
 # Teardown
 teardown do
-  uninstall_fake_reboot_resource(master)
+  step 'Remove Test Artifacts'
+  agents.each do |agent|
+    uninstall_fake_reboot_resource(agent)
+  end
 
   confine_block(:to, :platform => 'windows') do
     step 'Remove Test Artifacts'
@@ -27,23 +30,21 @@ teardown do
   end
 end
 
-# Setup
-install_fake_reboot_resource(master)
-
-step 'Inject "site.pp" on Master'
-site_pp = create_site_pp(master, :manifest => dsc_manifest)
-inject_site_pp(master, get_site_pp_path(master), site_pp)
 
 # Tests
 confine_block(:to, :platform => 'windows') do
   agents.each do |agent|
+    step 'Copy Test Type Wrappers'
+    install_fake_reboot_resource(agent)
+
     # Workaround for https://tickets.puppetlabs.com/browse/IMAGES-539
     step 'Remove PendingFileRenameOperations registry key'
     on(agent, 'reg delete "HKLM\SYSTEM\CurrentControlSet\Control\Session Manager" /v PendingFileRenameOperations /f', :accept_all_exit_codes => true)
 
-    step 'Run Puppet Agent'
-    on(agent, puppet('agent -t --environment production'), :acceptable_exit_codes => [0,2]) do |result|
-      assert_match(/Stage\[main\]\/Main\/Node\[default\]\/Dsc_puppetfakeresource\[#{fake_name}\]\/ensure\: created/, result.stdout, 'DSC Resource missing!')
+    step 'Run Puppet Apply'
+    on(agent, puppet('apply'), :stdin => dsc_manifest, :acceptable_exit_codes => [0,2]) do |result|
+      # NOTE: regex includes Node\[default\]\/ when run via agent rather than apply
+      assert_match(/Stage\[main\]\/Main\/Dsc_puppetfakeresource\[#{fake_name}\]\/ensure\: created/, result.stdout, 'DSC Resource missing!')
       assert_no_match(/Error:/, result.stderr, 'Unexpected error was detected!')
       assert_no_match(/Warning:/, result.stderr, 'Unexpected warning was detected!')
     end

@@ -14,29 +14,29 @@ fake_name = SecureRandom.uuid
 teardown do
   confine_block(:to, :platform => 'windows') do
     step 'Remove Test Artifacts'
+    agents.each do |agent|
+      uninstall_fake_reboot_resource(agent)
+    end
+
     on(agents, <<-CYGWIN)
 rm -rf /cygdrive/c/#{pshome_modules_path}/PuppetFakeResource
 rm -rf /cygdrive/c/#{program_files_modules_path}/PuppetFakeResource
 rm -rf /cygdrive/c/#{fake_name}
 CYGWIN
   end
-
-  uninstall_fake_reboot_resource(master)
 end
 
-# Setup
-step 'Copy Test Type DSC resources'
-install_fake_reboot_resource(master)
-
-step 'Clear "site.pp" on Master'
-inject_site_pp(master, get_site_pp_path(master), create_site_pp(master))
-
 confine_block(:to, :platform => 'windows') do
-  step 'Sync DSC resource implementations to agents'
-  on(agents, puppet('agent -t --environment production'), :acceptable_exit_codes => [0,2])
+  step 'Copy Test Type Wrappers'
+  install_fake_reboot_resource(agent)
 
   step 'Copy PuppetFakeResource implementations to system PSModulePath locations'
-  installed_path = '/cygdrive/c/ProgramData/PuppetLabs/puppet/cache/lib/puppet_x/dsc_resources'
+  # sourced from different directory
+  is_pluginsync = hosts.any? { |h| h['roles'].include?('master') }
+  install_base = '/cygdrive/c/ProgramData/PuppetLabs/' +
+    (is_pluginsync ? 'puppet/cache' : 'code/modules/dsc')
+
+  installed_path = "#{install_base}/lib/puppet_x/dsc_resources"
 
   # put PuppetFakeResource v1 in $PSHome\Modules
   on(agents, <<-CYGWIN)
@@ -76,17 +76,14 @@ dsc {'#{fake_name}':
 }
 MANIFEST
 
-step 'Inject "site.pp" on Master'
-site_pp = create_site_pp(master, :manifest => dsc_ambiguous_manifest)
-inject_site_pp(master, get_site_pp_path(master), site_pp)
-
 confine_block(:to, :platform => 'windows') do
   agents.each do |agent|
-    step 'Run Puppet Agent'
+    step 'Run Puppet Apply'
 
     # this scenario fails as DSC doesn't know which version to use
-    on(agent, puppet('agent -t --environment production'), :acceptable_exit_codes => [0,2,4]) do |result|
-      error_msg = /Stage\[main\]\/Main\/Node\[default\]\/Dsc\[#{fake_name}\]\: Could not evaluate\: Resource PuppetFakeResource was not found\./
+    on(agent, puppet('apply'), :stdin => dsc_ambiguous_manifest, :acceptable_exit_codes => [0,2,4]) do |result|
+      # NOTE: regex includes Node\[default\]\/ when run via agent rather than apply
+      error_msg = /Stage\[main\]\/Main\/Dsc\[#{fake_name}\]\: Could not evaluate\: Resource PuppetFakeResource was not found\./
       assert_match(error_msg, result.stderr, 'Expected Invoke-DscResource error missing!')
     end
 
@@ -111,17 +108,12 @@ dsc {'#{fake_name}':
 }
 MANIFEST
 
-step 'Inject "site.pp" on Master'
-site_pp = create_site_pp(master, :manifest => dsc_versioned_manifest)
-inject_site_pp(master, get_site_pp_path(master), site_pp)
-
 # Tests
 confine_block(:to, :platform => 'windows') do
   agents.each do |agent|
-    step 'Run Puppet Agent'
-
+    step 'Run Puppet Apply'
     # this scenario expectedly fails as DSC doesn't know which version to use
-    on(agent, puppet('agent -t --environment production'), :acceptable_exit_codes => [1]) do |result|
+    on(agent, puppet('apply'), :stdin => dsc_versioned_manifest, :acceptable_exit_codes => [1]) do |result|
       expect_failure('Cannot yet specify module version until MODULES-5845 implemented') do
         assert_no_match(/Error:/, result.stderr, 'Unexpected error was detected!')
       end
