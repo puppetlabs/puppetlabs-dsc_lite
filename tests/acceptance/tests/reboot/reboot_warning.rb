@@ -16,21 +16,20 @@ warning_message = /Warning: No reboot resource found in the graph that has 'dsc_
 
 # Teardown
 teardown do
-  uninstall_fake_reboot_resource(master)
+  step 'Remove Test Artifacts'
+  agents.each do |agent|
+    uninstall_fake_reboot_resource(agent)
+  end
 end
-
-# Setup
-install_fake_reboot_resource(master)
-
-step 'Inject "site.pp" on Master'
-site_pp = create_site_pp(master, :manifest => dsc_manifest)
-inject_site_pp(master, get_site_pp_path(master), site_pp)
 
 # Tests
 confine_block(:to, :platform => 'windows') do
   agents.each do |agent|
-    step 'Run Puppet Agent'
-    on(agent, puppet('agent -t --environment production'), :acceptable_exit_codes => [0,2]) do |result|
+    step 'Copy Test Type Wrappers'
+    install_fake_reboot_resource(agent)
+
+    step 'Run Puppet Apply'
+    on(agent, puppet('apply'), :stdin => dsc_manifest, :acceptable_exit_codes => [0,2]) do |result|
       assert_match(warning_message, result.stderr, 'Expected warning was not detected!')
       assert_no_match(/Error:/, result.stderr, 'Unexpected error was detected!')
     end

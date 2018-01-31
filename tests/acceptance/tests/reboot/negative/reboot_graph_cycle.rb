@@ -20,21 +20,20 @@ error_message = /Error:.*Found 1 dependency cycle/
 
 # Teardown
 teardown do
-  uninstall_fake_reboot_resource(master)
+  step 'Remove Test Artifacts'
+  agents.each do |agent|
+    uninstall_fake_reboot_resource(agent)
+  end
 end
-
-# Setup
-install_fake_reboot_resource(master)
-
-step 'Inject "site.pp" on Master'
-site_pp = create_site_pp(master, :manifest => dsc_manifest)
-inject_site_pp(master, get_site_pp_path(master), site_pp)
 
 # Tests
 confine_block(:to, :platform => 'windows') do
   agents.each do |agent|
-    step 'Run Puppet Agent'
-    on(agent, puppet('agent -t --environment production'), :acceptable_exit_codes => [0,1]) do |result|
+    step 'Copy Test Type Wrappers'
+    install_fake_reboot_resource(agent)
+
+    step 'Run Puppet Apply'
+    on(agent, puppet('apply'), :stdin => dsc_manifest, :acceptable_exit_codes => [0,1]) do |result|
       assert_match(error_message, result.stderr, 'Expected error was not detected!')
     end
 
