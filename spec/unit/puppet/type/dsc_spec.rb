@@ -40,7 +40,7 @@ describe Puppet::Type.type(:dsc) do
 
   describe "parameter :dsc_resource_name" do
     subject { resource.parameters[:dsc_resource_name] }
-    
+
     it "should not allow nil" do
       expect {
         resource[:name] = nil
@@ -52,7 +52,7 @@ describe Puppet::Type.type(:dsc) do
         resource[:name] = ''
       }.to raise_error(Puppet::ResourceError, /A non-empty name must/)
     end
-    
+
     [ 'value', 'value with spaces', 'UPPER CASE', '0123456789_-', 'With.Period' ].each do |value|
       it "should accept '#{value}'" do
         expect { resource[:name] = value }.not_to raise_error
@@ -65,10 +65,10 @@ describe Puppet::Type.type(:dsc) do
       end
     end
   end
-  
+
   describe "parameter :dsc_resource_module" do
     subject { resource.parameters[:dsc_resource_module] }
-    
+
     it "should not allow nil" do
       expect {
         resource[:name] = nil
@@ -80,7 +80,7 @@ describe Puppet::Type.type(:dsc) do
         resource[:name] = ''
       }.to raise_error(Puppet::ResourceError, /A non-empty name must/)
     end
-    
+
     [ 'value', 'value with spaces', 'UPPER CASE', '0123456789_-', 'With.Period' ].each do |value|
       it "should accept '#{value}'" do
         expect { resource[:name] = value }.not_to raise_error
@@ -93,10 +93,10 @@ describe Puppet::Type.type(:dsc) do
       end
     end
   end
-  
+
   describe "parameter :dsc_resource_properties" do
     subject { resource.parameters[:dsc_resource_properties] }
-    
+
     it "should not allow nil" do
       expect {
         resource[:dsc_resource_properties] = nil
@@ -108,7 +108,7 @@ describe Puppet::Type.type(:dsc) do
         resource[:dsc_resource_properties] = ''
       }.to raise_error(Puppet::ResourceError, /A non-empty dsc_resource_properties must be specified/)
     end
-    
+
     it "requires a hash or array of hashes" do
       expect {
         resource[:dsc_resource_properties] = "hi"
