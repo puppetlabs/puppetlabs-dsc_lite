@@ -3,15 +3,20 @@ require 'master_manipulator'
 require 'dsc_utils'
 test_name 'MODULES-2965 - C96623 - Apply DSC Manifest with "ensure" Set to "present"'
 
+installed_path = get_fake_reboot_resource_install_path(usage = :manifest)
+
 # Manifest
 fake_name = SecureRandom.uuid
 test_file_contents = SecureRandom.uuid
 dsc_manifest = <<-MANIFEST
-dsc_puppetfakeresource {'#{fake_name}':
-  # NOTE: setting ensure does not automatically set a dsc_ensure with same value
-  ensure              => 'present',
-  dsc_importantstuff  => '#{test_file_contents}',
-  dsc_destinationpath => 'C:\\#{fake_name}'
+dsc { '#{fake_name}':
+  dsc_resource_name => 'puppetfakeresource',
+  dsc_resource_module_name => '#{installed_path}/PuppetFakeResource',
+  dsc_resource_properties => {
+    importantstuff  => '#{test_file_contents}',
+    destinationpath => 'C:\\#{fake_name}',
+  },
+  ensure => 'present',
 }
 MANIFEST
 

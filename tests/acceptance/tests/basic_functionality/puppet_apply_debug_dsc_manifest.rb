@@ -3,6 +3,8 @@ require 'dsc_utils'
 require 'securerandom'
 test_name 'FM-2623 - C68534 - Apply DSC Resource Manifest via "puppet apply" with Debug Enabled'
 
+installed_path = get_fake_reboot_resource_install_path(usage = :manifest)
+
 confine(:to, :platform => 'windows')
 
 # ERB Manifest
@@ -15,15 +17,19 @@ file { 'C:/#{ test_dir_path }' :
    ensure => 'directory'
 }
 ->
-dsc_puppetfakeresource {'#{ fake_name }':
-  dsc_ensure          => 'present',
-  dsc_importantstuff  => '#{ test_file_contents }',
-  dsc_destinationpath => '#{ "C:\\" + test_dir_path + "\\" + fake_name }',
+dsc { '#{fake_name}':
+  dsc_resource_name => 'puppetfakeresource',
+  dsc_resource_module_name => '#{installed_path}/PuppetFakeResource',
+  dsc_resource_properties => {
+    ensure          => 'present',
+    importantstuff  => '#{test_file_contents}',
+    destinationpath => '#{"C:\\" + test_dir_path + "\\" + fake_name}',
+  },
 }
 MANIFEST
 
 # Verify
-debug_msg = /Debug:.*Dsc_puppetfakeresource\[#{fake_name}\]: The container Class\[Main\] will propagate my refresh event/
+debug_msg = /Debug:.*Dsc\[#{fake_name}\]: The container Class\[Main\] will propagate my refresh event/
 
 # Teardown
 teardown do
@@ -42,7 +48,7 @@ agents.each do |agent|
   step 'Apply Manifest'
   on(agent, puppet('apply --debug'), :stdin => dsc_manifest, :acceptable_exit_codes => [0,2]) do |result|
     assert_no_match(/Error:/, result.stderr, 'Unexpected error was detected!')
-    assert_match(/Stage\[main\]\/Main\/Dsc_puppetfakeresource\[#{fake_name}\]\/ensure\: created/, result.stdout, 'DSC Resource missing!')
+    assert_match(/Stage\[main\]\/Main\/Dsc\[#{fake_name}\]\/ensure\: created/, result.stdout, 'DSC Resource missing!')
     assert_match(debug_msg, result.stdout, 'Expected debug message was not detected!')
   end
 

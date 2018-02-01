@@ -3,6 +3,8 @@ require 'dsc_utils'
 require 'securerandom'
 test_name 'FM-2623 - C68680 - Apply DSC Resource Manifest Containing Alternate Path Separators'
 
+installed_path = get_fake_reboot_resource_install_path(usage = :manifest)
+
 confine(:to, :platform => 'windows')
 
 # ERB Manifests
@@ -17,10 +19,14 @@ file { 'C:/#{ test_dir_path }' :
    ensure => 'directory'
 }
 ->
-dsc_puppetfakeresource {'#{ fake_name }':
-  dsc_ensure          => 'present',
-  dsc_importantstuff  => '#{ original_contents }',
-  dsc_destinationpath => '#{ test_file_path }',
+dsc { '#{fake_name}':
+  dsc_resource_name => 'puppetfakeresource',
+  dsc_resource_module_name => '#{installed_path}/PuppetFakeResource',
+  dsc_resource_properties => {
+    ensure          => 'present',
+    importantstuff  => '#{original_contents}',
+    destinationpath => '#{test_file_path}',
+  },
 }
 MANIFEST
 
@@ -32,10 +38,14 @@ file { 'C:/#{ test_dir_path }' :
    ensure => 'directory'
 }
 ->
-dsc_puppetfakeresource {'#{ fake_name }':
-  dsc_ensure          => 'present',
-  dsc_importantstuff  => '#{ updated_contents }',
-  dsc_destinationpath => '#{ test_file_path.gsub("\\", "/") }',
+dsc { '#{fake_name}':
+  dsc_resource_name => 'puppetfakeresource',
+  dsc_resource_module_name => '#{installed_path}/PuppetFakeResource',
+  dsc_resource_properties => {
+    ensure          => 'present',
+    importantstuff  => '#{updated_contents}',
+    destinationpath => '#{test_file_path.gsub("\\", "/")}',
+  },
 }
 MANIFEST
 
@@ -56,7 +66,7 @@ agents.each do |agent|
   step 'Apply Manifest'
   on(agent, puppet('apply'), :stdin => dsc_manifest, :acceptable_exit_codes => [0,2]) do |result|
     assert_no_match(/Error:/, result.stderr, 'Unexpected error was detected!')
-    assert_match(/Stage\[main\]\/Main\/Dsc_puppetfakeresource\[#{fake_name}\]\/ensure\: created/, result.stdout, 'DSC Resource missing!')
+    assert_match(/Stage\[main\]\/Main\/Dsc\[#{fake_name}\]\/ensure\: created/, result.stdout, 'DSC Resource missing!')
   end
 
   step 'Verify Results'
@@ -68,7 +78,7 @@ agents.each do |agent|
   step 'Apply Manifest With Reversed Separators and new contents'
   on(agent, puppet('apply'), :stdin => dsc_manifest2, :acceptable_exit_codes => [0,2]) do |result|
     assert_no_match(/Error:/, result.stderr, 'Unexpected error was detected!')
-    assert_match(/Stage\[main\]\/Main\/Dsc_puppetfakeresource\[#{fake_name}\]\/ensure\: created/, result.stdout, 'DSC Resource missing!')
+    assert_match(/Stage\[main\]\/Main\/Dsc\[#{fake_name}\]\/ensure\: created/, result.stdout, 'DSC Resource missing!')
   end
 
   # PuppetFakeResource always overwrites file at this path

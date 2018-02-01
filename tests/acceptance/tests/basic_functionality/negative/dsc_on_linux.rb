@@ -4,20 +4,26 @@ require 'dsc_utils'
 require 'securerandom'
 test_name 'FM-2623 - C68790 - Attempt to Run DSC Manifest on a Linux Agent'
 
+installed_path = get_fake_reboot_resource_install_path(usage = :manifest)
+
 # Manifest
 fake_name = SecureRandom.uuid
 test_file_contents = SecureRandom.uuid
 
 dsc_manifest = <<-MANIFEST
-dsc_puppetfakeresource {'#{fake_name}':
-  dsc_ensure          => 'present',
-  dsc_importantstuff  => '#{test_file_contents}',
-  dsc_destinationpath => 'C:\\#{fake_name}'
+dsc { '#{fake_name}':
+  dsc_resource_name => 'puppetfakeresource',
+  dsc_resource_module_name => '#{installed_path}/PuppetFakeResource',
+  dsc_resource_properties => {
+    ensure          => 'present',
+    importantstuff  => '#{test_file_contents}',
+    destinationpath => 'C:\\#{fake_name}',
+  },
 }
 MANIFEST
 
 # Verify
-error_msg = /Could not find a suitable provider for dsc_puppetfakeresource/
+error_msg = /Could not find a suitable provider for dsc/
 
 # Teardown
 teardown do

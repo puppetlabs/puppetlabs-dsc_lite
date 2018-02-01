@@ -4,19 +4,29 @@ test_name 'FM-2624 - C68533 - Apply DSC Resource Manifest with Mix of Passing an
 
 confine(:to, :platform => 'windows')
 
+installed_path = get_fake_reboot_resource_install_path(usage = :manifest)
+
 # In-line Manifest
 throw_message = SecureRandom.uuid
 
 dsc_manifest = <<-MANIFEST
-dsc_puppetfakeresource {'good_resource':
-  dsc_ensure          => 'present',
-  dsc_importantstuff  => 'foo',
+dsc { 'good_resource':
+  dsc_resource_name => 'puppetfakeresource',
+  dsc_resource_module_name => '#{installed_path}/PuppetFakeResource',
+  dsc_resource_properties => {
+    ensure          => 'present',
+    importantstuff  => 'foo',
+  }
 }
 
-dsc_puppetfakeresource {'throw_resource':
-  dsc_ensure          => 'present',
-  dsc_importantstuff  => 'bar',
-  dsc_throwmessage    => '#{throw_message}',
+dsc { 'throw_resource':
+  dsc_resource_name => 'puppetfakeresource',
+  dsc_resource_module_name => '#{installed_path}/PuppetFakeResource',
+  dsc_resource_properties => {
+    ensure          => 'present',
+    importantstuff  => 'bar',
+    throwmessage    => '#{throw_message}',
+  }
 }
 MANIFEST
 
