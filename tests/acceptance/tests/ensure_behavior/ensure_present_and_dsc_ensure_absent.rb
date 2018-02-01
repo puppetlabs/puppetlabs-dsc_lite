@@ -3,14 +3,20 @@ require 'master_manipulator'
 require 'dsc_utils'
 test_name 'MODULES-2965 - C96626 - Apply DSC Manifest with "ensure" Set to "present" and "dsc_ensure" Set to "absent"'
 
+installed_path = get_fake_reboot_resource_install_path(usage = :manifest)
+
 # Manifest
 fake_name = SecureRandom.uuid
 test_file_contents = SecureRandom.uuid
 dsc_manifest = <<-MANIFEST
-dsc_puppetfakeresource {'#{fake_name}':
-  dsc_ensure          => 'present',
-  dsc_importantstuff  => '#{test_file_contents}',
-  dsc_destinationpath => 'C:\\#{fake_name}'
+dsc { '#{fake_name}':
+  dsc_resource_name => 'puppetfakeresource',
+  dsc_resource_module_name => '#{installed_path}/PuppetFakeResource',
+  dsc_resource_properties => {
+    ensure          => 'present',
+    importantstuff  => '#{test_file_contents}',
+    destinationpath => 'C:\\#{fake_name}',
+  },
 }
 MANIFEST
 
@@ -41,11 +47,15 @@ end
 
 # New manifest to remove value.
 dsc_remove_manifest = <<-MANIFEST
-dsc_puppetfakeresource {'#{fake_name}':
-  ensure              => 'present',
-  dsc_ensure          => 'absent',
-  dsc_importantstuff  => '#{test_file_contents}',
-  dsc_destinationpath => 'C:\\#{fake_name}'
+dsc { '#{fake_name}':
+  dsc_resource_name => 'puppetfakeresource',
+  dsc_resource_module_name => '#{installed_path}/PuppetFakeResource',
+  dsc_resource_properties => {
+    ensure          => 'absent',
+    importantstuff  => '#{test_file_contents}',
+    destinationpath => 'C:\\#{fake_name}',
+  },
+  ensure => 'present',
 }
 MANIFEST
 
