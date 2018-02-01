@@ -3,6 +3,8 @@ require 'dsc_utils'
 require 'securerandom'
 test_name 'FM-2623 - C68509 - Apply DSC Resource Manifest in "noop" Mode Using "puppet apply"'
 
+installed_path = get_fake_reboot_resource_install_path(usage = :manifest)
+
 confine(:to, :platform => 'windows')
 
 # ERB Manifest
@@ -14,10 +16,14 @@ file { 'C:/#{ test_dir_path }' :
    ensure => 'directory'
 }
 ->
-dsc_puppetfakeresource {'#{ fake_name }':
-  dsc_ensure          => 'present',
-  dsc_importantstuff  => '#{ SecureRandom.uuid }',
-  dsc_destinationpath => '#{ "C:\\" + test_dir_path + "\\" + fake_name }',
+dsc { '#{fake_name}':
+  dsc_resource_name => 'puppetfakeresource',
+  dsc_resource_module_name => '#{installed_path}/PuppetFakeResource',
+  dsc_resource_properties => {
+    ensure          => 'present',
+    importantstuff  => '#{SecureRandom.uuid}',
+    destinationpath => '#{"C:\\" + test_dir_path + "\\" + fake_name}',
+  },
 }
 MANIFEST
 
