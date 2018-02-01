@@ -17,7 +17,7 @@ describe Puppet::Type.type(:base_dsc_lite) do
 
   describe "powershell provider tests" do
 
-    it "should successfully instanciate the provider" do
+    it "should successfully instantiate the provider" do
       described_class.provider(:powershell).new(base_dsc_lite)
     end
 
