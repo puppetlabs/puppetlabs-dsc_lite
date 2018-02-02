@@ -13,7 +13,7 @@ throw_message_2 = SecureRandom.uuid
 dsc_manifest = <<-MANIFEST
 dsc { 'throw_1':
   dsc_resource_name => 'puppetfakeresource',
-  dsc_resource_module_name => '#{installed_path}/PuppetFakeResource',
+  dsc_resource_module => '#{installed_path}/PuppetFakeResource',
   dsc_resource_properties => {
     ensure          => 'present',
     importantstuff  => 'foo',
@@ -23,7 +23,7 @@ dsc { 'throw_1':
 
 dsc { 'throw_2':
   dsc_resource_name => 'puppetfakeresource',
-  dsc_resource_module_name => '#{installed_path}/PuppetFakeResource',
+  dsc_resource_module => '#{installed_path}/PuppetFakeResource',
   dsc_resource_properties => {
     ensure          => 'present',
     importantstuff  => 'bar',

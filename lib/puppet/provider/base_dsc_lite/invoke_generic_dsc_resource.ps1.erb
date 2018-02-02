@@ -23,7 +23,14 @@ $response = @{
 
 $invokeParams = @{
 Name       = '<%= resource.parameters[:dsc_resource_name].value %>'
-ModuleName = '<%= resource.parameters[:dsc_resource_module_name].value %>'
+ModuleName = <% if resource.parameters[:dsc_resource_module].value.is_a?(Hash) -%>
+@{
+modulename    = '<%= resource.parameters[:dsc_resource_module].value['name'] %>'
+moduleversion = '<%= resource.parameters[:dsc_resource_module].value['version'] %>'
+}
+<% else -%>
+'<%= resource.parameters[:dsc_resource_module].value %>'
+<% end -%>
 Method     = '<%= dsc_invoke_method %>'
 Property   = <% provider.dsc_property_param.each do |p| -%>
 <%= format_dsc_lite(p.value) %>

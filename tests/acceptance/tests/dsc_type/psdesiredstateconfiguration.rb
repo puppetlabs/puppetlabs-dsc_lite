@@ -9,7 +9,7 @@ test_file_contents = SecureRandom.uuid
 dsc_manifest = <<-MANIFEST
 dsc {'#{fake_name}':
   dsc_resource_name => 'file',
-  dsc_resource_module_name => 'PSDesiredStateConfiguration',
+  dsc_resource_module => 'PSDesiredStateConfiguration',
   dsc_resource_properties => {
     ensure          => 'present',
     contents  => '#{test_file_contents}',
@@ -52,7 +52,7 @@ end
 dsc_remove_manifest = <<-MANIFEST
 dsc {'#{fake_name}':
   dsc_resource_name => 'file',
-  dsc_resource_module_name => 'PSDesiredStateConfiguration',
+  dsc_resource_module => 'PSDesiredStateConfiguration',
   dsc_resource_properties => {
     ensure          => 'absent',
     contents  => '#{test_file_contents}',
