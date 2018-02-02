@@ -1,5 +1,16 @@
 ## Unreleased
 
+## 2018-02-02 - Unsupported Release 0.2.0
+
+### Summary
+
+Small release with breaking change to support for DSC Versions
+
+### Changed
+
+- Implement DSC resource version support ([MODULES-5845](https://tickets.puppetlabs.com/browse/MODULES-5845))
+
+
 ## 2018-01-11 - Unsupported Release 0.1.0
 
 ### Summary
