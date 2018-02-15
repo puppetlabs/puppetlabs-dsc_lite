@@ -27,7 +27,7 @@ CompanyName = 'Unknown'
 Copyright = '(c) 2015 - Present Puppet Inc.'
 
 # Description of the functionality provided by this module
-# Description = ''
+Description = 'A fake dsc resource to facilitate automated testing.'
 
 # Minimum version of the Windows PowerShell engine required by this module
 # PowerShellVersion = ''

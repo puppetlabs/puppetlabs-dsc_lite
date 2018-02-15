@@ -92,6 +92,45 @@ def install_fake_reboot_resource(host)
   end
 end
 
+def create_local_nuget_repo(host, repo_name, repo_folder)
+  create_repo_command = "Register-PSRepository "
+  create_repo_command << "-Name #{repo_name} "
+  create_repo_command << "-SourceLocation c:\\\\temp\\\\#{repo_folder} "
+  create_repo_command << "-ScriptSourceLocation c:\\\\temp\\\\#{repo_folder} "
+  create_repo_command << "-InstallationPolicy Trusted"
+
+  bootstrap_nuget = 'Install-PackageProvider -Name NuGet -MinimumVersion "2.8.5.201" -Force'
+
+  on(host, powershell("New-Item c:\\\\temp\\\\#{repo_folder} -ItemType Directory"))
+  on(host,powershell(bootstrap_nuget))
+  on(host, powershell(create_repo_command))
+end
+
+# This command will automatically install nuget on the host SilentlyContinue is
+# there to suppress warnings about certain properties not being present in the
+# module psd1
+def publish_dsc_module_to_nuget(host, repo_name)
+  fake_reboot_resource_source_path = "tests/files/dsc_puppetfakeresource/PuppetFakeResource"
+
+  scp_to(host, fake_reboot_resource_source_path, 'c:/temp')
+
+  publish_command = "$env:TEMP = 'c:\\temp'; "
+  publish_command << "Publish-Module "
+  publish_command << "-Path c:/temp/PuppetFakeResource "
+  publish_command << "-Repository #{repo_name} "
+  publish_command << "-Force "
+  publish_command << "-WarningAction SilentlyContinue"
+
+  on(host, powershell(publish_command, {'EncodedCommand' => true}))
+end
+
+def powershell_install_dsc_module(host, module_name, repo_name)
+  install_command = "$env:TEMP = 'C:\\temp'; Install-Module -Name #{module_name} -Repo #{repo_name}"
+
+  on(host, powershell(install_command, {'EncodedCommand' => true}))
+end
+
+
 def get_fake_reboot_resource_install_path(usage = :manifest)
   # Master or masterless determine content locations
   is_pluginsync = hosts.any? { |h| h['roles'].include?('master') }
