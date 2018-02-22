@@ -1,5 +1,7 @@
 ## Unreleased
 
+- Bump the puppetlabs-reboot module dependancy to reflect that the new version is 2.0.0 ([MODULES-6678](https://tickets.puppetlabs.com/browse/MODULES-6678))
+
 ## 2018-02-02 - Unsupported Release 0.2.0
 
 ### Summary
