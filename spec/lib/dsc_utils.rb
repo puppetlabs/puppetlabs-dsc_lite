@@ -66,9 +66,9 @@ end
 # install_fake_reboot_resource(agent, '/dsc/tests/files/reboot')
 def install_fake_reboot_resource(host)
   # Init
-  fake_reboot_resource_source_path = "tests/files/dsc_puppetfakeresource/PuppetFakeResource"
-  fake_reboot_resource_source_path2 = "tests/files/dsc_puppetfakeresource/PuppetFakeResource2"
-  fake_reboot_type_source_path = "tests/files/dsc_puppetfakeresource/dsc_puppetfakeresource.rb"
+  fake_reboot_resource_source_path = "spec/files/dsc_puppetfakeresource/PuppetFakeResource"
+  fake_reboot_resource_source_path2 = "spec/files/dsc_puppetfakeresource/PuppetFakeResource2"
+  fake_reboot_type_source_path = "spec/files/dsc_puppetfakeresource/dsc_puppetfakeresource.rb"
 
   dsc_resource_target_path = 'lib/puppet_x/dsc_resources'
   puppet_type_target_path = 'lib/puppet/type'
