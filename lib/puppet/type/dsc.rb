@@ -20,7 +20,7 @@ Puppet::Type.newtype(:dsc) do
       fail("#{value} is not a valid #{self.name.to_s}") unless value =~ /^[a-zA-Z0-9\.\-\_\'\s]+$/
     end
   end
-  
+
   newparam(:dsc_resource_name) do
     desc "DSC Resource Name"
     isrequired
@@ -66,7 +66,7 @@ HERE
 end
 
 Puppet::Type.type(:dsc).provide :powershell, :parent => Puppet::Type.type(:base_dsc_lite).provider(:powershell) do
-  confine :true => (Gem::Version.new(Facter.value(:powershell_version)) >= Gem::Version.new('5.0.10586.117'))
+  confine :feature => :dsc_lite
   defaultfor :operatingsystem => :windows
 
   mk_resource_methods
