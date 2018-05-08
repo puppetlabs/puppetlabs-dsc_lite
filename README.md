@@ -113,14 +113,14 @@ Specifying credentials in DSC Resources requires using a PSCredential object. Th
 
 ~~~puppet
 dsc {'foouser':
-  dsc_resource_name        => 'User',
-  dsc_resource_module => 'PSDesiredStateConfiguration',
-  dsc_resource_properties  => {
+  dsc_resource_name       => 'User',
+  dsc_resource_module     => 'PSDesiredStateConfiguration',
+  dsc_resource_properties => {
     'username'    => 'jane-doe',
     'description' => 'Jane Doe user',
     'ensure'      => 'present',
     'password'    => {
-      'dsc_type' => 'MSFT_Credential',
+      'dsc_type'       => 'MSFT_Credential',
       'dsc_properties' => {
         'user'     => 'jane-doe',
         'password' => 'StartFooo123&^!'
@@ -131,6 +131,8 @@ dsc {'foouser':
   }
 }
 ~~~
+
+Some DSC Resources require a password or passphrase for a setting, but do not need a user name. All credentials in DSC must be a PSCredential, so these passwords still have to be specified in a PSCredential format, even if there is no `user` to specify. How you specify the PSCredential will depend on how the DSC Resource implemented the password requirement. Some DSC Resources will accept an empty or null string for `user`, others do not. If it does not accept an empty or null string, then specify a dummy value. Do not use `undef` as it will error out.
 
 ### Using CimInstance
 
