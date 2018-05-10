@@ -107,6 +107,52 @@ dsc {'iis_server':
 }
 ~~~
 
+### Distributing DSC Resources
+
+There are several methods to distribute DSC Resources to the target nodes for the `dsc_lite` module to use.
+
+#### PowerShell Gallery
+
+You can choose to install DSC Resources yourself using a mechanism that calls the builtin PowerShell package management system called `PackageManagement`, which uses the `PowerShellGet` module and pulls from the [PowerShell Gallery](https://www.powershellgallery.com). You would be responsible for orchestrating this before Puppet is run on the host, or you could do so using `exec` in your Puppet manifest. This gives you control of the process, but requires you to manage the complexity yourself.
+
+The following example shows how to install the `xPSDesiredStateConfiguration` DSC Resource, and could be extended to support different DSC Resource names. This example assumes a package repository was configured already.
+
+~~~puppet
+exec { 'xPSDesiredStateConfiguration-Install':
+  command   => 'Install-Module -Name xPSDesiredStateConfiguration -Force',
+  provider => 'powershell',
+}
+~~~
+
+#### Puppet hbuckle/powershellmodule module
+
+A community created module [hbuckle/powershellmodule](https://forge.puppet.com/hbuckle/powershellmodule) handles using `PackageMangement` and `PowerShellGet` to download and install DSC Resources on target nodes. It is another Puppet `package` provider, so it looks and feels like how you install packages with Puppet for any other use case.
+
+Installing a DSC Resource can be as simple as the following declaration:
+
+~~~puppet
+package { 'xPSDesiredStateConfiguration':
+  ensure   => latest,
+  provider => 'windowspowershell',
+  source   => 'PSGallery',
+}
+~~~
+
+The module supports configuring repository sources and other `PackageManagement` options like configuring trusted package repositories and private or on-premise package sources. For more information please refer to the [forge page](https://forge.puppet.com/hbuckle/powershellmodule).
+
+#### Chocolatey
+
+Puppet already works well with [chocolatey](https://chocolatey.org/), so you can create chocolatey packages that wrap the DSC Resources you need. 
+
+~~~puppet
+package { 'xPSDesiredStateConfiguration':
+  ensure   => latest,
+  provider => 'chocolatey',
+}
+~~~
+
+This works well for users that already have a chocolatey source feed setup internally, as all that's needed is to push the DSC Resource chocolatey packages to the internal feed. If you use the community feed, you will have to check that the DSC Resource you use is present there.
+
 ### Using PSCredential or MSFT_Credential
 
 Specifying credentials in DSC Resources requires using a PSCredential object. The `dsc` type will automatically create a PSCredential if the `dsc_type` has `MSFT_Credential` as a value.
