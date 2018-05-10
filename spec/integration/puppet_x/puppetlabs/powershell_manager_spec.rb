@@ -1,7 +1,6 @@
 require 'spec_helper'
 require 'puppet/type'
 require 'puppet_x/puppetlabs/dsc_lite/powershell_manager'
-require 'puppet_x/puppetlabs/dsc_lite/compatible_powershell_version'
 
 module PuppetX
   module DscLite
