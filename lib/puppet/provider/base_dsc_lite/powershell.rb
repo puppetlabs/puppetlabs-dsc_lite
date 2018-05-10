@@ -23,7 +23,7 @@ Puppet::Type.type(:base_dsc_lite).provide(:powershell) do
 Applies DSC Resources by generating a configuration file and applying it.
 EOT
 
-  PUPPET_UPGRADE_MSG = <<-UPGRADE
+  DSC_LITE_MODULE_PUPPET_UPGRADE_MSG = <<-UPGRADE
   Currently, the dsc module has reduced functionality on this agent
   due to one or more of the following conditions:
   - Puppet 3.x (non-x64 version)
@@ -35,7 +35,7 @@ EOT
   Puppet (including 3.x), or to a Puppet version newer than 3.x.
   UPGRADE
 
-  DSC_MODULE_POWERSHELL_UPGRADE_MSG = <<-UPGRADE
+  DSC_LITE_MODULE_POWERSHELL_UPGRADE_MSG = <<-UPGRADE
   Currently, the dsc module has reduced functionality on this agent
   due to one or more of the following conditions:
   - A PowerShell less than 5.0
@@ -48,7 +48,7 @@ EOT
   UPGRADE
 
   def self.upgrade_message
-    Puppet.warning PUPPET_UPGRADE_MSG if !@upgrade_warning_issued
+    Puppet.warning DSC_LITE_MODULE_PUPPET_UPGRADE_MSG if !@upgrade_warning_issued
     @upgrade_warning_issued = true
   end
 
@@ -61,7 +61,7 @@ EOT
       p.name.to_s =~ /dsc_/
     end
   end
-  
+
   def dsc_property_param
     resource.parameters_with_value.select{ |pr| pr.name == :dsc_resource_properties }.each do |p|
       p.name.to_s =~ /dsc_/
@@ -92,7 +92,7 @@ EOT
     script_content = ps_script_content('test')
     Puppet.debug "\n" + script_content
 
-    fail DSC_MODULE_POWERSHELL_UPGRADE_MSG if !PuppetX::DscLite::PowerShellManager.compatible_version_of_powershell?
+    fail DSC_LITE_MODULE_POWERSHELL_UPGRADE_MSG if !PuppetX::DscLite::PowerShellManager.compatible_version_of_powershell?
 
     if !PuppetX::DscLite::PowerShellManager.supported?
       self.class.upgrade_message
@@ -114,7 +114,7 @@ EOT
     script_content = ps_script_content('set')
     Puppet.debug "\n" + script_content
 
-    fail DSC_MODULE_POWERSHELL_UPGRADE_MSG if !PuppetX::DscLite::PowerShellManager.compatible_version_of_powershell?
+    fail DSC_LITE_MODULE_POWERSHELL_UPGRADE_MSG if !PuppetX::DscLite::PowerShellManager.compatible_version_of_powershell?
 
     if !PuppetX::DscLite::PowerShellManager.supported?
       self.class.upgrade_message
@@ -136,7 +136,7 @@ EOT
     script_content = ps_script_content('set')
     Puppet.debug "\n" + script_content
 
-    fail DSC_MODULE_POWERSHELL_UPGRADE_MSG if !PuppetX::DscLite::PowerShellManager.compatible_version_of_powershell?
+    fail DSC_LITE_MODULE_POWERSHELL_UPGRADE_MSG if !PuppetX::DscLite::PowerShellManager.compatible_version_of_powershell?
 
     if !PuppetX::DscLite::PowerShellManager.supported?
       self.class.upgrade_message
@@ -190,7 +190,7 @@ EOT
       fail "unsupported type #{dsc_value.class} of value '#{dsc_value}'"
     end
   end
-  
+
   def self.format_dsc_lite(dsc_value)
     PuppetX::PuppetLabs::DscLite::PowerShellHashFormatter.format(dsc_value)
   end
