@@ -2,7 +2,7 @@ require 'rexml/document'
 require 'securerandom'
 require 'open3'
 require 'base64'
-require File.join(File.dirname(__FILE__), 'compatible_powershell_version')
+require 'puppet/feature/dsc_lite'
 
 module PuppetX
   module DscLite
@@ -29,7 +29,7 @@ module PuppetX
       end
 
       def self.compatible_version_of_powershell?
-        @compatible_powershell_version ||= PuppetX::PuppetLabs::DscLite::CompatiblePowerShellVersion.compatible_version?
+        @compatible_powershell_version ||= Puppet.features.dsc_lite?
       end
 
       def self.supported?
