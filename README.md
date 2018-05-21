@@ -48,8 +48,8 @@ So a DSC resource specified in PowerShell...
 
 ~~~powershell
 WindowsFeature IIS {
-  Ensure = 'present'
-  Name   = 'Web-Server'
+  Ensure => 'present'
+  Name   => 'Web-Server'
 }
 ~~~
 
@@ -58,7 +58,7 @@ WindowsFeature IIS {
 ~~~puppet
 dsc {'iis':
   dsc_resource_name        => 'WindowsFeature',
-  dsc_resource_module => 'PSDesiredStateConfiguration',
+  dsc_resource_module      => 'PSDesiredStateConfiguration',
   dsc_resource_properties  => {
     ensure => 'present',
     name   => 'Web-Server',
@@ -75,13 +75,13 @@ A contrived, but simple example follows:
 ~~~puppet
 dsc {'foo':
   dsc_resource_name        => 'xFoo',
-  dsc_resource_module => 'xFooBar',
+  dsc_resource_module      => 'xFooBar',
   dsc_resource_properties  => {
     ensure  => 'present',
     fooinfo => {
       'dsc_type'       => 'FooBarBaz',
       'dsc_properties' => {
-        "wakka" => "woot",
+        "wakka"      => "woot",
         "number"     => 8090
       }
     }
@@ -120,7 +120,7 @@ The following example shows how to install the `xPSDesiredStateConfiguration` DS
 ~~~puppet
 exec { 'xPSDesiredStateConfiguration-Install':
   command   => 'Install-Module -Name xPSDesiredStateConfiguration -Force',
-  provider => 'powershell',
+  provider  => 'powershell',
 }
 ~~~
 
@@ -189,7 +189,7 @@ For example, we'll create a new IIS website using the xWebSite DSC Resource, bou
 ~~~puppet
 dsc {'NewWebsite':
   dsc_resource_name        => 'xWebsite',
-  dsc_resource_module => 'xWebAdministration',
+  dsc_resource_module      => 'xWebAdministration',
   dsc_resource_properties  => {
     ensure       => 'Present',
     state        => 'Started',
@@ -211,7 +211,7 @@ To show using more than one value in `dsc_properties`, let's create the same sit
 ~~~puppet
 dsc {'NewWebsite':
   dsc_resource_name        => 'xWebsite',
-  dsc_resource_module => 'xWebAdministration',
+  dsc_resource_module      => 'xWebAdministration',
   dsc_resource_properties  => {
     ensure       => 'Present',
     state        => 'Started',
@@ -225,11 +225,11 @@ dsc {'NewWebsite':
           "port"     => 80
         },
         {
-          'protocol'             => 'HTTPS',
-          'port'                 => 443,
+          'protocol'              => 'HTTPS',
+          'port'                  => 443,
           'certificatethumbprint' => 'F94B4CC4C445703388E418F82D1BBAA6F3E9E512',
           'certificatestorename'  => 'My',
-          'ipaddress'            => '*'
+          'ipaddress'             => '*'
         }
       ]
     }
@@ -244,7 +244,7 @@ Add the following `reboot` resource to your manifest. It must have the name `dsc
 ~~~puppet
 reboot { 'dsc_reboot' :
   message => 'DSC has requested a reboot',
-  when => 'pending'
+  when    => 'pending'
 }
 ~~~
 
