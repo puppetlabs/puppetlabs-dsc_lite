@@ -1,12 +1,32 @@
 ## Unreleased
 
+## 2018-05-23 - Unsupported Release 0.3.0
+
+### Summary
+
+Small release with documentation and minor bug fixes.
+
+### Added
+
+- Added Server 2016 to metadata ([MODULES-4271](https://tickets.puppetlabs.com/browse/MODULES-4271))
+
+### Changed
+
 - Bump the puppetlabs-reboot module dependancy to reflect that the new version is 2.0.0 ([MODULES-6678](https://tickets.puppetlabs.com/browse/MODULES-6678))
+- Documented null username PSCredential ([MODULES-6992](https://tickets.puppetlabs.com/browse/MODULES-6992))
+- Emit a better message when PowerShell version is unsuitable for provider ([MODULES-6860](https://tickets.puppetlabs.com/browse/MODULES-6860))
+- Documented the DSC Resource Distribution process ([MODULES-7105](https://tickets.puppetlabs.com/browse/MODULES-7105))
+
+### Fixed
+
+- Fixed Named Pipes Server on Windows Server 2008r2 ([MODULES-6930](https://tickets.puppetlabs.com/browse/MODULES-6930))
+
 
 ## 2018-02-02 - Unsupported Release 0.2.0
 
 ### Summary
 
-Small release with breaking change to support for DSC Versions
+Small release with breaking change to support for DSC Versions.
 
 ### Changed
 
