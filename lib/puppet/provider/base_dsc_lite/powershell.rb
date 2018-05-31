@@ -190,7 +190,8 @@ EOT
     template_name = resource.type == :dsc ?
       '/invoke_generic_dsc_resource.ps1.erb' :
       '/invoke_dsc_resource.ps1.erb'
-    template = ERB.new(File.new(template_path + template_name).read, nil, '-')
+    file = File.new(template_path + template_name, :encoding => Encoding::UTF_8)
+    template = ERB.new(file.read, nil, '-')
     template.result(binding)
   end
 end
