@@ -196,6 +196,38 @@ HERE
         expect(result).to eq expected.strip
       end
 
+      it "should output correct syntax with Sensitive MSFT_Credential" do
+        expected = <<-HERE
+@{
+'username' = 'jane-doe';
+'description' = 'Jane Doe user';
+'ensure' = 'present';
+'password' = ([PSCustomObject]@{
+'user' = 'jane-doe';
+'password' = 'password'
+} | new-pscredential);
+'passwordneverexpires' = $false;
+'disabled' = $true
+}
+HERE
+        sensitive_pass = Puppet::Pops::Types::PSensitiveType::Sensitive.new('password')
+        result = @formatter.format({
+          'username'    => 'jane-doe',
+          'description' => 'Jane Doe user',
+          'ensure'      => 'present',
+          'password'    => {
+            'dsc_type'       => 'MSFT_Credential',
+            'dsc_properties' => {
+              'user'     => 'jane-doe',
+              'password' => sensitive_pass
+            }
+          },
+          'passwordneverexpires' => false,
+          'disabled'             => true,
+        })
+        expect(result).to eq expected.strip
+      end
+
     end
   end
 end
