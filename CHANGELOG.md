@@ -1,5 +1,16 @@
 ## Unreleased
 
+## 2018-06-07 - Unsupported Release 0.4.0
+
+### Summary
+
+Small release with bug fixes.
+
+### Fixed
+
+- Support for `Sensitive` data type ([MODULES-7141](https://tickets.puppetlabs.com/browse/MODULES-7141))
+- UTF-8 support in ERB template creation ([MODULES-7143](https://tickets.puppetlabs.com/browse/MODULES-7143))
+
 ## 2018-05-23 - Unsupported Release 0.3.0
 
 ### Summary
