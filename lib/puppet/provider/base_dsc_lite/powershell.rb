@@ -115,26 +115,6 @@ EOT
     data
   end
 
-  def destroy
-    script_content = ps_script_content('set')
-    Puppet.debug "\n" + script_content
-
-    if !PuppetX::DscLite::PowerShellManager.supported?
-      self.class.upgrade_message
-      output = powershell(self.class.powershell_args, script_content)
-    else
-      output = ps_manager.execute(script_content, COMMAND_TIMEOUT)[:stdout]
-    end
-    Puppet.debug "Destroy Dsc Resource returned: #{output}"
-    data = JSON.parse(output)
-
-    fail(data['errormessage']) if !data['errormessage'].empty?
-
-    notify_reboot_pending if data['rebootrequired'] == true
-
-    data
-  end
-
   def notify_reboot_pending
     Puppet.info "A reboot is required to progress further. Notifying Puppet."
 

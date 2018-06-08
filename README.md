@@ -287,6 +287,12 @@ The `dsc` type allows specifying any DSC Resource declaration as a minimal Puppe
 
 The name of the declaration. This has no affect on the DSC Resource declaration and is not used by the DSC Resource.
 
+#### ensure
+
+An optional property that specifies that the DSC resource should be invoked.
+This property has only one value of `present`.
+This property does not need be be set in manifests.
+
 #### dsc_resource_name
 
 The name of the DSC Resource to use. For example, the xRemoteFile DSC Resource.

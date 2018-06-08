@@ -5,9 +5,18 @@ Puppet::Type.newtype(:dsc) do
   require Pathname.new(__FILE__).dirname + '../../puppet_x/puppetlabs/dsc_lite/dsc_type_helpers'
 
   ensurable do
-    newvalue(:exists?) { provider.exists? }
+    desc <<-HERE
+    An optional property that specifies that the DSC resource should be invoked.
+    This property has only one value of `present`.
+    This property does not need be be set in manifests.
+HERE
+    # Using the default magic of puppet to run exists? to detmine if create should be called
+    # means that by default puppet will think of the resource as 'present' if the dsc resource
+    # is in the desired state. Setting this to a more semantically correct name, such as 
+    # `invoke` will cause puppet to report the resource changing from 'present' to 'invoke'
+    # on every run where changes are not actually made. In any case, puppet will always report
+    # that the resource was created on runs where Invoke-DscResource _does_ modify the system.
     newvalue(:present) { provider.create }
-    newvalue(:absent)  { provider.destroy }
     defaultto { :present }
   end
 
