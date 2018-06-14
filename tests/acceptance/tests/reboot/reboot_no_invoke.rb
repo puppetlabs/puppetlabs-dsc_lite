@@ -4,16 +4,21 @@ require 'dsc_utils'
 test_name 'MODULES-2843 - C96007 - Apply DSC Resource that Does not Require a Reboot with Autonotify "reboot" Resource'
 
 # Manifest
+installed_path = get_fake_reboot_resource_install_path(usage = :manifest)
 fake_name = SecureRandom.uuid
 test_file_contents = SecureRandom.uuid
 dsc_manifest = <<-MANIFEST
+dsc { '#{fake_name}':
+  dsc_resource_name       => 'puppetfakeresource',
+  dsc_resource_module     => '#{installed_path}/1.0',
+  dsc_resource_properties => {
+    ensure          => present,
+    importantstuff  => '#{test_file_contents}',
+    destinationpath => 'C:\\#{fake_name}',
+  }
+}
 reboot { 'dsc_reboot':
   when => pending
-}
-dsc_puppetfakeresource { '#{fake_name}':
-  dsc_ensure          => present,
-  dsc_importantstuff  => '#{test_file_contents}',
-  dsc_destinationpath => 'C:\\#{fake_name}'
 }
 MANIFEST
 
@@ -44,7 +49,7 @@ confine_block(:to, :platform => 'windows') do
     step 'Run Puppet Apply'
     on(agent, puppet('apply'), :stdin => dsc_manifest, :acceptable_exit_codes => [0,2]) do |result|
       # NOTE: regex includes Node\[default\]\/ when run via agent rather than apply
-      assert_match(/Stage\[main\]\/Main\/Dsc_puppetfakeresource\[#{fake_name}\]\/ensure\: created/, result.stdout, 'DSC Resource missing!')
+      assert_match(/Stage\[main\]\/Main\/Dsc\[#{fake_name}\]\/ensure\: created/, result.stdout, 'DSC Resource missing!')
       assert_no_match(/Error:/, result.stderr, 'Unexpected error was detected!')
       assert_no_match(/Warning:/, result.stderr, 'Unexpected warning was detected!')
     end

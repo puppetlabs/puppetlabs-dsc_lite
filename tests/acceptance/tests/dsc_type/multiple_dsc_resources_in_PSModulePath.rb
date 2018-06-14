@@ -19,8 +19,8 @@ teardown do
     end
 
     on(agents, <<-CYGWIN)
-rm -rf /cygdrive/c/#{pshome_modules_path}/PuppetFakeResource
-rm -rf /cygdrive/c/#{program_files_modules_path}/PuppetFakeResource
+rm -rf /cygdrive/c/#{pshome_modules_path}/PuppetFakeResource/1.0
+rm -rf /cygdrive/c/#{program_files_modules_path}/PuppetFakeResource/2.0
 rm -rf /cygdrive/c/#{fake_name}
 CYGWIN
   end
@@ -36,18 +36,18 @@ confine_block(:to, :platform => 'windows') do
 
   # put PuppetFakeResource v1 in $PSHome\Modules
   on(agents, <<-CYGWIN)
-cp --recursive #{installed_path}/PuppetFakeResource /cygdrive/c/#{pshome_modules_path}
+cp --recursive #{installed_path}/1.0 /cygdrive/c/#{pshome_modules_path}/PuppetFakeResource
 # copying from Puppet pluginsync directory includes NULL SID and other wonky perms, so reset
-icacls "C:\\#{pshome_modules_path.gsub('/', '\\')}\\PuppetFakeResource" /reset /T
+icacls "C:\\#{pshome_modules_path.gsub('/', '\\')}\\PuppetFakeResource\\1.0" /reset /T
 CYGWIN
 
   # put PuppetFakeResource v2 in $Env:Program Files\WindowsPowerShell\Modules
-  # noting that the parent folder *must* be PuppetFakeResource, not PuppetFakeResource2
+  # noting that the parent folder *must* be PuppetFakeResource
   on(agents, <<-CYGWIN)
 mkdir -p /cygdrive/c/#{program_files_modules_path}/PuppetFakeResource
-cp --recursive #{installed_path}/PuppetFakeResource2/* /cygdrive/c/#{program_files_modules_path}/PuppetFakeResource
+cp --recursive #{installed_path}/2.0 /cygdrive/c/#{program_files_modules_path}/PuppetFakeResource
 # copying from Puppet pluginsync directory includes NULL SID and other wonky perms, so reset
-icacls "C:\\#{program_files_modules_path.gsub('\\', '').gsub('/', '\\')}\\PuppetFakeResource" /reset /T
+icacls "C:\\#{program_files_modules_path.gsub('\\', '').gsub('/', '\\')}\\PuppetFakeResource\\2.0" /reset /T
 CYGWIN
 
   # verify DSC shows 2 installed copies of the resource
@@ -116,7 +116,7 @@ confine_block(:to, :platform => 'windows') do
 
     step 'Verify Results'
     # PuppetFakeResource always overwrites file at this path
-    # PuppetFakeResourc2 2.0 appends "v2" to the written file before "ImportantStuff"
+    # PuppetFakeResource 2.0 appends "v2" to the written file before "ImportantStuff"
     on(agent, "cat /cygdrive/c/#{fake_name}", :acceptable_exit_codes => [0]) do |result|
       assert_match(/^v2#{test_file_contents}/, result.stdout, 'PuppetFakeResource File contents incorrect!')
     end

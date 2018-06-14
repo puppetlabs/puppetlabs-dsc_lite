@@ -4,10 +4,15 @@ require 'dsc_utils'
 test_name 'MODULES-2843 - C96005 - Apply DSC Resource that Requires Reboot without "reboot" Resource'
 
 # Manifest
+installed_path = get_fake_reboot_resource_install_path(usage = :manifest)
 dsc_manifest = <<-MANIFEST
-dsc_puppetfakeresource { 'reboot_test':
-  dsc_importantstuff => 'reboot',
-  dsc_requirereboot => true,
+dsc { 'reboot_test':
+  dsc_resource_name => 'puppetfakeresource',
+  dsc_resource_module => '#{installed_path}/1.0',
+  dsc_resource_properties => {
+    importantstuff  => 'reboot',
+    requirereboot   => true,
+  }
 }
 MANIFEST
 

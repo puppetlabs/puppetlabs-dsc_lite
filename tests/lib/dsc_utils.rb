@@ -24,7 +24,7 @@ def locate_dsc_module(host)
 
   # Search the available module paths.
   module_paths.each do |module_path|
-    dsc_module_path = "#{module_path}/dsc".gsub('\\', '/')
+    dsc_module_path = "#{module_path}/dsc_lite".gsub('\\', '/')
     ps_command = "Test-Path -Type Container -Path #{dsc_module_path}"
 
     if host.is_powershell?
@@ -66,11 +66,11 @@ end
 # install_fake_reboot_resource(agent, '/dsc/tests/files/reboot')
 def install_fake_reboot_resource(host)
   # Init
-  fake_reboot_resource_source_path = "tests/files/dsc_puppetfakeresource/PuppetFakeResource"
-  fake_reboot_resource_source_path2 = "tests/files/dsc_puppetfakeresource/PuppetFakeResource2"
+  fake_reboot_resource_source_path = "tests/files/dsc_puppetfakeresource/PuppetFakeResource/1.0"
+  fake_reboot_resource_source_path2 = "tests/files/dsc_puppetfakeresource/PuppetFakeResource/2.0"
   fake_reboot_type_source_path = "tests/files/dsc_puppetfakeresource/dsc_puppetfakeresource.rb"
 
-  dsc_resource_target_path = 'lib/puppet_x/dsc_resources'
+  dsc_resource_target_path = 'lib/puppet_x/dsc_resources/PuppetFakeResource'
   puppet_type_target_path = 'lib/puppet/type'
 
   step 'Determine Correct DSC Module Path'
@@ -99,9 +99,9 @@ def get_fake_reboot_resource_install_path(usage = :manifest)
   install_root = usage == :manifest ? 'C:/' : '/cygdrive/c'
 
   install_base = "#{install_root}/ProgramData/PuppetLabs/" +
-    (is_pluginsync ? 'puppet/cache' : 'code/modules/dsc')
+    (is_pluginsync ? 'puppet/cache' : 'code/modules/dsc_lite')
 
-  installed_path = "#{install_base}/lib/puppet_x/dsc_resources"
+  installed_path = "#{install_base}/lib/puppet_x/dsc_resources/PuppetFakeResource"
 end
 
 # Remove the "PuppetFakeResource" module on target host.
@@ -123,13 +123,13 @@ end
 # uninstall_fake_reboot_resource(agent)
 def uninstall_fake_reboot_resource(host)
   # Init
-  dsc_resource_target_path = 'lib/puppet_x/dsc_resources'
+  dsc_resource_target_path = 'lib/puppet_x/dsc_resources/PuppetFakeResource'
   puppet_type_target_path = 'lib/puppet/type'
 
   step 'Determine Correct DSC Module Path'
   dsc_module_path = locate_dsc_module(host)
-  dsc_resource_path = "#{dsc_module_path}/#{dsc_resource_target_path}/PuppetFakeResource"
-  dsc_resource_path2 = "#{dsc_module_path}/#{dsc_resource_target_path}/PuppetFakeResource2"
+  dsc_resource_path = "#{dsc_module_path}/#{dsc_resource_target_path}/1.0"
+  dsc_resource_path2 = "#{dsc_module_path}/#{dsc_resource_target_path}/2.0"
   dsc_type_path = "#{dsc_module_path}/#{puppet_type_target_path}/dsc_puppetfakeresource.rb"
 
   step 'Remove DSC Fake Reboot Resource from Host'

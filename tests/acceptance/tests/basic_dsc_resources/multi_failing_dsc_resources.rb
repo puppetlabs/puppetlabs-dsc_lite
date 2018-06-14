@@ -13,7 +13,7 @@ throw_message_2 = SecureRandom.uuid
 dsc_manifest = <<-MANIFEST
 dsc { 'throw_1':
   dsc_resource_name => 'puppetfakeresource',
-  dsc_resource_module => '#{installed_path}/PuppetFakeResource',
+  dsc_resource_module => '#{installed_path}/1.0',
   dsc_resource_properties => {
     ensure          => 'present',
     importantstuff  => 'foo',
@@ -23,7 +23,7 @@ dsc { 'throw_1':
 
 dsc { 'throw_2':
   dsc_resource_name => 'puppetfakeresource',
-  dsc_resource_module => '#{installed_path}/PuppetFakeResource',
+  dsc_resource_module => '#{installed_path}/1.0',
   dsc_resource_properties => {
     ensure          => 'present',
     importantstuff  => 'bar',
@@ -48,7 +48,6 @@ end
 agents.each do |agent|
   step 'Copy Test Type Wrappers'
   install_fake_reboot_resource(agent)
-
   step 'Apply Manifest'
   on(agent, puppet('apply'), :stdin => dsc_manifest, :acceptable_exit_codes => 0) do |result|
     assert_match(error_msg_1, result.stderr, 'Expected error was not detected!')

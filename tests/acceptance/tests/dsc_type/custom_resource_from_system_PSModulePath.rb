@@ -31,7 +31,7 @@ teardown do
       uninstall_fake_reboot_resource(agent)
     end
     on(agents, <<-CYGWIN)
-rm -rf /cygdrive/c/#{pshome_modules_path}/PuppetFakeResource
+rm -rf /cygdrive/c/#{pshome_modules_path}/PuppetFakeResource/1.0
 rm -rf /cygdrive/c/#{fake_name}
 CYGWIN
   end
@@ -46,9 +46,9 @@ confine_block(:to, :platform => 'windows') do
 
   # put PuppetFakeResource in $PSHome\Modules
   on(agents, <<-CYGWIN)
-cp --recursive #{installed_path}/PuppetFakeResource /cygdrive/c/#{pshome_modules_path}
+cp --recursive #{installed_path}/1.0 /cygdrive/c/#{pshome_modules_path}/PuppetFakeResource
 # copying from Puppet pluginsync directory includes NULL SID and other wonky perms, so reset
-icacls "C:\\#{pshome_modules_path.gsub('/', '\\')}\\PuppetFakeResource" /reset /T
+icacls "C:\\#{pshome_modules_path.gsub('/', '\\')}\\PuppetFakeResource\\1.0" /reset /T
 CYGWIN
 end
 
