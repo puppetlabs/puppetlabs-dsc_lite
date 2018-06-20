@@ -4,7 +4,7 @@ require 'dsc_utils'
 test_name 'MODULES-2843 - C96007 - Apply DSC Resource that Does not Require a Reboot with Autonotify "reboot" Resource'
 
 # Manifest
-installed_path = get_fake_reboot_resource_install_path(usage = :manifest)
+installed_path = get_dsc_resource_fixture_path(usage = :manifest)
 fake_name = SecureRandom.uuid
 test_file_contents = SecureRandom.uuid
 dsc_manifest = <<-MANIFEST
@@ -26,7 +26,7 @@ MANIFEST
 teardown do
   step 'Remove Test Artifacts'
   windows_agents.each do |agent|
-    uninstall_fake_reboot_resource(agent)
+    teardown_dsc_resource_fixture(agent)
   end
 
   step 'Remove Test Artifacts'
@@ -37,7 +37,7 @@ end
 # Tests
 windows_agents.each do |agent|
   step 'Copy Test Type Wrappers'
-  install_fake_reboot_resource(agent)
+  setup_dsc_resource_fixture(agent)
 
   # Workaround for https://tickets.puppetlabs.com/browse/IMAGES-539
   step 'Remove PendingFileRenameOperations registry key'

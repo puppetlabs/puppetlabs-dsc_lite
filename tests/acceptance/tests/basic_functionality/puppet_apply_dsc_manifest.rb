@@ -3,7 +3,7 @@ require 'dsc_utils'
 require 'securerandom'
 test_name 'FM-2625 - C68511 - Apply DSC Resource Manifest via "puppet apply"'
 
-installed_path = get_fake_reboot_resource_install_path(usage = :manifest)
+installed_path = get_dsc_resource_fixture_path(usage = :manifest)
 
 # ERB Manifest
 test_dir_path = SecureRandom.uuid
@@ -31,14 +31,14 @@ teardown do
   step 'Remove Test Artifacts'
   on(windows_agents, "rm -rf /cygdrive/c/#{test_dir_path}")
   windows_agents.each do |agent|
-    uninstall_fake_reboot_resource(agent)
+    teardown_dsc_resource_fixture(agent)
   end
 end
 
 # Tests
 windows_agents.each do |agent|
   step 'Copy Test Type Wrappers'
-  install_fake_reboot_resource(agent)
+  setup_dsc_resource_fixture(agent)
 
   step 'Apply Manifest'
   on(agent, puppet('apply'), :stdin => dsc_manifest, :acceptable_exit_codes => [0,2]) do |result|

@@ -27,7 +27,7 @@ MANIFEST
 teardown do
   step 'Remove Test Artifacts'
   windows_agents.each do |agent|
-    uninstall_fake_reboot_resource(agent)
+    teardown_dsc_resource_fixture(agent)
   end
   on(windows_agents, <<-CYGWIN)
 rm -rf /cygdrive/c/#{pshome_modules_path}/PuppetFakeResource/1.0
@@ -38,10 +38,10 @@ end
 # Tests
 windows_agents.each do |agent|
   step 'Copy Test Type Wrappers'
-  install_fake_reboot_resource(agent)
+  setup_dsc_resource_fixture(agent)
 
   step 'Copy PuppetFakeResource implementation to system PSModulePath'
-  installed_path = get_fake_reboot_resource_install_path(usage = :cygwin)
+  installed_path = get_dsc_resource_fixture_path(usage = :cygwin)
   # put PuppetFakeResource in $PSHome\Modules
   on(agent, <<-CYGWIN)
 cp --recursive #{installed_path}/1.0 /cygdrive/c/#{pshome_modules_path}/PuppetFakeResource

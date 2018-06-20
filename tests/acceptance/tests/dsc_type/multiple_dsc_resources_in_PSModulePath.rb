@@ -14,7 +14,7 @@ fake_name = SecureRandom.uuid
 teardown do
   step 'Remove Test Artifacts'
   windows_agents.each do |agent|
-    uninstall_fake_reboot_resource(agent)
+    teardown_dsc_resource_fixture(agent)
   end
 
   on(windows_agents, <<-CYGWIN)
@@ -25,11 +25,11 @@ CYGWIN
 end
 
 step 'Copy Test Type Wrappers'
-install_fake_reboot_resource(agent)
+setup_dsc_resource_fixture(agent)
 
 step 'Copy PuppetFakeResource implementations to system PSModulePath locations'
 # sourced from different directory
-installed_path = get_fake_reboot_resource_install_path(usage = :cygwin)
+installed_path = get_dsc_resource_fixture_path(usage = :cygwin)
 
 # put PuppetFakeResource v1 in $PSHome\Modules
 on(windows_agents, <<-CYGWIN)

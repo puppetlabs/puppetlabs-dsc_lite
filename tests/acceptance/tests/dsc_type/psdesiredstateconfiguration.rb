@@ -21,7 +21,7 @@ MANIFEST
 # Teardown
 teardown do
   windows_agents.each do |agent|
-    uninstall_fake_reboot_resource(agent)
+    teardown_dsc_resource_fixture(agent)
   end
 
   step 'Remove Test Artifacts'
@@ -31,7 +31,7 @@ end
 # Tests
 windows_agents.each do |agent|
   step 'Copy Test Type Wrappers'
-  install_fake_reboot_resource(agent)
+  setup_dsc_resource_fixture(agent)
 
   step 'Run Puppet Apply'
   on(agent, puppet('apply'), :stdin => dsc_manifest, :acceptable_exit_codes => [0,2]) do |result|

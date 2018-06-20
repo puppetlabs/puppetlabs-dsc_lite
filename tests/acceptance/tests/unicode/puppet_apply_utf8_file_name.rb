@@ -3,7 +3,7 @@ require 'master_manipulator'
 require 'dsc_utils'
 test_name 'Apply generic DSC Manifest with UTF-8 file name to create a puppetfakeresource'
 
-installed_path = get_fake_reboot_resource_install_path(usage = :manifest)
+installed_path = get_dsc_resource_fixture_path(usage = :manifest)
 
 # different UTF-8 widths
 # 1-byte A
@@ -33,7 +33,7 @@ MANIFEST
 teardown do
   step 'Remove Test Artifacts'
   windows_agents.each do |agent|
-    uninstall_fake_reboot_resource(agent)
+    teardown_dsc_resource_fixture(agent)
   end
   on(windows_agents, "rm -rf C:/#{file_path}")
 end
@@ -44,7 +44,7 @@ windows_agents.each do |agent|
   on(agent, powershell("mkdir /#{file_path}"))
 
   step 'Copy Test Type Wrappers'
-  install_fake_reboot_resource(agent)
+  setup_dsc_resource_fixture(agent)
 
   step 'Run Puppet Apply'
   on(agent, puppet('apply'), :stdin => dsc_manifest, :acceptable_exit_codes => [0,2]) do |result|

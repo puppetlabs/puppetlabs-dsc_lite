@@ -63,8 +63,8 @@ end
 #
 # ==== Examples
 #
-# install_fake_reboot_resource(agent, '/dsc/tests/files/reboot')
-def install_fake_reboot_resource(host)
+# setup_dsc_resource_fixture(agent, '/dsc/tests/files/reboot')
+def setup_dsc_resource_fixture(host)
   # Init
   fake_reboot_resource_source_path = "tests/files/dsc_puppetfakeresource/PuppetFakeResource/1.0"
   fake_reboot_resource_source_path2 = "tests/files/dsc_puppetfakeresource/PuppetFakeResource/2.0"
@@ -92,7 +92,7 @@ def install_fake_reboot_resource(host)
   end
 end
 
-def get_fake_reboot_resource_install_path(usage = :manifest)
+def get_dsc_resource_fixture_path(usage = :manifest)
   # Master or masterless determine content locations
   is_pluginsync = hosts.any? { |h| h['roles'].include?('master') }
 
@@ -120,8 +120,8 @@ end
 #
 # ==== Examples
 #
-# uninstall_fake_reboot_resource(agent)
-def uninstall_fake_reboot_resource(host)
+# teardown_dsc_resource_fixture(agent)
+def teardown_dsc_resource_fixture(host)
   # Init
   dsc_resource_target_path = 'lib/puppet_x/dsc_resources/PuppetFakeResource'
   puppet_type_target_path = 'lib/puppet/type'

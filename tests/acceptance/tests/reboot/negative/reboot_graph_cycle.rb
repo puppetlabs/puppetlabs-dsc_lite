@@ -22,14 +22,14 @@ error_message = /Error:.*Found 1 dependency cycle/
 teardown do
   step 'Remove Test Artifacts'
   windows_agents.each do |agent|
-    uninstall_fake_reboot_resource(agent)
+    teardown_dsc_resource_fixture(agent)
   end
 end
 
 # Tests
 windows_agents.each do |agent|
   step 'Copy Test Type Wrappers'
-  install_fake_reboot_resource(agent)
+  setup_dsc_resource_fixture(agent)
 
   step 'Run Puppet Apply'
   on(agent, puppet('apply'), :stdin => dsc_manifest, :acceptable_exit_codes => [0,1]) do |result|

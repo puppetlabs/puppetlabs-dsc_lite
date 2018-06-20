@@ -2,7 +2,7 @@ require 'dsc_utils'
 require 'securerandom'
 test_name 'FM-2624 - C87654 - Apply DSC Resource Manifest with Multiple Failing DSC Resources'
 
-installed_path = get_fake_reboot_resource_install_path(usage = :manifest)
+installed_path = get_dsc_resource_fixture_path(usage = :manifest)
 
 # In-line Manifest
 throw_message_1 = SecureRandom.uuid
@@ -38,14 +38,14 @@ error_msg_2 = /Error: PowerShell DSC resource PuppetFakeResource  failed to exec
 teardown do
   step 'Remove Test Artifacts'
   windows_agents.each do |agent|
-    uninstall_fake_reboot_resource(agent)
+    teardown_dsc_resource_fixture(agent)
   end
 end
 
 # Tests
 windows_agents.each do |agent|
   step 'Copy Test Type Wrappers'
-  install_fake_reboot_resource(agent)
+  setup_dsc_resource_fixture(agent)
   step 'Apply Manifest'
   on(agent, puppet('apply'), :stdin => dsc_manifest, :acceptable_exit_codes => 0) do |result|
     assert_match(error_msg_1, result.stderr, 'Expected error was not detected!')

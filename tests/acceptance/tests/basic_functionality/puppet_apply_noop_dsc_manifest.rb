@@ -3,7 +3,7 @@ require 'dsc_utils'
 require 'securerandom'
 test_name 'FM-2623 - C68509 - Apply DSC Resource Manifest in "noop" Mode Using "puppet apply"'
 
-installed_path = get_fake_reboot_resource_install_path(usage = :manifest)
+installed_path = get_dsc_resource_fixture_path(usage = :manifest)
 
 # ERB Manifest
 test_dir_path = SecureRandom.uuid
@@ -29,14 +29,14 @@ MANIFEST
 teardown do
   windows_agents.each do |agent|
     step 'Remove Test Artifacts'
-    uninstall_fake_reboot_resource(agent)
+    teardown_dsc_resource_fixture(agent)
   end
 end
 
 # Tests
 windows_agents.each do |agent|
   step 'Copy Test Type Wrappers'
-  install_fake_reboot_resource(agent)
+  setup_dsc_resource_fixture(agent)
 
   step 'Apply Manifest'
   on(agent, puppet('apply --noop'), :stdin => dsc_manifest, :acceptable_exit_codes => [0,2]) do |result|
