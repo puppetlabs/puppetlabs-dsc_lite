@@ -176,3 +176,7 @@ module Beaker
     end
   end
 end
+
+def windows_agents
+  agents.select { |agent| agent['platform'].include?('windows') }
+end

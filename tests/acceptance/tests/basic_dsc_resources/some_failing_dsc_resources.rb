@@ -2,8 +2,6 @@ require 'dsc_utils'
 require 'securerandom'
 test_name 'FM-2624 - C68533 - Apply DSC Resource Manifest with Mix of Passing and Failing DSC Resources'
 
-confine(:to, :platform => 'windows')
-
 installed_path = get_fake_reboot_resource_install_path(usage = :manifest)
 
 # In-line Manifest
@@ -36,13 +34,13 @@ error_msg = /Error: PowerShell DSC resource PuppetFakeResource  failed to execut
 # Teardown
 teardown do
   step 'Remove Test Artifacts'
-  agents.each do |agent|
+  windows_agents.each do |agent|
     uninstall_fake_reboot_resource(agent)
   end
 end
 
 # Tests
-agents.each do |agent|
+windows_agents.each do |agent|
   step 'Copy Test Type Wrappers'
   install_fake_reboot_resource(agent)
   step 'Apply Manifest'

@@ -21,25 +21,23 @@ error_message = /Error:.*Found 1 dependency cycle/
 # Teardown
 teardown do
   step 'Remove Test Artifacts'
-  agents.each do |agent|
+  windows_agents.each do |agent|
     uninstall_fake_reboot_resource(agent)
   end
 end
 
 # Tests
-confine_block(:to, :platform => 'windows') do
-  agents.each do |agent|
-    step 'Copy Test Type Wrappers'
-    install_fake_reboot_resource(agent)
+windows_agents.each do |agent|
+  step 'Copy Test Type Wrappers'
+  install_fake_reboot_resource(agent)
 
-    step 'Run Puppet Apply'
-    on(agent, puppet('apply'), :stdin => dsc_manifest, :acceptable_exit_codes => [0,1]) do |result|
-      assert_match(error_message, result.stderr, 'Expected error was not detected!')
-    end
+  step 'Run Puppet Apply'
+  on(agent, puppet('apply'), :stdin => dsc_manifest, :acceptable_exit_codes => [0,1]) do |result|
+    assert_match(error_message, result.stderr, 'Expected error was not detected!')
+  end
 
-    step 'Verify Reboot is NOT Pending'
-    expect_failure('Expect that no reboot should be pending.') do
-      assert_reboot_pending(agent)
-    end
+  step 'Verify Reboot is NOT Pending'
+  expect_failure('Expect that no reboot should be pending.') do
+    assert_reboot_pending(agent)
   end
 end

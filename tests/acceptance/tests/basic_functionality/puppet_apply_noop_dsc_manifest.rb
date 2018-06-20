@@ -5,8 +5,6 @@ test_name 'FM-2623 - C68509 - Apply DSC Resource Manifest in "noop" Mode Using "
 
 installed_path = get_fake_reboot_resource_install_path(usage = :manifest)
 
-confine(:to, :platform => 'windows')
-
 # ERB Manifest
 test_dir_path = SecureRandom.uuid
 fake_name = SecureRandom.uuid
@@ -29,14 +27,14 @@ MANIFEST
 
 # Teardown
 teardown do
-  agents.each do |agent|
+  windows_agents.each do |agent|
     step 'Remove Test Artifacts'
     uninstall_fake_reboot_resource(agent)
   end
 end
 
 # Tests
-agents.each do |agent|
+windows_agents.each do |agent|
   step 'Copy Test Type Wrappers'
   install_fake_reboot_resource(agent)
 
