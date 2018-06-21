@@ -30,7 +30,7 @@ HERE
     end
   end
 
-  newparam(:dsc_resource_name) do
+  newparam(:resource_name) do
     desc "DSC Resource Name"
     isrequired
     validate do |value|
@@ -41,7 +41,7 @@ HERE
     end
   end
 
-  newparam(:dsc_resource_module) do
+  newparam(:module) do
     desc "DSC Resource Module"
     isrequired
     validate do |value|
@@ -58,11 +58,11 @@ HERE
     end
   end
 
-  newparam(:dsc_resource_properties, :array_matching => :all) do
+  newparam(:properties, :array_matching => :all) do
     desc <<-HERE
     The hash of properties to pass to the DSC Resource.
 
-    To express EmbeddedInstances, the dsc_resource_properties parameter will reconize any key with a hash value that contains two keys: dsc_type and dsc_properties, as a indication of how to format the data supplied. The dsc_type contains the CimInstance name to use, and the dsc_properties contains a hash or an array of hashes representing the data for the CimInstances. If the CimInstance is an array, we append a [] to the end of the name.
+    To express EmbeddedInstances, the properties parameter will reconize any key with a hash value that contains two keys: dsc_type and dsc_properties, as a indication of how to format the data supplied. The dsc_type contains the CimInstance name to use, and the dsc_properties contains a hash or an array of hashes representing the data for the CimInstances. If the CimInstance is an array, we append a [] to the end of the name.
 HERE
     isrequired
     validate do |value|

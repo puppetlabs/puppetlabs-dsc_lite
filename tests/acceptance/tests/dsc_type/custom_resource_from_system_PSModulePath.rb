@@ -12,10 +12,10 @@ fake_name = SecureRandom.uuid
 test_file_contents = SecureRandom.uuid
 dsc_manifest = <<-MANIFEST
 dsc {'#{fake_name}':
-  dsc_resource_name => 'PuppetFakeResource',
+  resource_name => 'PuppetFakeResource',
   # NOTE: relies on finding resource in system part of $ENV:PSModulePath
-  dsc_resource_module => 'PuppetFakeResource',
-  dsc_resource_properties => {
+  module => 'PuppetFakeResource',
+  properties => {
     ensure          => 'present',
     importantstuff  => '#{test_file_contents}',
     destinationpath => 'C:\\#{fake_name}'

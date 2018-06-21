@@ -50,7 +50,7 @@ EOT
   end
 
   def dsc_property_param
-    resource.parameters_with_value.select{ |pr| pr.name == :dsc_resource_properties }.each do |p|
+    resource.parameters_with_value.select{ |pr| pr.name == :properties }.each do |p|
       p.name.to_s =~ /dsc_/
     end
   end

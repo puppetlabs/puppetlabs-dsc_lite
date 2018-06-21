@@ -10,10 +10,10 @@ fake_name = SecureRandom.uuid
 test_file_contents = SecureRandom.uuid
 dsc_manifest = <<-MANIFEST
 dsc {'#{fake_name}':
-  dsc_resource_name => 'puppetfakeresource',
+  resource_name => 'puppetfakeresource',
   # NOTE: install_fake_reboot_resource installs on master, which pluginsyncs here
-  dsc_resource_module => '#{installed_path}/1.0',
-  dsc_resource_properties => {
+  module => '#{installed_path}/1.0',
+  properties => {
     ensure          => 'present',
     importantstuff  => '#{test_file_contents}',
     destinationpath => 'C:\\#{fake_name}'
@@ -50,9 +50,9 @@ end
 # New manifest to remove value.
 dsc_remove_manifest = <<-MANIFEST
 dsc {'#{fake_name}':
-  dsc_resource_name => 'puppetfakeresource',
-  dsc_resource_module => '#{installed_path}/1.0',
-  dsc_resource_properties => {
+  resource_name => 'puppetfakeresource',
+  module => '#{installed_path}/1.0',
+  properties => {
     ensure          => 'absent',
     importantstuff  => '#{test_file_contents}',
     destinationpath => 'C:\\#{fake_name}'

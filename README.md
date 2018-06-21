@@ -42,7 +42,7 @@ See [known issues](#known-issues) for troubleshooting setup.
 
 ## Usage
 
-The generic `dsc` type is a streamlined and minimal representation of a DSC Resource declaration in Puppet syntax. You can use a DSC Resource by supplying the same properties you would set in a DSC Configuration script inside the `dsc_resource_properties` parameter. For most use cases the `dsc_resource_properties` parameter accepts the same structure as the PowerShell syntax, with the substitution of Puppet syntax for arrays, hashes and other data structures.
+The generic `dsc` type is a streamlined and minimal representation of a DSC Resource declaration in Puppet syntax. You can use a DSC Resource by supplying the same properties you would set in a DSC Configuration script inside the `properties` parameter. For most use cases the `properties` parameter accepts the same structure as the PowerShell syntax, with the substitution of Puppet syntax for arrays, hashes and other data structures.
 
 So a DSC resource specified in PowerShell...
 
@@ -57,9 +57,9 @@ WindowsFeature IIS {
 
 ~~~puppet
 dsc {'iis':
-  dsc_resource_name        => 'WindowsFeature',
-  dsc_resource_module      => 'PSDesiredStateConfiguration',
-  dsc_resource_properties  => {
+  resource_name        => 'WindowsFeature',
+  module      => 'PSDesiredStateConfiguration',
+  properties  => {
     ensure => 'present',
     name   => 'Web-Server',
   }
@@ -68,15 +68,15 @@ dsc {'iis':
 
 For the simplest cases, the above example is enough. However there are more advanced use cases in DSC that require more custom syntax in the `dsc` Puppet type. Since the `dsc` Puppet type has no prior knowledge of the type for each property in a DSC Resource, it can't format the hash correctly without some hints.
 
-The `dsc_resource_properties` parameter will recognize any key with a hash value that contains two keys: `dsc_type` and `dsc_properties`, as a indication of how to format the data supplied. The `dsc_type` contains the CimInstance name to use, and the `dsc_properties` contains a hash or an array of hashes representing the data for the CimInstances.
+The `properties` parameter will recognize any key with a hash value that contains two keys: `dsc_type` and `dsc_properties`, as a indication of how to format the data supplied. The `dsc_type` contains the CimInstance name to use, and the `dsc_properties` contains a hash or an array of hashes representing the data for the CimInstances.
 
 A contrived, but simple example follows:
 
 ~~~puppet
 dsc {'foo':
-  dsc_resource_name        => 'xFoo',
-  dsc_resource_module      => 'xFooBar',
-  dsc_resource_properties  => {
+  resource_name        => 'xFoo',
+  module      => 'xFooBar',
+  properties  => {
     ensure  => 'present',
     fooinfo => {
       'dsc_type'       => 'FooBarBaz',
@@ -95,12 +95,12 @@ When there is more than one version installed for a given DSC Resource module, y
 
 ~~~puppet
 dsc {'iis_server':
-  dsc_resource_name   => 'WindowsFeature',
-  dsc_resource_module => {
+  resource_name   => 'WindowsFeature',
+  module => {
     name    => 'PSDesiredStateConfiguration',
     version => '1.1'
   },
-  dsc_resource_properties  => {
+  properties  => {
     ensure => 'present',
     name   => 'Web-Server',
   }
@@ -159,9 +159,9 @@ Specifying credentials in DSC Resources requires using a PSCredential object. Th
 
 ~~~puppet
 dsc {'foouser':
-  dsc_resource_name       => 'User',
-  dsc_resource_module     => 'PSDesiredStateConfiguration',
-  dsc_resource_properties => {
+  resource_name       => 'User',
+  module     => 'PSDesiredStateConfiguration',
+  properties => {
     'username'    => 'jane-doe',
     'description' => 'Jane Doe user',
     'ensure'      => 'present',
@@ -184,9 +184,9 @@ You can also use the Puppet [Sensitive type](https://puppet.com/docs/puppet/late
 
 ~~~puppet
 dsc {'foouser':
-  dsc_resource_name       => 'User',
-  dsc_resource_module     => 'PSDesiredStateConfiguration',
-  dsc_resource_properties => {
+  resource_name       => 'User',
+  module     => 'PSDesiredStateConfiguration',
+  properties => {
     'username'    => 'jane-doe',
     'description' => 'Jane Doe user',
     'ensure'      => 'present',
@@ -211,9 +211,9 @@ For example, we'll create a new IIS website using the xWebSite DSC Resource, bou
 
 ~~~puppet
 dsc {'NewWebsite':
-  dsc_resource_name        => 'xWebsite',
-  dsc_resource_module      => 'xWebAdministration',
-  dsc_resource_properties  => {
+  resource_name        => 'xWebsite',
+  module      => 'xWebAdministration',
+  properties  => {
     ensure       => 'Present',
     state        => 'Started',
     name         => 'TestSite',
@@ -233,9 +233,9 @@ To show using more than one value in `dsc_properties`, let's create the same sit
 
 ~~~puppet
 dsc {'NewWebsite':
-  dsc_resource_name        => 'xWebsite',
-  dsc_resource_module      => 'xWebAdministration',
-  dsc_resource_properties  => {
+  resource_name        => 'xWebsite',
+  module      => 'xWebAdministration',
+  properties  => {
     ensure       => 'Present',
     state        => 'Started',
     name         => 'TestSite',
@@ -293,19 +293,19 @@ An optional property that specifies that the DSC resource should be invoked.
 This property has only one value of `present`.
 This property does not need be be set in manifests.
 
-#### dsc_resource_name
+#### resource_name
 
 The name of the DSC Resource to use. For example, the xRemoteFile DSC Resource.
 
-#### dsc_resource_module
+#### module
 
 The name of the DSC Resource module to use. For example, the xPSDesiredStateConfiguration DSC Resource module contains the xRemoteFile DSC Resource.
 
-#### dsc_resource_properties
+#### properties
 
 The hash of properties to pass to the DSC Resource.
 
-To express EmbeddedInstances, the `dsc_resource_properties` parameter will recognize any key with a hash value that contains two keys: `dsc_type` and `dsc_properties`, as a indication of how to format the data supplied. The `dsc_type` contains the CimInstance name to use, and the `dsc_properties` contains a hash or an array of hashes representing the data for the CimInstances. If the CimInstance is an array, we append a `[]` to the end of the name.
+To express EmbeddedInstances, the `properties` parameter will recognize any key with a hash value that contains two keys: `dsc_type` and `dsc_properties`, as a indication of how to format the data supplied. The `dsc_type` contains the CimInstance name to use, and the `dsc_properties` contains a hash or an array of hashes representing the data for the CimInstances. If the CimInstance is an array, we append a `[]` to the end of the name.
 
 ## Limitations
 
