@@ -2,6 +2,7 @@ require 'erb'
 require 'master_manipulator'
 require 'dsc_utils'
 test_name 'MODULES-2843 - C96008 - Attempt to Apply DSC Resource that Requires Reboot with Inverse Relationship to a "reboot" Resource'
+pending_test('Implementation of this functionality depends on MODULES-6569')
 
 # Manifest
 dsc_manifest = <<-MANIFEST

@@ -2,6 +2,7 @@ require 'erb'
 require 'master_manipulator'
 require 'dsc_utils'
 test_name 'MODULES-2843 - C96007 - Apply DSC Resource that Does not Require a Reboot with Autonotify "reboot" Resource'
+pending_test('Implementation of this functionality depends on MODULES-6569')
 
 # Manifest
 installed_path = get_dsc_resource_fixture_path(usage = :manifest)
