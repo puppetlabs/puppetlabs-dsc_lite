@@ -2,40 +2,44 @@ require 'erb'
 require 'master_manipulator'
 require 'dsc_utils'
 test_name 'MODULES-2843 - C96006 - Apply DSC Resource that Requires Reboot with Explicit "reboot" Resource'
+pending_test('Implementation of this functionality depends on MODULES-6569')
 
 # Manifest
+installed_path = get_dsc_resource_fixture_path(usage = :manifest)
 dsc_manifest = <<-MANIFEST
+dsc { 'reboot_test':
+  dsc_resource_name       => 'puppetfakeresource',
+  dsc_resource_module     => '#{installed_path}/1.0',
+  dsc_resource_properties => {
+    importantstuff => 'reboot',
+    requirereboot  => true,
+  },
+  notify                  => Reboot['dsc_reboot'],
+}
 reboot { 'dsc_reboot':
   when => pending
-}
-dsc_puppetfakeresource { 'reboot_test':
-  dsc_importantstuff => 'reboot',
-  dsc_requirereboot => true,
-  notify => Reboot['dsc_reboot']
 }
 MANIFEST
 
 # Teardown
 teardown do
   step 'Remove Test Artifacts'
-  agents.each do |agent|
-    uninstall_fake_reboot_resource(agent)
+  windows_agents.each do |agent|
+    teardown_dsc_resource_fixture(agent)
   end
 end
 
 # Tests
-confine_block(:to, :platform => 'windows') do
-  agents.each do |agent|
-    step 'Copy Test Type Wrappers'
-    install_fake_reboot_resource(agent)
+windows_agents.each do |agent|
+  step 'Copy Test Type Wrappers'
+  setup_dsc_resource_fixture(agent)
 
-    step 'Run Puppet Apply'
-    on(agent, puppet('apply'), :stdin => dsc_manifest, :acceptable_exit_codes => [0,2]) do |result|
-      assert_no_match(/Error:/, result.stderr, 'Unexpected error was detected!')
-      assert_no_match(/Warning:/, result.stderr, 'Unexpected warning was detected!')
-    end
-
-    step 'Verify Reboot is Pending'
-    assert_reboot_pending(agent)
+  step 'Run Puppet Apply'
+  on(agent, puppet('apply'), :stdin => dsc_manifest, :acceptable_exit_codes => [0,2]) do |result|
+    assert_no_match(/Error:/, result.stderr, 'Unexpected error was detected!')
+    assert_no_match(/Warning:/, result.stderr, 'Unexpected warning was detected!')
   end
+
+  step 'Verify Reboot is Pending'
+  assert_reboot_pending(agent)
 end

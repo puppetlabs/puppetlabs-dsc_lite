@@ -3,7 +3,7 @@ require 'master_manipulator'
 require 'dsc_utils'
 test_name 'Apply generic DSC Manifest to create a puppetfakeresource'
 
-installed_path = get_fake_reboot_resource_install_path(usage = :manifest)
+installed_path = get_dsc_resource_fixture_path(usage = :manifest)
 
 # Manifest
 fake_name = SecureRandom.uuid
@@ -12,7 +12,7 @@ dsc_manifest = <<-MANIFEST
 dsc {'#{fake_name}':
   dsc_resource_name => 'puppetfakeresource',
   # NOTE: install_fake_reboot_resource installs on master, which pluginsyncs here
-  dsc_resource_module => '#{installed_path}/PuppetFakeResource',
+  dsc_resource_module => '#{installed_path}/1.0',
   dsc_resource_properties => {
     ensure          => 'present',
     importantstuff  => '#{test_file_contents}',
@@ -23,31 +23,27 @@ MANIFEST
 
 # Teardown
 teardown do
-  confine_block(:to, :platform => 'windows') do
-    step 'Remove Test Artifacts'
-    agents.each do |agent|
-      uninstall_fake_reboot_resource(agent)
-    end
-    on(agents, "rm -rf /cygdrive/c/#{fake_name}")
+  step 'Remove Test Artifacts'
+  windows_agents.each do |agent|
+    teardown_dsc_resource_fixture(agent)
   end
+  on(windows_agents, "rm -rf /cygdrive/c/#{fake_name}")
 end
 
 # Tests
-confine_block(:to, :platform => 'windows') do
-  agents.each do |agent|
-    step 'Copy Test Type Wrappers'
-    install_fake_reboot_resource(agent)
+windows_agents.each do |agent|
+  step 'Copy Test Type Wrappers'
+  setup_dsc_resource_fixture(agent)
 
-    step 'Run Puppet Apply'
-    on(agent, puppet('apply'), :stdin => dsc_manifest, :acceptable_exit_codes => [0,2]) do |result|
-      assert_no_match(/Error:/, result.stderr, 'Unexpected error was detected!')
-    end
+  step 'Run Puppet Apply'
+  on(agent, puppet('apply'), :stdin => dsc_manifest, :acceptable_exit_codes => [0,2]) do |result|
+    assert_no_match(/Error:/, result.stderr, 'Unexpected error was detected!')
+  end
 
-    step 'Verify Results'
-    # PuppetFakeResource always overwrites file at this path
-    on(agent, "cat /cygdrive/c/#{fake_name}", :acceptable_exit_codes => [0]) do |result|
-      assert_match(/#{test_file_contents}/, result.stdout, 'PuppetFakeResource File contents incorrect!')
-    end
+  step 'Verify Results'
+  # PuppetFakeResource always overwrites file at this path
+  on(agent, "cat /cygdrive/c/#{fake_name}", :acceptable_exit_codes => [0]) do |result|
+    assert_match(/#{test_file_contents}/, result.stdout, 'PuppetFakeResource File contents incorrect!')
   end
 end
 
@@ -55,7 +51,7 @@ end
 dsc_remove_manifest = <<-MANIFEST
 dsc {'#{fake_name}':
   dsc_resource_name => 'puppetfakeresource',
-  dsc_resource_module => '#{installed_path}/PuppetFakeResource',
+  dsc_resource_module => '#{installed_path}/1.0',
   dsc_resource_properties => {
     ensure          => 'absent',
     importantstuff  => '#{test_file_contents}',
@@ -64,15 +60,13 @@ dsc {'#{fake_name}':
 }
 MANIFEST
 
-confine_block(:to, :platform => 'windows') do
-  agents.each do |agent|
-    step 'Apply Manifest to Remove File'
-    on(agent, puppet('apply'), :stdin => dsc_remove_manifest, :acceptable_exit_codes => [0,2]) do |result|
-      assert_no_match(/Error:/, result.stderr, 'Unexpected error was detected!')
-    end
-
-    step 'Verify Results'
-    # if this file exists, 'absent' didn't work
-    on(agent, "test -f /cygdrive/c/#{fake_name}", :acceptable_exit_codes => [1])
+windows_agents.each do |agent|
+  step 'Apply Manifest to Remove File'
+  on(agent, puppet('apply'), :stdin => dsc_remove_manifest, :acceptable_exit_codes => [0,2]) do |result|
+    assert_no_match(/Error:/, result.stderr, 'Unexpected error was detected!')
   end
+
+  step 'Verify Results'
+  # if this file exists, 'absent' didn't work
+  on(agent, "test -f /cygdrive/c/#{fake_name}", :acceptable_exit_codes => [1])
 end

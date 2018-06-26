@@ -4,7 +4,7 @@ require 'dsc_utils'
 require 'securerandom'
 test_name 'FM-2623 - C68790 - Attempt to Run DSC Manifest on a Linux Agent'
 
-installed_path = get_fake_reboot_resource_install_path(usage = :manifest)
+installed_path = get_dsc_resource_fixture_path(usage = :manifest)
 
 # Manifest
 fake_name = SecureRandom.uuid
@@ -13,7 +13,7 @@ test_file_contents = SecureRandom.uuid
 dsc_manifest = <<-MANIFEST
 dsc { '#{fake_name}':
   dsc_resource_name => 'puppetfakeresource',
-  dsc_resource_module => '#{installed_path}/PuppetFakeResource',
+  dsc_resource_module => '#{installed_path}/1.0',
   dsc_resource_properties => {
     ensure          => 'present',
     importantstuff  => '#{test_file_contents}',
@@ -29,7 +29,7 @@ error_msg = /Could not find a suitable provider for dsc/
 teardown do
   step 'Remove Test Artifacts'
   agents.each do |agent|
-    uninstall_fake_reboot_resource(agent)
+    teardown_dsc_resource_fixture(agent)
   end
 end
 
@@ -38,7 +38,7 @@ end
 confine_block(:except, :platform => 'windows') do
   agents.each do |agent|
     step 'Copy Test Type Wrappers'
-    install_fake_reboot_resource(agent)
+    setup_dsc_resource_fixture(agent)
 
     step 'Run Puppet Apply'
     on(agent, puppet('apply'), :stdin => dsc_manifest, :acceptable_exit_codes => 4) do |result|
