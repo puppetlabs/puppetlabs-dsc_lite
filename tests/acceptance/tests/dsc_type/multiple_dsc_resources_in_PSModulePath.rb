@@ -57,10 +57,10 @@ end
 test_file_contents = SecureRandom.uuid
 dsc_ambiguous_manifest = <<-MANIFEST
 dsc {'#{fake_name}':
-  dsc_resource_name => 'PuppetFakeResource',
+  resource_name => 'PuppetFakeResource',
   # NOTE: relies on finding resource in system parts of $ENV:PSModulePath
-  dsc_resource_module => 'PuppetFakeResource',
-  dsc_resource_properties => {
+  module => 'PuppetFakeResource',
+  properties => {
     ensure          => 'present',
     importantstuff  => '#{test_file_contents}',
     destinationpath => 'C:\\#{fake_name}'
@@ -86,13 +86,13 @@ end
 # Test that DSC works with versioned reference
 dsc_versioned_manifest = <<-MANIFEST
 dsc {'#{fake_name}':
-  dsc_resource_name => 'PuppetFakeResource',
+  resource_name => 'PuppetFakeResource',
   # NOTE: relies on finding resource in system parts of $ENV:PSModulePath
-  dsc_resource_module => {
+  module => {
     name    => 'PuppetFakeResource',
     version => '2.0',
   },
-  dsc_resource_properties => {
+  properties => {
     ensure          => 'present',
     importantstuff  => '#{test_file_contents}',
     destinationpath => 'C:\\#{fake_name}'

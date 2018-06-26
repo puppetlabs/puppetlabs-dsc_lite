@@ -1,5 +1,10 @@
 ## Unreleased
 
+### Changed
+
+- **BREAKING:**  Renamed all parameters for resource declarations, will require manifest modifications. [(MODULES-7253)](https://tickets.puppetlabs.com/browse/MODULES-7253).
+
+
 ## 2018-06-07 - Unsupported Release 0.4.0
 
 ### Summary

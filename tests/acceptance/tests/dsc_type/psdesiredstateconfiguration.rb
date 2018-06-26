@@ -8,9 +8,9 @@ fake_name = SecureRandom.uuid
 test_file_contents = SecureRandom.uuid
 dsc_manifest = <<-MANIFEST
 dsc {'#{fake_name}':
-  dsc_resource_name => 'file',
-  dsc_resource_module => 'PSDesiredStateConfiguration',
-  dsc_resource_properties => {
+  resource_name => 'file',
+  module => 'PSDesiredStateConfiguration',
+  properties => {
     ensure          => 'present',
     contents  => '#{test_file_contents}',
     destinationpath => 'C:\\#{fake_name}'
@@ -47,9 +47,9 @@ end
 # New manifest to remove value.
 dsc_remove_manifest = <<-MANIFEST
 dsc {'#{fake_name}':
-  dsc_resource_name => 'file',
-  dsc_resource_module => 'PSDesiredStateConfiguration',
-  dsc_resource_properties => {
+  resource_name => 'file',
+  module => 'PSDesiredStateConfiguration',
+  properties => {
     ensure          => 'absent',
     contents  => '#{test_file_contents}',
     destinationpath => 'C:\\#{fake_name}'

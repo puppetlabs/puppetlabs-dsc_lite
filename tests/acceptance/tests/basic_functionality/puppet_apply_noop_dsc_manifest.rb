@@ -15,9 +15,9 @@ file { 'C:/#{ test_dir_path }' :
 }
 ->
 dsc { '#{fake_name}':
-  dsc_resource_name => 'puppetfakeresource',
-  dsc_resource_module => '#{installed_path}/1.0',
-  dsc_resource_properties => {
+  resource_name => 'puppetfakeresource',
+  module => '#{installed_path}/1.0',
+  properties => {
     ensure          => 'present',
     importantstuff  => '#{SecureRandom.uuid}',
     destinationpath => '#{"C:\\" + test_dir_path + "\\" + fake_name}',
