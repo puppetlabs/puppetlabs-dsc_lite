@@ -32,7 +32,7 @@ describe 'Negative resource tests' do
       it 'Applies manifest with one failing resource and one successful resource' do
         on(agent, puppet('apply --detailed-exitcodes'), :stdin => dsc_manifest, :acceptable_exit_codes => 6) do |result|
           assert_match(error_msg, result.stderr, 'Expected error was not detected!')
-          assert_match(/Stage\[main\]\/Main\/Dsc\[good_resource\]\/ensure\: created/, result.stdout, 'DSC Resource missing!')
+          assert_match(/Stage\[main\]\/Main\/Dsc\[good_resource\]\/ensure\: invoked/, result.stdout, 'DSC Resource missing!')
         end
       end
     end
