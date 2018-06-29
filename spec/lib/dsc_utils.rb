@@ -63,12 +63,12 @@ end
 #
 # ==== Examples
 #
-# setup_dsc_resource_fixture(agent, '/dsc/tests/files/reboot')
+# setup_dsc_resource_fixture(agent, '/dsc/spec/fixtures/reboot')
 def setup_dsc_resource_fixture(host)
   # Init
-  fake_reboot_resource_source_path = "tests/files/dsc_puppetfakeresource/PuppetFakeResource/1.0"
-  fake_reboot_resource_source_path2 = "tests/files/dsc_puppetfakeresource/PuppetFakeResource/2.0"
-  fake_reboot_type_source_path = "tests/files/dsc_puppetfakeresource/dsc_puppetfakeresource.rb"
+  fake_reboot_resource_source_path = "spec/fixtures/dsc_puppetfakeresource/PuppetFakeResource/1.0"
+  fake_reboot_resource_source_path2 = "spec/fixtures/dsc_puppetfakeresource/PuppetFakeResource/2.0"
+  fake_reboot_type_source_path = "spec/fixtures/dsc_puppetfakeresource/dsc_puppetfakeresource.rb"
 
   dsc_resource_target_path = 'lib/puppet_x/dsc_resources/PuppetFakeResource'
   puppet_type_target_path = 'lib/puppet/type'
