@@ -31,7 +31,7 @@ describe 'Puppet apply for file resource ensure present and ensure absent' do
   context 'Apply generic DSC Manifest to create a standard DSC File' do
     windows_agents.each do |agent|
       it 'Run puppet apply to create file' do
-        on(agent, puppet('apply'), :stdin => dsc_manifest, :acceptable_exit_codes => [0, 2]) do |result|
+        on(agent, puppet('apply --detailed-exitcodes'), :stdin => dsc_manifest, :acceptable_exit_codes => [0, 2]) do |result|
           assert_no_match(/Error:/, result.stderr, 'Unexpected error was detected!')
         end
       end
@@ -47,7 +47,7 @@ describe 'Puppet apply for file resource ensure present and ensure absent' do
   context 'Apply generic DSC Manifest to remove a standard DSC File' do
     windows_agents.each do |agent|
       it 'Applies manifest to remove file' do
-        on(agent, puppet('apply'), :stdin => dsc_remove_manifest, :acceptable_exit_codes => [0, 2]) do |result|
+        on(agent, puppet('apply --detailed-exitcodes'), :stdin => dsc_remove_manifest, :acceptable_exit_codes => [0, 2]) do |result|
           assert_no_match(/Error:/, result.stderr, 'Unexpected error was detected!')
         end
       end

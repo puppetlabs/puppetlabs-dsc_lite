@@ -44,7 +44,7 @@ describe 'Multiple versioned resource tests' do
     windows_agents.each do |agent|
       it 'Run Puppet Apply' do
         # this scenario fails as DSC doesn't know which version to use
-        on(agent, puppet('apply'), :stdin => dsc_ambiguous_manifest, :acceptable_exit_codes => [0, 2, 4]) do |result|
+        on(agent, puppet('apply --detailed-exitcodes'), :stdin => dsc_ambiguous_manifest, :acceptable_exit_codes => [0, 2, 4]) do |result|
           # NOTE: regex includes Node\[default\]\/ when run via agent rather than apply
           error_msg = /Stage\[main\]\/Main\/Dsc\[#{fake_name}\]\: Could not evaluate\: Resource PuppetFakeResource was not found\./
           assert_match(error_msg, result.stderr, 'Expected Invoke-DscResource error missing!')
@@ -61,7 +61,7 @@ describe 'Multiple versioned resource tests' do
   context 'Can load DSC Resource from PSModulePath by ModuleName when version specified' do
     windows_agents.each do |agent|
       it 'Run Puppet Apply' do
-        on(agent, puppet('apply'), :stdin => dsc_versioned_manifest, :acceptable_exit_codes => [0]) do |result|
+        on(agent, puppet('apply --detailed-exitcodes'), :stdin => dsc_versioned_manifest, :acceptable_exit_codes => [2]) do |result|
           assert_no_match(/Error:/, result.stderr, 'Unexpected error was detected!')
         end
       end

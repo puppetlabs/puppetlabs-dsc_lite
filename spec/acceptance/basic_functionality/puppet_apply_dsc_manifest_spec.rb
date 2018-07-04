@@ -43,7 +43,7 @@ describe 'Puppet apply tests' do
   context 'FM-2625 - Apply DSC Resource Manifest via "puppet apply"' do
     windows_agents.each do |agent|
       it 'applies dsc_lite manifest via puppet apply' do
-        on(agent, puppet('apply'), :stdin => dsc_manifest, :acceptable_exit_codes => [0, 2]) do |result|
+        on(agent, puppet('apply --detailed-exitcodes'), :stdin => dsc_manifest, :acceptable_exit_codes => [0, 2]) do |result|
           assert_no_match(/Error:/, result.stderr, 'Unexpected error was detected!')
           assert_match(/Stage\[main\]\/Main\/Dsc\[#{fake_name}\]\/ensure\: created/, result.stdout, 'DSC Resource missing!')
         end
@@ -61,7 +61,7 @@ describe 'Puppet apply tests' do
   context 'FM-2623 - Apply DSC Resource Manifest in "noop" Mode Using "puppet apply"' do
     windows_agents.each do |agent|
       it 'Applies noop manifest' do
-        on(agent, puppet('apply --noop'), :stdin => dsc_manifest_2, :acceptable_exit_codes => [0, 2]) do |result|
+        on(agent, puppet('apply --noop --detailed-exitcodes'), :stdin => dsc_manifest_2, :acceptable_exit_codes => [0, 2]) do |result|
           assert_no_match(/Error:/, result.stderr, 'Unexpected error was detected!')
         end
       end

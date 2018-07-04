@@ -41,7 +41,7 @@ describe 'UTF-8 tests' do
   context 'Apply generic DSC Manifest with ensure present on UTF-8 file name to create a puppetfakeresource' do
     windows_agents.each do |agent|
       it 'Run Puppet Apply' do
-        on(agent, puppet('apply'), :stdin => dsc_manifest, :acceptable_exit_codes => [0, 2]) do |result|
+        on(agent, puppet('apply --detailed-exitcodes'), :stdin => dsc_manifest, :acceptable_exit_codes => [0, 2]) do |result|
           assert_no_match(/Error:/, result.stderr, 'Unexpected error was detected!')
         end
       end
@@ -58,7 +58,7 @@ describe 'UTF-8 tests' do
   context 'Apply generic DSC Manifest with ensure absent on UTF-8 file name to remove a puppetfakeresource' do
     windows_agents.each do |agent|
       it 'Apply Manifest to Remove File' do
-        on(agent, puppet('apply'), :stdin => dsc_remove_manifest, :acceptable_exit_codes => [0, 2]) do |result|
+        on(agent, puppet('apply --detailed-exitcodes'), :stdin => dsc_remove_manifest, :acceptable_exit_codes => [0, 2]) do |result|
           assert_no_match(/Error:/, result.stderr, 'Unexpected error was detected!')
         end
       end

@@ -6,9 +6,9 @@ describe 'Reboot tests: Autonotify, Explicit' do
     context 'MODULES-2843 - Apply DSC Resource that Requires Reboot with Autonotify "reboot" Resource' do
       dsc_manifest = <<-MANIFEST
     dsc { 'reboot_test':
-      dsc_resource_name => 'puppetfakeresource',
-      dsc_resource_module => '#{installed_path}/1.0',
-      dsc_resource_properties => {
+      resource_name => 'puppetfakeresource',
+      module => '#{installed_path}/1.0',
+      properties => {
         importantstuff  => 'reboot',
         requirereboot   => true,
       }
@@ -20,7 +20,7 @@ describe 'Reboot tests: Autonotify, Explicit' do
 
       windows_agents.each do |agent|
         it 'Run Puppet Apply' do
-          on(agent, puppet('apply'), :stdin => dsc_manifest, :acceptable_exit_codes => [0, 2]) do |result|
+          on(agent, puppet('apply --detailed-exitcodes'), :stdin => dsc_manifest, :acceptable_exit_codes => [0, 2]) do |result|
             assert_no_match(/Error:/, result.stderr, 'Unexpected error was detected!')
             assert_no_match(/Warning:/, result.stderr, 'Unexpected warning was detected!')
           end
@@ -53,7 +53,7 @@ describe 'Reboot tests: Autonotify, Explicit' do
 
       windows_agents.each do |agent|
         it 'Run Puppet Apply' do
-          on(agent, puppet('apply'), :stdin => dsc_manifest, :acceptable_exit_codes => [0, 2]) do |result|
+          on(agent, puppet('apply --detailed-exitcodes'), :stdin => dsc_manifest, :acceptable_exit_codes => [0, 2]) do |result|
             assert_no_match(/Error:/, result.stderr, 'Unexpected error was detected!')
             assert_no_match(/Warning:/, result.stderr, 'Unexpected warning was detected!')
           end
