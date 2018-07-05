@@ -18,6 +18,16 @@ HERE
     # that the resource was created on runs where Invoke-DscResource _does_ modify the system.
     newvalue(:present) { provider.create }
     defaultto { :present }
+
+    def change_to_s(currentvalue, newvalue)
+      begin
+        if currentvalue == :absent || currentvalue.nil?
+          return _("invoked #{resource.parameters[:module].value}\\#{resource.parameters[:resource_name].value}")
+        else
+          super(currentvalue, newvalue)
+        end
+      end
+    end
   end
 
   newparam(:name, :namevar => true) do

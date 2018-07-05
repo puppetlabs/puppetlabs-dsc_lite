@@ -45,7 +45,7 @@ describe 'Puppet apply tests' do
       it 'applies dsc_lite manifest via puppet apply' do
         on(agent, puppet('apply --detailed-exitcodes'), :stdin => dsc_manifest, :acceptable_exit_codes => [0, 2]) do |result|
           assert_no_match(/Error:/, result.stderr, 'Unexpected error was detected!')
-          assert_match(/Stage\[main\]\/Main\/Dsc\[#{fake_name}\]\/ensure\: created/, result.stdout, 'DSC Resource missing!')
+          assert_match(/Stage\[main\]\/Main\/Dsc\[#{fake_name}\]\/ensure\: invoked/, result.stdout, 'DSC Resource missing!')
         end
       end
 
