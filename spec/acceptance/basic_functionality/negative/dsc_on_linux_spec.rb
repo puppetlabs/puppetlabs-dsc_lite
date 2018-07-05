@@ -17,7 +17,6 @@ describe 'FM-2623 - Attempt to Run DSC Manifest on a Linux Agent' do
     }
   MANIFEST
 
-# Verify
   error_msg = /Could not find a suitable provider for dsc/
 
 # NOTE: this test only runs when in a master / agent setup with more than Windows hosts
@@ -25,7 +24,7 @@ describe 'FM-2623 - Attempt to Run DSC Manifest on a Linux Agent' do
     confine_block(:except, :platform => 'windows') do
       agents.each do |agent|
         it 'Run Puppet Apply' do
-          on(agent, puppet('apply'), :stdin => dsc_manifest, :acceptable_exit_codes => 4) do |result|
+          on(agent, puppet('apply --detailed-exitcodes'), :stdin => dsc_manifest, :acceptable_exit_codes => 4) do |result|
             assert_match(error_msg, result.stderr, 'Expected error was not detected!')
           end
 
@@ -33,18 +32,6 @@ describe 'FM-2623 - Attempt to Run DSC Manifest on a Linux Agent' do
           on(agent, "test -f /cygdrive/c/#{fake_name}", :acceptable_exit_codes => [1])
         end
       end
-    end
-  end
-
-  before(:all) do
-    agents.each do |agent|
-      setup_dsc_resource_fixture(agent)
-    end
-  end
-
-  after(:all) do
-    agents.each do |agent|
-      teardown_dsc_resource_fixture(agent)
     end
   end
 end

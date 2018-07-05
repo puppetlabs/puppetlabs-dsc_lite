@@ -8,9 +8,9 @@ describe 'Reboot tests: No Invoke, Warning' do
       test_file_contents = SecureRandom.uuid
       dsc_manifest = <<-MANIFEST
       dsc { '#{fake_name}':
-        dsc_resource_name       => 'puppetfakeresource',
-        dsc_resource_module     => '#{installed_path}/1.0',
-        dsc_resource_properties => {
+        resource_name       => 'puppetfakeresource',
+        module     => '#{installed_path}/1.0',
+        properties => {
           ensure          => present,
           importantstuff  => '#{test_file_contents}',
           destinationpath => 'C:\\#{fake_name}',
@@ -28,7 +28,7 @@ describe 'Reboot tests: No Invoke, Warning' do
         end
 
         it 'Run Puppet Apply' do
-          on(agent, puppet('apply'), :stdin => dsc_manifest, :acceptable_exit_codes => [0, 2]) do |result|
+          on(agent, puppet('apply --detailed-exitcodes'), :stdin => dsc_manifest, :acceptable_exit_codes => [0, 2]) do |result|
             # NOTE: regex includes Node\[default\]\/ when run via agent rather than apply
             assert_match(/Stage\[main\]\/Main\/Dsc\[#{fake_name}\]\/ensure\: created/, result.stdout, 'DSC Resource missing!')
             assert_no_match(/Error:/, result.stderr, 'Unexpected error was detected!')
@@ -54,9 +54,9 @@ describe 'Reboot tests: No Invoke, Warning' do
       installed_path = get_dsc_resource_fixture_path(usage = :manifest)
       dsc_manifest = <<-MANIFEST
       dsc { 'reboot_test':
-        dsc_resource_name => 'puppetfakeresource',
-        dsc_resource_module => '#{installed_path}/1.0',
-        dsc_resource_properties => {
+        dresource_name => 'puppetfakeresource',
+        module => '#{installed_path}/1.0',
+        properties => {
           importantstuff  => 'reboot',
           requirereboot   => true,
         }
@@ -67,7 +67,7 @@ describe 'Reboot tests: No Invoke, Warning' do
 
       windows_agents.each do |agent|
         it 'Run Puppet Apply' do
-          on(agent, puppet('apply'), :stdin => dsc_manifest, :acceptable_exit_codes => [0, 2]) do |result|
+          on(agent, puppet('apply --detailed-exitcodes'), :stdin => dsc_manifest, :acceptable_exit_codes => [0, 2]) do |result|
             assert_match(warning_message, result.stderr, 'Expected warning was not detected!')
             assert_no_match(/Error:/, result.stderr, 'Unexpected error was detected!')
           end

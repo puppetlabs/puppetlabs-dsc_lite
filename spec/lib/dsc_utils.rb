@@ -93,15 +93,11 @@ def setup_dsc_resource_fixture(host)
 end
 
 def get_dsc_resource_fixture_path(usage = :manifest)
-  # Master or masterless determine content locations
-  is_pluginsync = hosts.any? { |h| h['roles'].include?('master') }
-
   install_root = usage == :manifest ? 'C:/' : '/cygdrive/c'
 
-  install_base = "#{install_root}/ProgramData/PuppetLabs/" +
-    (is_pluginsync ? 'puppet/cache' : 'code/modules/dsc_lite')
+  install_base = "#{install_root}/ProgramData/PuppetLabs/code/modules/dsc_lite"
 
-  installed_path = "#{install_base}/lib/puppet_x/dsc_resources/PuppetFakeResource"
+  return "#{install_base}/lib/puppet_x/dsc_resources/PuppetFakeResource"
 end
 
 # Remove the "PuppetFakeResource" module on target host.
