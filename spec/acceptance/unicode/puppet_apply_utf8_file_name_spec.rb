@@ -41,7 +41,7 @@ describe 'UTF-8 tests' do
   context 'Apply generic DSC Manifest with ensure present on UTF-8 file name to create a puppetfakeresource' do
     windows_agents.each do |agent|
       it 'Run Puppet Apply' do
-        on(agent, puppet('apply --detailed-exitcodes'), :stdin => dsc_manifest, :acceptable_exit_codes => [0, 2]) do |result|
+        on(agent, puppet("apply C:\\\\#{file_path}\\\\dsc_create_manifest.pp --detailed-exitcodes"), :acceptable_exit_codes => [0, 2]) do |result|
           assert_no_match(/Error:/, result.stderr, 'Unexpected error was detected!')
         end
       end
@@ -58,7 +58,7 @@ describe 'UTF-8 tests' do
   context 'Apply generic DSC Manifest with ensure absent on UTF-8 file name to remove a puppetfakeresource' do
     windows_agents.each do |agent|
       it 'Apply Manifest to Remove File' do
-        on(agent, puppet('apply --detailed-exitcodes'), :stdin => dsc_remove_manifest, :acceptable_exit_codes => [0, 2]) do |result|
+        on(agent, puppet("apply C:\\\\#{file_path}\\\\dsc_remove_manifest.pp --detailed-exitcodes"), :acceptable_exit_codes => [0, 2]) do |result|
           assert_no_match(/Error:/, result.stderr, 'Unexpected error was detected!')
         end
       end
@@ -76,6 +76,8 @@ describe 'UTF-8 tests' do
   before(:all) do
     windows_agents.each do |agent|
       on(agent, powershell("mkdir /#{file_path}"))
+      create_remote_file(agent, "/cygdrive/c/#{file_path}/dsc_create_manifest.pp", dsc_manifest)
+      create_remote_file(agent, "/cygdrive/c/#{file_path}/dsc_remove_manifest.pp", dsc_remove_manifest)
       setup_dsc_resource_fixture(agent)
     end
   end
