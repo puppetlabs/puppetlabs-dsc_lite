@@ -1,9 +1,21 @@
 ## Unreleased
 
+## 2018-07-10 - Unsupported Release 0.5.0
+
+### Summary
+
+[MODULES-7253](https://tickets.puppetlabs.com/browse/MODULES-7253) introduced a breaking change, where the repetitive use of `dsc_resource_...` was removed.
+
 ### Changed
 
-- **BREAKING:**  Renamed all parameters for resource declarations, will require manifest modifications. [(MODULES-7253)](https://tickets.puppetlabs.com/browse/MODULES-7253).
+- **BREAKING:**  Renamed all parameters for resource declarations, will require manifest modifications. ([MODULES-7253](https://tickets.puppetlabs.com/browse/MODULES-7253))
+- Refactor acceptance tests into beaker rpsec ([MODULES-6572](https://tickets.puppetlabs.com/browse/MODULES-6572), [MODULES-6751](https://tickets.puppetlabs.com/browse/MODULES-6751), [MODULES-6517](https://tickets.puppetlabs.com/browse/MODULES-6517))
+- Changed `created` event to `invoked` ([MODULES-7179](https://tickets.puppetlabs.com/browse/MODULES-7179))
 
+### Removed
+
+- Removed unused ensurable values ([MODULES-7197](https://tickets.puppetlabs.com/browse/MODULES-7197))
+- Removed redundant acceptance tests ([MODULES-7041](https://tickets.puppetlabs.com/browse/MODULES-7041))
 
 ## 2018-06-07 - Unsupported Release 0.4.0
 
