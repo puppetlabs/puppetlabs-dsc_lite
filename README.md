@@ -309,7 +309,7 @@ To express EmbeddedInstances, the `properties` parameter will recognize any key 
 
 ## Limitations
 
-- For a list of tradeoffs and improvements in the dsc_lite module compared to the dsc module, see [README_Tradeoffs.md](README_Tradeoffs.md)
+- For a list of tradeoffs and improvements in the dsc_lite module compared to the dsc module, see [README_Tradeoffs.md](https://github.com/puppetlabs/puppetlabs-dsc_lite/blob/master/README_Tradeoffs.md)
 
 - DSC Composite Resources are not supported.
 
