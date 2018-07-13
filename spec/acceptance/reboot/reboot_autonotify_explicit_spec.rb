@@ -51,15 +51,15 @@ describe 'Reboot tests: Autonotify, Explicit' do
       }
       MANIFEST
 
-      windows_agents.each do |agent|
-        it 'Run Puppet Apply' do
-          on(agent, puppet('apply --detailed-exitcodes'), :stdin => dsc_manifest, :acceptable_exit_codes => [0, 2]) do |result|
-            assert_no_match(/Error:/, result.stderr, 'Unexpected error was detected!')
-            assert_no_match(/Warning:/, result.stderr, 'Unexpected warning was detected!')
-          end
+      it 'Run Puppet Apply' do
+        execute_manifest(dsc_manifest, :catch_failures => true) do |result|
+          assert_no_match(/Error:/, result.stderr, 'Unexpected error was detected!')
+          assert_no_match(/Warning:/, result.stderr, 'Unexpected warning was detected!')
         end
+      end
 
-        it 'Verify Reboot is Pending' do
+      it 'Verify Reboot is Pending' do
+        windows_agents.each do |agent|
           assert_reboot_pending(agent)
         end
       end

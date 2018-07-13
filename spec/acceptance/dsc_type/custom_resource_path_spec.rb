@@ -30,34 +30,31 @@ describe 'Custom resource from path' do
   MANIFEST
 
   context 'Apply generic DSC Manifest to create a puppetfakeresource' do
-  windows_agents.each do |agent|
     it 'Run Puppet Apply' do
-      on(agent, puppet('apply --detailed-exitcodes'), :stdin => dsc_manifest, :acceptable_exit_codes => [0, 2]) do |result|
+      execute_manifest(dsc_manifest, :catch_failures => true) do |result|
         assert_no_match(/Error:/, result.stderr, 'Unexpected error was detected!')
       end
     end
 
     it 'Verify Results' do
       # PuppetFakeResource always overwrites file at this path
-      on(agent, "cat /cygdrive/c/#{fake_name}", :acceptable_exit_codes => [0]) do |result|
+      on(windows_agents, "cat /cygdrive/c/#{fake_name}", :acceptable_exit_codes => [0]) do |result|
         assert_match(/#{test_file_contents}/, result.stdout, 'PuppetFakeResource File contents incorrect!')
       end
     end
   end
-  end
 
-  windows_agents.each do |agent|
-    it 'Apply Manifest to Remove File' do
-      on(agent, puppet('apply --detailed-exitcodes'), :stdin => dsc_remove_manifest, :acceptable_exit_codes => [0, 2]) do |result|
-        assert_no_match(/Error:/, result.stderr, 'Unexpected error was detected!')
-      end
-    end
-
-    it 'Verify Results' do
-      # if this file exists, 'absent' didn't work
-      on(agent, "test -f /cygdrive/c/#{fake_name}", :acceptable_exit_codes => [1])
+  it 'Apply Manifest to Remove File' do
+    on(windows_agents, puppet('apply --detailed-exitcodes'), :stdin => dsc_remove_manifest, :acceptable_exit_codes => [0, 2]) do |result|
+      assert_no_match(/Error:/, result.stderr, 'Unexpected error was detected!')
     end
   end
+
+  it 'Verify Results' do
+    # if this file exists, 'absent' didn't work
+    on(windows_agents, "test -f /cygdrive/c/#{fake_name}", :acceptable_exit_codes => [1])
+  end
+
 
   before(:all) do
     windows_agents.each do |agent|
@@ -68,7 +65,7 @@ describe 'Custom resource from path' do
   after(:all) do
     windows_agents.each do |agent|
       teardown_dsc_resource_fixture(agent)
+      on(agent, "rm -rf /cygdrive/c/#{fake_name}")
     end
-    on(windows_agents, "rm -rf /cygdrive/c/#{fake_name}")
   end
 end

@@ -16,14 +16,14 @@ describe 'Reboot - Negative Tests' do
   error_message = /Error:.*Found 1 dependency cycle/
   skip 'Implementation of this functionality depends on MODULES-6569' do
     context 'MODULES-2843 - Attempt to Apply DSC Resource that Requires Reboot with Inverse Relationship to a "reboot" Resource' do
-      windows_agents.each do |agent|
-        it 'Run Puppet Apply' do
-          on(agent, puppet('apply --detailed-exitcodes'), :stdin => dsc_manifest, :acceptable_exit_codes => [0, 1]) do |result|
-            assert_match(error_message, result.stderr, 'Expected error was not detected!')
-          end
+      it 'Run Puppet Apply' do
+        execute_manifest(dsc_manifest, :expect_failures => true) do |result|
+          assert_match(error_message, result.stderr, 'Expected error was not detected!')
         end
+      end
 
-        it 'Verify Reboot is NOT Pending' do
+      it 'Verify Reboot is NOT Pending' do
+        windows_agents.each do |agent|
           expect_failure('Expect that no reboot should be pending.') do
             assert_reboot_pending(agent)
           end

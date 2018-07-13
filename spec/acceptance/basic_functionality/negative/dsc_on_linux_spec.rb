@@ -24,8 +24,9 @@ describe 'FM-2623 - Attempt to Run DSC Manifest on a Linux Agent' do
     confine_block(:except, :platform => 'windows') do
       agents.each do |agent|
         it 'Run Puppet Apply' do
-          on(agent, puppet('apply --detailed-exitcodes'), :stdin => dsc_manifest, :acceptable_exit_codes => 4) do |result|
+          execute_manifest(dsc_manifest, :expect_failures => true) do |result|
             assert_match(error_msg, result.stderr, 'Expected error was not detected!')
+            assert_match(result.exit_code, 4)
           end
 
           # if this file exists, we're in trouble!

@@ -28,12 +28,11 @@ describe 'Negative resource tests' do
 
     error_msg = /Error: PowerShell DSC resource PuppetFakeResource  failed to execute Set-TargetResource functionality with error message: #{throw_message}/
 
-    windows_agents.each do |agent|
-      it 'Applies manifest with one failing resource and one successful resource' do
-        on(agent, puppet('apply --detailed-exitcodes'), :stdin => dsc_manifest, :acceptable_exit_codes => 6) do |result|
-          assert_match(error_msg, result.stderr, 'Expected error was not detected!')
-          assert_match(/Stage\[main\]\/Main\/Dsc\[good_resource\]\/ensure\: invoked/, result.stdout, 'DSC Resource missing!')
-        end
+    it 'Applies manifest with one failing resource and one successful resource' do
+      execute_manifest(dsc_manifest, :expect_failures => true) do |result|
+        assert_match(error_msg, result.stderr, 'Expected error was not detected!')
+        assert_match(result.exit_code, 6)
+        assert_match(/Stage\[main\]\/Main\/Dsc\[good_resource\]\/ensure\: invoked/, result.stdout, 'DSC Resource missing!')
       end
     end
   end
@@ -67,12 +66,11 @@ describe 'Negative resource tests' do
     error_msg_1 = /Error: PowerShell DSC resource PuppetFakeResource  failed to execute Set-TargetResource functionality with error message: #{throw_message_1}/
     error_msg_2 = /Error: PowerShell DSC resource PuppetFakeResource  failed to execute Set-TargetResource functionality with error message: #{throw_message_2}/
 
-    windows_agents.each do |agent|
-      it 'Applies manifest with multiple failing resources' do
-        on(agent, puppet('apply --detailed-exitcodes'), :stdin => dsc_manifest, :acceptable_exit_codes => 4) do |result|
-          assert_match(error_msg_1, result.stderr, 'Expected error was not detected!')
-          assert_match(error_msg_2, result.stderr, 'Expected error was not detected!')
-        end
+    it 'Applies manifest with multiple failing resources' do
+      execute_manifest(dsc_manifest, :expect_failures => true) do |result|
+        assert_match(error_msg_1, result.stderr, 'Expected error was not detected!')
+        assert_match(error_msg_2, result.stderr, 'Expected error was not detected!')
+        assert_match(result.exit_code, 4)
       end
     end
   end
