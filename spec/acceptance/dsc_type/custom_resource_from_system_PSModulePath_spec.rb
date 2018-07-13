@@ -22,18 +22,16 @@ describe 'Custom resource from system path' do
   MANIFEST
 
   context 'Loads a custom DSC resource from system PSModulePath by ModuleName' do
-    windows_agents.each do |agent|
-      it 'Run Puppet Apply' do
-        on(agent, puppet('apply --detailed-exitcodes'), :stdin => dsc_manifest, :acceptable_exit_codes => [0, 2]) do |result|
-          assert_no_match(/Error:/, result.stderr, 'Unexpected error was detected!')
-        end
+    it 'Run Puppet Apply' do
+      execute_manifest(dsc_manifest, :catch_failures => true) do |result|
+        assert_no_match(/Error:/, result.stderr, 'Unexpected error was detected!')
       end
+    end
 
-      it 'Verify Results' do
-        # PuppetFakeResource always overwrites file at this path
-        on(agent, "cat /cygdrive/c/#{fake_name}", :acceptable_exit_codes => [0]) do |result|
-          assert_match(/^#{test_file_contents}/, result.stdout, 'PuppetFakeResource File contents incorrect!')
-        end
+    it 'Verify Results' do
+      # PuppetFakeResource always overwrites file at this path
+      on(windows_agents, "cat /cygdrive/c/#{fake_name}", :acceptable_exit_codes => [0]) do |result|
+        assert_match(/^#{test_file_contents}/, result.stdout, 'PuppetFakeResource File contents incorrect!')
       end
     end
   end
@@ -57,7 +55,7 @@ describe 'Custom resource from system path' do
   after(:all) do
     windows_agents.each do |agent|
       teardown_dsc_resource_fixture(agent)
-      on(windows_agents, <<-CYGWIN)
+      on(agent, <<-CYGWIN)
         rm -rf /cygdrive/c/#{pshome_modules_path}/PuppetFakeResource/1.0
         rm -rf /cygdrive/c/#{fake_name}
       CYGWIN

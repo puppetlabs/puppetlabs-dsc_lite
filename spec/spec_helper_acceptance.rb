@@ -3,6 +3,7 @@ require 'beaker/puppet_install_helper'
 require 'beaker/module_install_helper'
 require 'lib/dsc_utils'
 require 'securerandom'
+require 'beaker/testmode_switcher/dsl'
 
 # automatically load any shared examples or contexts
 Dir["./spec/support/**/*.rb"].sort.each { |f| require f }
