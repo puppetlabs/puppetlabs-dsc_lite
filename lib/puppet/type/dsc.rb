@@ -4,6 +4,20 @@ Puppet::Type.newtype(:dsc) do
   require Pathname.new(__FILE__).dirname + '../../' + 'puppet/type/base_dsc_lite'
   require Pathname.new(__FILE__).dirname + '../../puppet_x/puppetlabs/dsc_lite/dsc_type_helpers'
 
+  def type
+    # in the event this value is consumed early in the lifecycle / before
+    # parameters have been populated, use 'unspecified'
+    name = ( parameters[:resource_name].nil? || parameters[:resource_name].value.nil? || (parameters[:resource_name].value =~ /\W/) ) ?
+      'unspecified' :
+      # but for the sake of catalog eval / report status, masquerade as a different type
+      parameters[:resource_name].value.downcase
+    "Dsc_lite_#{name}".to_sym
+  end
+
+  def generic_dsc
+    true
+  end
+
   ensurable do
     desc <<-HERE
     An optional property that specifies that the DSC resource should be invoked.

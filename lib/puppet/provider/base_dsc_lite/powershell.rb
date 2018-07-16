@@ -169,7 +169,7 @@ EOT
   def self.ps_script_content(mode, resource, provider)
     dsc_invoke_method = mode
     @param_hash = resource
-    template_name = resource.type == :dsc ?
+    template_name = resource.generic_dsc ?
       '/invoke_generic_dsc_resource.ps1.erb' :
       '/invoke_dsc_resource.ps1.erb'
     file = File.new(template_path + template_name, :encoding => Encoding::UTF_8)
