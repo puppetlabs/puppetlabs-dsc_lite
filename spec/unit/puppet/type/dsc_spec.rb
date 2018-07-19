@@ -3,24 +3,21 @@ require 'puppet/type'
 require 'puppet/type/dsc'
 
 describe Puppet::Type.type(:dsc) do
-  let(:resource) { described_class.new(:name => "dsc") }
+  let(:resource) {
+    described_class.new(
+      :name => "dsc",
+      :resource_name => 'foo',
+      :module => 'bar',
+      :properties => { 'wakka' => 'woot' }
+    )
+  }
   subject { resource }
 
   it { is_expected.to be_a_kind_of Puppet::Type::Dsc }
 
   describe "type" do
     it "should be built dynamically from parameter :resource_name" do
-      resource[:resource_name] = 'foo'
       expect(resource.type).to eq(:Dsc_lite_foo)
-    end
-
-    it "should return Dsc_lite_unspecified given a missing :resource_name" do
-      expect(resource.type).to eq(:Dsc_lite_unspecified)
-    end
-
-    it "should return Dsc_lite_unspecified given a :resource_name of ' '" do
-      resource[:resource_name] = ' '
-      expect(resource.type).to eq(:Dsc_lite_unspecified)
     end
   end
 

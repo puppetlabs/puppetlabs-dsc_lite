@@ -5,12 +5,7 @@ Puppet::Type.newtype(:dsc) do
   require Pathname.new(__FILE__).dirname + '../../puppet_x/puppetlabs/dsc_lite/dsc_type_helpers'
 
   def type
-    # in the event this value is consumed early in the lifecycle / before
-    # parameters have been populated, use 'unspecified'
-    name = ( parameters[:resource_name].nil? || parameters[:resource_name].value.nil? || (parameters[:resource_name].value =~ /\W/) ) ?
-      'unspecified' :
-      # but for the sake of catalog eval / report status, masquerade as a different type
-      parameters[:resource_name].value.downcase
+    name = parameters[:resource_name].value.downcase
     "Dsc_lite_#{name}".to_sym
   end
 
@@ -56,7 +51,6 @@ HERE
 
   newparam(:resource_name) do
     desc "DSC Resource Name"
-    isrequired
     validate do |value|
       if value.nil? or value.empty?
         raise ArgumentError, "A non-empty #{self.name.to_s} must be specified."
@@ -67,7 +61,6 @@ HERE
 
   newparam(:module) do
     desc "DSC Resource Module"
-    isrequired
     validate do |value|
       if value.nil? or value.empty?
         raise ArgumentError, "A non-empty #{self.name.to_s} must be specified."
@@ -88,7 +81,6 @@ HERE
 
     To express EmbeddedInstances, the properties parameter will reconize any key with a hash value that contains two keys: dsc_type and dsc_properties, as a indication of how to format the data supplied. The dsc_type contains the CimInstance name to use, and the dsc_properties contains a hash or an array of hashes representing the data for the CimInstances. If the CimInstance is an array, we append a [] to the end of the name.
 HERE
-    isrequired
     validate do |value|
       if value.nil? or value.empty?
         raise ArgumentError, "A non-empty #{self.name.to_s} must be specified."
@@ -96,6 +88,15 @@ HERE
       fail "#{self.name.to_s} should be a Hash" unless value.is_a? ::Hash
     end
   end
+
+  validate do
+    raise ArgumentError, 'dsc: resource_name is required' unless self[:resource_name]
+    raise ArgumentError, 'dsc: module is required' unless self[:module]
+    raise ArgumentError, 'dsc: properties is required' unless self[:properties]
+
+    provider.validate if provider.respond_to?(:validate)
+  end
+
 end
 
 Puppet::Type.type(:dsc).provide :powershell, :parent => Puppet::Type.type(:base_dsc_lite).provider(:powershell) do
