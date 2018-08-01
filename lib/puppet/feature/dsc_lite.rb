@@ -18,14 +18,18 @@ if Puppet.features.microsoft_windows?
   if (installed_version >= required_version)
     Puppet.features.add(:dsc_lite)
   else
-    Puppet.warn_once(
+    params = [
       'dsc_lite_unavailable',
       :dsc_lite_unavailable,
       DSC_LITE_MODULE_POWERSHELL_UPGRADE_MSG %
         { :required => required_version, :current => installed_version},
       nil,
-      nil,
-      :err
-    )
+      nil
+    ]
+
+    # Puppet 5 allows changing warning to error
+    params << :err if Puppet.method(:warn_once).arity > 5
+
+    Puppet.warn_once(*params)
   end
 end
