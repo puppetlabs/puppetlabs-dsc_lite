@@ -1,5 +1,20 @@
 ## Unreleased
 
+## 2018-08-02 - Unsupported Release 0.6.0
+
+### Summary
+
+Small release with bug fixes and a reporting improvement.
+
+### Changed
+
+- Ensure the output report for resources prefixes type names with `dsc_lite_#{resource_name}` for improved reporting ([MODULES-7178](https://tickets.puppetlabs.com/browse/MODULES-7178))
+
+### Fixed
+
+- Fix validation for required parameters ([MODULES-7485](https://tickets.puppetlabs.com/browse/MODULES-7485))
+- Fix crash on Puppet 4 / WMF < 5 ([MODULES-7554](https://tickets.puppetlabs.com/browse/MODULES-7554))
+
 ## 2018-07-10 - Unsupported Release 0.5.0
 
 ### Summary
