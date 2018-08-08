@@ -41,9 +41,22 @@ See [known issues](#known-issues) for troubleshooting setup.
 
 ## Usage
 
-The generic `dsc` type is a streamlined and minimal representation of a DSC Resource declaration in Puppet syntax. You can use a DSC Resource by supplying the same properties you would set in a DSC Configuration script, inside the `properties` parameter. For most use cases, the `properties` parameter accepts the same structure as the PowerShell syntax, with the substitution of Puppet syntax for arrays, hashes, and other data structures.
+The generic `dsc` type is a streamlined and minimal representation of a DSC Resource declaration in Puppet syntax. You can use a DSC Resource by supplying the same properties you would set in a DSC Configuration script, inside the `properties` parameter. For most use cases, the `properties` parameter accepts the same structure as the PowerShell syntax, with the substitution of Puppet syntax for arrays, hashes, and other data structures. You can use PowerShell on the command-line to identify the available parameters.
 
-A DSC resource specified in PowerShell:
+~~~powershell
+PS C:\> (Get-DscResource -name xADDomain).Properties
+ 
+Name                          PropertyType                                    IsMandatory Values
+----                          ------------                                    ----------- ------
+DomainAdministratorCredential [PSCredential]                                         True {}
+DomainName                    [string]                                               True {}
+SafemodeAdministratorPassword [PSCredential]                                         True {}
+DependsOn                     [string[]]                                            False {}
+DnsDelegationCredential       [PSCredential]                                        False {}
+ParentDomainName              [string]                                              False {}
+~~~
+
+An example of that DSC resource specified in PowerShell:
 
 ~~~powershell
 WindowsFeature IIS {
