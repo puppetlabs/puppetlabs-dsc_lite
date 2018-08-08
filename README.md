@@ -41,9 +41,29 @@ See [known issues](#known-issues) for troubleshooting setup.
 
 ## Usage
 
-The generic `dsc` type is a streamlined and minimal representation of a DSC Resource declaration in Puppet syntax. You can use a DSC Resource by supplying the same properties you would set in a DSC Configuration script, inside the `properties` parameter. For most use cases, the `properties` parameter accepts the same structure as the PowerShell syntax, with the substitution of Puppet syntax for arrays, hashes, and other data structures.
+The generic `dsc` type is a streamlined and minimal representation of a DSC Resource declaration in Puppet syntax. You can use a DSC Resource by supplying the same properties you would set in a DSC Configuration script, inside the `properties` parameter. For most use cases, the `properties` parameter accepts the same structure as the PowerShell syntax, with the substitution of Puppet syntax for arrays, hashes, and other data structures. You can use PowerShell on the command-line to identify the available parameters.
 
-A DSC resource specified in PowerShell:
+~~~powershell
+PS C:\> (Get-DscResource -name xADDomain).Properties
+
+Name                          PropertyType   IsMandatory Values
+----                          ------------   ----------- ------
+DomainAdministratorCredential [PSCredential]        True {}
+DomainName                    [string]              True {}
+SafemodeAdministratorPassword [PSCredential]        True {}
+DatabasePath                  [string]             False {}
+DependsOn                     [string[]]           False {}
+DnsDelegationCredential       [PSCredential]       False {}
+DomainMode                    [string]             False {Win2008, Win2008R2, Win2012, Win2012R2...}
+DomainNetbiosName             [string]             False {}
+ForestMode                    [string]             False {Win2008, Win2008R2, Win2012, Win2012R2...}
+LogPath                       [string]             False {}
+ParentDomainName              [string]             False {}
+PsDscRunAsCredential          [PSCredential]       False {}
+SysvolPath                    [string]             False {}
+~~~
+
+An example of that DSC resource specified in PowerShell:
 
 ~~~powershell
 WindowsFeature IIS {
