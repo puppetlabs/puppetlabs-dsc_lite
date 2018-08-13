@@ -27,6 +27,8 @@
 
 The Puppet dsc_lite module allows you to manage target nodes using Windows PowerShell DSC (Desired State Configuration) Resources.
 
+**Note that using dsc_lite requires previous experience with DSC and PowerShell, unlike our other modules that are easier to get started with. It is an alternative approach to Puppet's dsc module, providing more flexibility for advanced users.**  
+
 ### Windows system prerequisites
 
 At least PowerShell 5.0, which is included in [Windows Management Framework 5.0][wmf-5.0].
