@@ -1,5 +1,12 @@
 ## Unreleased
 
+## 2018-08-30 - Supported Release 1.0.0
+
+### Changed
+
+- Clarify target user for dsc_lite in README ([MODULES-7556](https://tickets.puppetlabs.com/browse/MODULES-7556))
+- General README improvements
+
 ## 2018-08-02 - Unsupported Release 0.6.0
 
 ### Summary
