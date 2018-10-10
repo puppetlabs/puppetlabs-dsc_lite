@@ -289,7 +289,7 @@ describe PuppetX::DscLite::PowerShellManager,
       expect(result[:exitcode]).to eq(1)
     end
 
-    it "should handle writting to stdout and stderr" do
+    it "should handle writing to stdout and stderr" do
       result = manager.execute('ps;[System.Console]::Error.WriteLine("foo")')
 
       expect(result[:stdout]).not_to eq(nil)
