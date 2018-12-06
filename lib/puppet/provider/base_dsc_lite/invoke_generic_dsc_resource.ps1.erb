@@ -7,8 +7,26 @@ function new-pscredential{
     [parameter(Mandatory=$true, ValueFromPipelineByPropertyName=$true)]
     [string]$user,
     [parameter(Mandatory=$true, ValueFromPipelineByPropertyName=$true)]
-    [string]$password
+    [object]$password
   )
+
+  Switch ($password.GetType().FullName) {
+    'System.String' {
+      [string]$password = $password
+    }
+
+    'System.Collections.Hashtable' {
+      If ($password.__pcore_type__ -eq 'Sensitive') {
+        [string]$password = $password.__pcore_value__
+      } ElseIf ($password.__ptype -eq 'Sensitive') {
+        [string]$password = $password.__pvalue
+      } Else { Throw "An invalid object was passed as a password: $password" }
+    }
+
+    default {
+      Throw "An invalid object was passed instead of a password: Object type was [$($password.GetType().FullName)] and value was $password"
+    }
+  }
 
   $secpasswd   = ConvertTo-SecureString $password -AsPlainText -Force
   $credentials = New-Object System.Management.Automation.PSCredential ($user, $secpasswd)
@@ -21,23 +39,22 @@ $response = @{
   errormessage   = ''
 }
 
-$invokeParams = @{
-Name       = '<%= resource.parameters[:resource_name].value %>'
-ModuleName = <% if resource.parameters[:module].value.is_a?(Hash) -%>
-@{
-modulename    = '<%= resource.parameters[:module].value['name'] %>'
-moduleversion = '<%= resource.parameters[:module].value['version'] %>'
-}
-<% else -%>
-'<%= resource.parameters[:module].value %>'
-<% end -%>
-Method     = '<%= dsc_invoke_method %>'
-Property   = <% provider.dsc_property_param.each do |p| -%>
-<%= format_dsc_lite(p.value) %>
-<% end -%>
-}
-
 try{
+  $invokeParams = @{
+    Name       = '<%= resource.parameters[:resource_name].value %>'
+    ModuleName = <% if resource.parameters[:module].value.is_a?(Hash) -%>
+    @{
+    modulename    = '<%= resource.parameters[:module].value['name'] %>'
+    moduleversion = '<%= resource.parameters[:module].value['version'] %>'
+    }
+    <% else -%>
+    '<%= resource.parameters[:module].value %>'
+    <% end -%>
+    Method     = '<%= dsc_invoke_method %>'
+    Property   = <% provider.dsc_property_param.each do |p| -%>
+    <%= format_dsc_lite(p.value) %>
+    <% end -%>
+  }
   $result = Invoke-DscResource @invokeParams
 }catch{
   $response.errormessage = $_.Exception.Message
