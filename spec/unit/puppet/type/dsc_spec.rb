@@ -53,7 +53,7 @@ describe Puppet::Type.type(:dsc) do
 
   describe "parameter :resource_name" do
     subject { resource.parameters[:resource_name] }
-    
+
     it "should not allow nil" do
       expect {
         resource[:name] = nil
@@ -65,7 +65,7 @@ describe Puppet::Type.type(:dsc) do
         resource[:name] = ''
       }.to raise_error(Puppet::ResourceError, /A non-empty name must/)
     end
-    
+
     [ 'value', 'value with spaces', 'UPPER CASE', '0123456789_-', 'With.Period' ].each do |value|
       it "should accept '#{value}'" do
         expect { resource[:name] = value }.not_to raise_error
@@ -78,10 +78,10 @@ describe Puppet::Type.type(:dsc) do
       end
     end
   end
-  
+
   describe "parameter :module" do
     subject { resource.parameters[:module] }
-    
+
     it "should allow a string" do
       expect {
         resource[:module] = 'foo'
@@ -111,17 +111,17 @@ describe Puppet::Type.type(:dsc) do
         resource[:module] = ''
       }.to raise_error(Puppet::ResourceError, /A non-empty module must/)
     end
-    
+
     [ 'value', 'value with spaces', 'UPPER CASE', '0123456789_-', 'With.Period' ].each do |value|
       it "should accept '#{value}'" do
         expect { resource[:module] = value }.not_to raise_error
       end
     end
   end
-  
+
   describe "parameter :properties" do
     subject { resource.parameters[:properties] }
-    
+
     it "should not allow nil" do
       expect {
         resource[:properties] = nil
@@ -133,7 +133,7 @@ describe Puppet::Type.type(:dsc) do
         resource[:properties] = ''
       }.to raise_error(Puppet::ResourceError, /A non-empty properties must be specified/)
     end
-    
+
     it "requires a hash or array of hashes" do
       expect {
         resource[:properties] = "hi"
