@@ -1,5 +1,9 @@
 ## Unreleased
 
+## 2018-11-20
+### Changed
+Updated metadata for Puppet version 6.x
+
 ## 2018-08-30 - Supported Release 1.0.0
 
 ### Changed
