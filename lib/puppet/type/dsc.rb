@@ -87,6 +87,10 @@ HERE
       end
       fail "#{self.name.to_s} should be a Hash" unless value.is_a? ::Hash
     end
+
+    munge do |value|
+      PuppetX::DscLite::TypeHelpers.munge_sensitive_hash(value)
+    end
   end
 
   validate do
