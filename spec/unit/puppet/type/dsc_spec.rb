@@ -142,5 +142,43 @@ describe Puppet::Type.type(:dsc) do
         resource[:properties] = ["hi"]
       }.to raise_error(Puppet::Error, /properties should be a Hash/)
     end
+
+    it "deserializes and munges malformed sensitive values for Puppet 5" do
+      value = SecureRandom.uuid
+      munged = Puppet::Type.type(:dsc).new(
+        :title => 'foo',
+        :properties => {
+          "bar" => {"__ptype" => "Sensitive", "__pvalue" => value},
+          "bar2" => {
+            "bar3" => {"__ptype" => "Sensitive", "__pvalue" => value},
+          },
+        },
+        :resource_name => "baz",
+        :module => "cat",
+      )
+      expect(munged[:properties]["bar"]).to be_a_kind_of Puppet::Pops::Types::PSensitiveType::Sensitive
+      expect(munged[:properties]["bar"].unwrap).to eq value
+      expect(munged[:properties]["bar2"]["bar3"]).to be_a_kind_of Puppet::Pops::Types::PSensitiveType::Sensitive
+      expect(munged[:properties]["bar2"]["bar3"].unwrap).to eq value
+    end
+
+    it "deserializes and munges malformed sensitive values for Puppet 6" do
+      value = SecureRandom.uuid
+      munged = Puppet::Type.type(:dsc).new(
+        :title => 'foo',
+        :properties => {
+          "bar" => {"__pcore_type__" => "Sensitive", "__pcore_value__" => value},
+          "bar2" => {
+            "bar3" => {"__pcore_type__" => "Sensitive", "__pcore_value__" => value},
+          },
+        },
+        :resource_name => "baz",
+        :module => "cat",
+      )
+      expect(munged[:properties]["bar"]).to be_a_kind_of Puppet::Pops::Types::PSensitiveType::Sensitive
+      expect(munged[:properties]["bar"].unwrap).to eq value
+      expect(munged[:properties]["bar2"]["bar3"]).to be_a_kind_of Puppet::Pops::Types::PSensitiveType::Sensitive
+      expect(munged[:properties]["bar2"]["bar3"].unwrap).to eq value
+    end
   end
 end
