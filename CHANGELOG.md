@@ -1,5 +1,16 @@
 ## Unreleased
 
+## 2019-02-07
+### Summary
+Release fixes sensitive data types to function when master and agent are different major versions of Puppet.
+
+### Changed
+- Updated README.md to prevent daily unwanted reboots when handling reboots with dsc_lite [MODULES-7716](https://tickets.puppetlabs.com/browse/MODULES-7716)
+- PDK update to version 1.8.0 [MODULES-8532](https://tickets.puppetlabs.com/browse/MODULES-8532)
+
+### Fixed
+- Ensure that using sensitive values in dsc_lite resource declarations functions when the master and agent are different major versions [MODULES-8175](https://tickets.puppetlabs.com/browse/MODULES-8175)
+
 ## 2018-11-20
 ### Changed
 Updated metadata for Puppet version 6.x
