@@ -45,10 +45,13 @@ describe PuppetX::DscLite::PowerShellManager,
 
   let (:manager) { create_manager() }
 
+  before :each do
+    skip ('Not on Windows platform') unless Puppet::Util::Platform.windows?
+  end
+
   describe "when managing the powershell process" do
     describe "the PowerShellManager::instance method" do
       it "should return the same manager instance / process given the same cmd line" do
-        skip ('Not on Windows platform') unless Puppet::Util::Platform.windows?
         first_pid = manager.execute('[Diagnostics.Process]::GetCurrentProcess().Id')[:stdout]
 
         manager_2 = create_manager()
@@ -119,7 +122,6 @@ describe PuppetX::DscLite::PowerShellManager,
       end
 
       it "should create a new PowerShell manager host if user code exits the first process" do
-        skip ('Not on Windows platform') unless Puppet::Util::Platform.windows?
         first_pid = manager.execute('[Diagnostics.Process]::GetCurrentProcess().Id')[:stdout]
         exitcode = manager.execute('[Diagnostics.Process]::GetCurrentProcess().Kill()')[:exitcode]
 
@@ -133,7 +135,6 @@ describe PuppetX::DscLite::PowerShellManager,
       end
 
       it "should create a new PowerShell manager host if the underlying PowerShell process is killed" do
-        skip ('Not on Windows platform') unless Puppet::Util::Platform.windows?
         first_pid = manager.execute('[Diagnostics.Process]::GetCurrentProcess().Id')[:stdout]
 
         # kill the PID from Ruby
@@ -146,7 +147,6 @@ describe PuppetX::DscLite::PowerShellManager,
       end
 
       it "should create a new PowerShell manager host if the input stream is closed" do
-        skip ('Not on Windows platform') unless Puppet::Util::Platform.windows?
         first_pid = manager.execute('[Diagnostics.Process]::GetCurrentProcess().Id')[:stdout]
 
         # closing pipe from the Ruby side tears down the process
@@ -158,7 +158,6 @@ describe PuppetX::DscLite::PowerShellManager,
       end
 
       it "should create a new PowerShell manager host if the input stream handle is closed" do
-        skip ('Not on Windows platform') unless Puppet::Util::Platform.windows?
         first_pid = manager.execute('[Diagnostics.Process]::GetCurrentProcess().Id')[:stdout]
 
         # call CloseHandle against pipe, therby tearing down the PowerShell process
@@ -170,7 +169,6 @@ describe PuppetX::DscLite::PowerShellManager,
       end
 
       it "should create a new PowerShell manager host if the output stream is closed" do
-        skip ('Not on Windows platform') unless Puppet::Util::Platform.windows?
         first_pid = manager.execute('[Diagnostics.Process]::GetCurrentProcess().Id')[:stdout]
 
         # closing stdout from the Ruby side allows process to run
@@ -187,7 +185,6 @@ describe PuppetX::DscLite::PowerShellManager,
         # currently skipped as it can trigger an internal Ruby thread clean-up race
         # its unknown why this test fails, but not the identical test against @stderr
         skip('This test can cause intermittent segfaults in Ruby with w32_reset_event invalid handle')
-        skip ('Not on Windows platform') unless Puppet::Util::Platform.windows?
         first_pid = manager.execute('[Diagnostics.Process]::GetCurrentProcess().Id')[:stdout]
 
         # call CloseHandle against stdout, which leaves PowerShell process running
@@ -204,7 +201,6 @@ describe PuppetX::DscLite::PowerShellManager,
       end
 
       it "should create a new PowerShell manager host if the error stream is closed" do
-        skip ('Not on Windows platform') unless Puppet::Util::Platform.windows?
         first_pid = manager.execute('[Diagnostics.Process]::GetCurrentProcess().Id')[:stdout]
 
         # closing stderr from the Ruby side allows process to run
@@ -218,7 +214,6 @@ describe PuppetX::DscLite::PowerShellManager,
       end
 
       it "should create a new PowerShell manager host if the error stream handle is closed" do
-        skip ('Not on Windows platform') unless Puppet::Util::Platform.windows?
         first_pid = manager.execute('[Diagnostics.Process]::GetCurrentProcess().Id')[:stdout]
 
         # call CloseHandle against stderr, which leaves PowerShell process running
@@ -242,13 +237,11 @@ describe PuppetX::DscLite::PowerShellManager,
 
   describe "when provided powershell commands" do
     it "shows ps version" do
-      skip ('Not on Windows platform') unless Puppet::Util::Platform.windows?
       result = manager.execute('$psversiontable')
       puts result[:stdout]
     end
 
     it "should return simple output" do
-      skip ('Not on Windows platform') unless Puppet::Util::Platform.windows?
       result = manager.execute('write-output foo')
 
       expect(result[:stdout]).to eq("foo\r\n")
@@ -256,7 +249,6 @@ describe PuppetX::DscLite::PowerShellManager,
     end
 
     it "should return the exitcode specified" do
-      skip ('Not on Windows platform') unless Puppet::Util::Platform.windows?
       result = manager.execute('write-output foo; exit 55')
 
       expect(result[:stdout]).to eq("foo\r\n")
@@ -264,7 +256,6 @@ describe PuppetX::DscLite::PowerShellManager,
     end
 
     it "should return the exitcode 1 when exception is thrown" do
-      skip ('Not on Windows platform') unless Puppet::Util::Platform.windows?
       result = manager.execute('throw "foo"')
 
       expect(result[:stdout]).to eq(nil)
@@ -272,7 +263,6 @@ describe PuppetX::DscLite::PowerShellManager,
     end
 
     it "should return the exitcode of the last command to set an exit code" do
-      skip ('Not on Windows platform') unless Puppet::Util::Platform.windows?
       result = manager.execute("$LASTEXITCODE = 0; write-output 'foo'; cmd.exe /c 'exit 99'; write-output 'bar'")
 
       expect(result[:stdout]).to eq("foo\r\nbar\r\n")
@@ -280,7 +270,6 @@ describe PuppetX::DscLite::PowerShellManager,
     end
 
     it "should return the exitcode of a script invoked with the call operator &" do
-      skip ('Not on Windows platform') unless Puppet::Util::Platform.windows?
       fixture_path = File.expand_path(File.dirname(__FILE__) + '../../../../exit-27.ps1')
       result = manager.execute("& #{fixture_path}")
 
@@ -289,7 +278,6 @@ describe PuppetX::DscLite::PowerShellManager,
     end
 
     it "should collect anything written to stderr" do
-      skip ('Not on Windows platform') unless Puppet::Util::Platform.windows?
       result = manager.execute('[System.Console]::Error.WriteLine("foo")')
 
       expect(result[:stderr]).to eq(["foo\r\n"])
@@ -297,7 +285,6 @@ describe PuppetX::DscLite::PowerShellManager,
     end
 
     it "should collect multiline output written to stderr" do
-      skip ('Not on Windows platform') unless Puppet::Util::Platform.windows?
       # induce a failure in cmd.exe that emits a multi-iline error message
       result = manager.execute('cmd.exe /c foo.exe')
 
@@ -307,7 +294,6 @@ describe PuppetX::DscLite::PowerShellManager,
     end
 
     it "should handle writing to stdout and stderr" do
-      skip ('Not on Windows platform') unless Puppet::Util::Platform.windows?
       result = manager.execute('ps;[System.Console]::Error.WriteLine("foo")')
 
       expect(result[:stdout]).not_to eq(nil)
@@ -316,7 +302,6 @@ describe PuppetX::DscLite::PowerShellManager,
     end
 
     it "should handle writing to stdout natively" do
-      skip ('Not on Windows platform') unless Puppet::Util::Platform.windows?
       result = manager.execute('[System.Console]::Out.WriteLine("foo")')
 
       expect(result[:stdout]).to eq("foo\r\n")
@@ -326,7 +311,6 @@ describe PuppetX::DscLite::PowerShellManager,
     end
 
     it "should properly interleave output written natively to stdout and via Write-XXX cmdlets" do
-      skip ('Not on Windows platform') unless Puppet::Util::Platform.windows?
       result = manager.execute('Write-Output "bar"; [System.Console]::Out.WriteLine("foo"); Write-Warning "baz";')
 
       expect(result[:stdout]).to eq("bar\r\nfoo\r\nWARNING: baz\r\n")
@@ -335,7 +319,6 @@ describe PuppetX::DscLite::PowerShellManager,
     end
 
     it "should handle writing to regularly captured output AND stdout natively" do
-      skip ('Not on Windows platform') unless Puppet::Util::Platform.windows?
       result = manager.execute('ps;[System.Console]::Out.WriteLine("foo")')
 
       expect(result[:stdout]).not_to eq("foo\r\n")
@@ -345,7 +328,6 @@ describe PuppetX::DscLite::PowerShellManager,
     end
 
     it "should handle writing to regularly captured output, stderr AND stdout natively" do
-      skip ('Not on Windows platform') unless Puppet::Util::Platform.windows?
       result = manager.execute('ps;[System.Console]::Out.WriteLine("foo");[System.Console]::Error.WriteLine("bar")')
 
       expect(result[:stdout]).not_to eq("foo\r\n")
@@ -363,7 +345,6 @@ describe PuppetX::DscLite::PowerShellManager,
       let (:mixed_utf8) { "A\u06FF\u16A0\u{2070E}" } # Aۿᚠ𠜎
 
       it "when writing basic text" do
-        skip ('Not on Windows platform') unless Puppet::Util::Platform.windows?
         code = "Write-Output '#{mixed_utf8}'"
         result = manager.execute(code)
 
@@ -372,7 +353,6 @@ describe PuppetX::DscLite::PowerShellManager,
       end
 
       it "when writing basic text to stderr" do
-        skip ('Not on Windows platform') unless Puppet::Util::Platform.windows?
         code = "[System.Console]::Error.WriteLine('#{mixed_utf8}')"
         result = manager.execute(code)
 
@@ -382,7 +362,6 @@ describe PuppetX::DscLite::PowerShellManager,
     end
 
     it "should execute cmdlets" do
-      skip ('Not on Windows platform') unless Puppet::Util::Platform.windows?
       result = manager.execute('ls')
 
       expect(result[:stdout]).not_to eq(nil)
@@ -390,7 +369,6 @@ describe PuppetX::DscLite::PowerShellManager,
     end
 
     it "should execute cmdlets with pipes" do
-      skip ('Not on Windows platform') unless Puppet::Util::Platform.windows?
       result = manager.execute('Get-Process | ? { $_.PID -ne $PID }')
 
       expect(result[:stdout]).not_to eq(nil)
@@ -398,7 +376,6 @@ describe PuppetX::DscLite::PowerShellManager,
     end
 
     it "should execute multi-line" do
-      skip ('Not on Windows platform') unless Puppet::Util::Platform.windows?
       result = manager.execute(<<-CODE
 $foo = ls
 $count = $foo.count
@@ -411,7 +388,6 @@ $count
     end
 
    it "should execute code with a try/catch, receiving the output of Write-Error" do
-    skip ('Not on Windows platform') unless Puppet::Util::Platform.windows?
      result = manager.execute(<<-CODE
 try{
  $foo = ls
@@ -428,7 +404,6 @@ try{
    end
 
     it "should be able to execute the code in a try block when using try/catch" do
-      skip ('Not on Windows platform') unless Puppet::Util::Platform.windows?
       result = manager.execute(<<-CODE
  try {
   $foo = @(1, 2, 3).count
@@ -445,8 +420,7 @@ try{
     end
 
    it "should be able to execute the code in a catch block when using try/catch" do
-    skip ('Not on Windows platform') unless Puppet::Util::Platform.windows?
-    result = manager.execute(<<-CODE
+     result = manager.execute(<<-CODE
 try {
   throw "Error!"
   exit 0
@@ -463,7 +437,6 @@ try {
 
 
     it "should reuse the same PowerShell process for multiple calls" do
-      skip ('Not on Windows platform') unless Puppet::Util::Platform.windows?
       first_pid = manager.execute('[Diagnostics.Process]::GetCurrentProcess().Id')[:stdout]
       second_pid = manager.execute('[Diagnostics.Process]::GetCurrentProcess().Id')[:stdout]
 
@@ -471,7 +444,6 @@ try {
     end
 
     it "should remove psvariables between runs" do
-      skip ('Not on Windows platform') unless Puppet::Util::Platform.windows?
       manager.execute('$foo = "bar"')
       result = manager.execute('$foo')
 
@@ -479,7 +451,6 @@ try {
     end
 
     it "should remove env variables between runs" do
-      skip ('Not on Windows platform') unless Puppet::Util::Platform.windows?
       manager.execute('[Environment]::SetEnvironmentVariable("foo", "bar", "process")')
       result = manager.execute('Test-Path env:\foo')
 
@@ -511,7 +482,6 @@ try {
     end
 
     it "should be able to write more than the 64k default buffer size to the managers pipe without deadlocking the Ruby parent process or breaking the pipe" do
-      skip ('Not on Windows platform') unless Puppet::Util::Platform.windows?
       # this was tested successfully up to 5MB of text
       buffer_string_96k = 'a' * ((1024 * 96) + 1)
       result = manager.execute(<<-CODE
@@ -526,7 +496,6 @@ try {
     end
 
     it "should be able to write more than the 64k default buffer size to child process stdout without deadlocking the Ruby parent process" do
-      skip ('Not on Windows platform') unless Puppet::Util::Platform.windows?
       result = manager.execute(<<-CODE
 $bytes_in_k = (1024 * 64) + 1
 [Text.Encoding]::UTF8.GetString((New-Object Byte[] ($bytes_in_k))) | #{output_cmdlet}
@@ -541,7 +510,6 @@ $bytes_in_k = (1024 * 64) + 1
     end
 
     it "should return a response with a timeout error if the execution timeout is exceeded" do
-      skip ('Not on Windows platform') unless Puppet::Util::Platform.windows?
       timeout_ms = 100
       result = manager.execute('sleep 1', timeout_ms)
       # TODO What is the real message now?
@@ -550,7 +518,6 @@ $bytes_in_k = (1024 * 64) + 1
     end
 
     it "should not deadlock and return a valid response given invalid unparseable PowerShell code" do
-      skip ('Not on Windows platform') unless Puppet::Util::Platform.windows?
       result = manager.execute(<<-CODE
         {
 
@@ -561,7 +528,6 @@ $bytes_in_k = (1024 * 64) + 1
     end
 
     it "should error if working directory does not exist" do
-      skip ('Not on Windows platform') unless Puppet::Util::Platform.windows?
       work_dir = 'C:/some/directory/that/does/not/exist'
 
       result = manager.execute('(Get-Location).Path',nil,work_dir)
@@ -571,7 +537,6 @@ $bytes_in_k = (1024 * 64) + 1
     end
 
     it "should allow forward slashes in working directory" do
-      skip ('Not on Windows platform') unless Puppet::Util::Platform.windows?
       work_dir = ENV["WINDIR"]
       forward_work_dir = work_dir.gsub('\\','/')
 
@@ -581,7 +546,6 @@ $bytes_in_k = (1024 * 64) + 1
     end
 
     it "should use a specific working directory if set" do
-      skip ('Not on Windows platform') unless Puppet::Util::Platform.windows?
       work_dir = ENV["WINDIR"]
 
       result = manager.execute('(Get-Location).Path',nil,work_dir)[:stdout]
@@ -590,7 +554,6 @@ $bytes_in_k = (1024 * 64) + 1
     end
 
     it "should not reuse the same working directory between runs" do
-      skip ('Not on Windows platform') unless Puppet::Util::Platform.windows?
       work_dir = ENV["WINDIR"]
       current_work_dir = Dir.getwd
 
@@ -604,7 +567,6 @@ $bytes_in_k = (1024 * 64) + 1
 
     context "with runtime error" do
       it "should not refer to 'EndInvoke' or 'throw' for a runtime error" do
-        skip ('Not on Windows platform') unless Puppet::Util::Platform.windows?
         result = manager.execute(powershell_runtime_error)
 
         expect(result[:exitcode]).to eq(1)
@@ -613,7 +575,6 @@ $bytes_in_k = (1024 * 64) + 1
       end
 
       it "should display line and char information for a runtime error" do
-        skip ('Not on Windows platform') unless Puppet::Util::Platform.windows?
         result = manager.execute(powershell_runtime_error)
 
         expect(result[:exitcode]).to eq(1)
@@ -623,7 +584,6 @@ $bytes_in_k = (1024 * 64) + 1
 
     context "with ParseException error" do
       it "should not refer to 'EndInvoke' or 'throw' for a ParseException error" do
-        skip ('Not on Windows platform') unless Puppet::Util::Platform.windows?
         result = manager.execute(powershell_parseexception_error)
 
         expect(result[:exitcode]).to eq(1)
@@ -632,7 +592,6 @@ $bytes_in_k = (1024 * 64) + 1
       end
 
       it "should display line and char information for a ParseException error" do
-        skip ('Not on Windows platform') unless Puppet::Util::Platform.windows?
         result = manager.execute(powershell_parseexception_error)
 
         expect(result[:exitcode]).to eq(1)
@@ -642,7 +601,6 @@ $bytes_in_k = (1024 * 64) + 1
 
     context "with IncompleteParseException error" do
       it "should not refer to 'EndInvoke' or 'throw' for an IncompleteParseException error" do
-        skip ('Not on Windows platform') unless Puppet::Util::Platform.windows?
         result = manager.execute(powershell_incompleteparseexception_error)
 
         expect(result[:exitcode]).to eq(1)
@@ -651,7 +609,6 @@ $bytes_in_k = (1024 * 64) + 1
       end
 
       it "should not display line and char information for an IncompleteParseException error" do
-        skip ('Not on Windows platform') unless Puppet::Util::Platform.windows?
         result = manager.execute(powershell_incompleteparseexception_error)
 
         expect(result[:exitcode]).to eq(1)
@@ -662,7 +619,6 @@ $bytes_in_k = (1024 * 64) + 1
 
   describe "when output is written to a PowerShell Stream" do
     it "should collect anything written to verbose stream" do
-      skip ('Not on Windows platform') unless Puppet::Util::Platform.windows?
       msg = SecureRandom.uuid.to_s.gsub('-', '')
       result = manager.execute("$VerbosePreference = 'Continue';Write-Verbose '#{msg}'")
 
@@ -671,7 +627,6 @@ $bytes_in_k = (1024 * 64) + 1
     end
 
     it "should collect anything written to debug stream" do
-      skip ('Not on Windows platform') unless Puppet::Util::Platform.windows?
       msg = SecureRandom.uuid.to_s.gsub('-', '')
       result = manager.execute("$debugPreference = 'Continue';Write-debug '#{msg}'")
 
@@ -680,7 +635,6 @@ $bytes_in_k = (1024 * 64) + 1
     end
 
     it "should collect anything written to Warning stream" do
-      skip ('Not on Windows platform') unless Puppet::Util::Platform.windows?
       msg = SecureRandom.uuid.to_s.gsub('-', '')
       result = manager.execute("Write-Warning '#{msg}'")
 
@@ -689,7 +643,6 @@ $bytes_in_k = (1024 * 64) + 1
     end
 
     it "should collect anything written to Error stream" do
-      skip ('Not on Windows platform') unless Puppet::Util::Platform.windows?
       msg = SecureRandom.uuid.to_s.gsub('-', '')
       result = manager.execute("Write-Error '#{msg}'")
 
@@ -698,7 +651,6 @@ $bytes_in_k = (1024 * 64) + 1
     end
 
     it "should handle a Write-Error in the middle of code" do
-      skip ('Not on Windows platform') unless Puppet::Util::Platform.windows?
       result = manager.execute('ls;Write-Error "Hello";ps')
 
       expect(result[:stdout]).not_to eq(nil)
@@ -706,7 +658,6 @@ $bytes_in_k = (1024 * 64) + 1
     end
 
     it "should handle a Out-Default in the user code" do
-      skip ('Not on Windows platform') unless Puppet::Util::Platform.windows?
       result = manager.execute('\'foo\' | Out-Default')
 
       expect(result[:stdout]).to eq("foo\r\n")
@@ -714,7 +665,6 @@ $bytes_in_k = (1024 * 64) + 1
     end
 
     it "should handle lots of output from user code" do
-      skip ('Not on Windows platform') unless Puppet::Util::Platform.windows?
       result = manager.execute('1..1000 | %{ (65..90) + (97..122) | Get-Random -Count 5 | % {[char]$_} }')
 
       expect(result[:stdout]).not_to eq(nil)
@@ -722,7 +672,6 @@ $bytes_in_k = (1024 * 64) + 1
     end
 
     it "should handle a larger return of output from user code" do
-      skip ('Not on Windows platform') unless Puppet::Util::Platform.windows?
       result = manager.execute('1..1000 | %{ (65..90) + (97..122) | Get-Random -Count 5 | % {[char]$_} } | %{ $f="" } { $f+=$_ } {$f }')
 
       expect(result[:stdout]).not_to eq(nil)
@@ -730,7 +679,6 @@ $bytes_in_k = (1024 * 64) + 1
     end
 
     it "should handle shell redirection" do
-      skip ('Not on Windows platform') unless Puppet::Util::Platform.windows?
       # the test here is to ensure that this doesn't break. because we merge the streams regardless
       # the opposite of this test shows the same thing
       result = manager.execute('function test-error{ ps;write-error \'foo\' }; test-error 2>&1')

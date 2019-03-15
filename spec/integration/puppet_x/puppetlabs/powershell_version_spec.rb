@@ -8,12 +8,15 @@ describe PuppetX::PuppetLabs::DscLite::PowerShellVersion do
     @ps = PuppetX::PuppetLabs::DscLite::PowerShellVersion
   end
 
+  before :each do
+    skip ('Not on Windows platform') unless Puppet::Util::Platform.windows?
+  end
+
   describe "when powershell is installed" do
 
     describe "when powershell version is greater than three" do
 
       it "should detect a powershell version" do
-        skip ('Not on Windows platform') unless Puppet::Util::Platform.windows?
         Win32::Registry.any_instance.expects(:[]).with('PowerShellVersion').returns('5.0.10514.6')
 
         version = @ps.version
@@ -22,7 +25,6 @@ describe PuppetX::PuppetLabs::DscLite::PowerShellVersion do
       end
 
       it "should call the powershell three registry path" do
-        skip ('Not on Windows platform') unless Puppet::Util::Platform.windows?
         reg_key = mock('bob')
         reg_key.expects(:[]).with('PowerShellVersion').returns('5.0.10514.6')
         Win32::Registry.any_instance.expects(:open).with('SOFTWARE\Microsoft\PowerShell\3\PowerShellEngine', Win32::Registry::KEY_READ | 0x100).yields(reg_key).once
@@ -31,7 +33,6 @@ describe PuppetX::PuppetLabs::DscLite::PowerShellVersion do
       end
 
       it "should not call powershell one registry path" do
-        skip ('Not on Windows platform') unless Puppet::Util::Platform.windows?
         reg_key = mock('bob')
         reg_key.expects(:[]).with('PowerShellVersion').returns('5.0.10514.6')
         Win32::Registry.any_instance.expects(:open).with('SOFTWARE\Microsoft\PowerShell\3\PowerShellEngine', Win32::Registry::KEY_READ | 0x100).yields(reg_key)
@@ -44,7 +45,6 @@ describe PuppetX::PuppetLabs::DscLite::PowerShellVersion do
     describe "when powershell version is less than three" do
 
       it "should detect a powershell version" do
-        skip ('Not on Windows platform') unless Puppet::Util::Platform.windows?
         Win32::Registry.any_instance.expects(:[]).with('PowerShellVersion').returns('2.0')
 
         version = @ps.version
@@ -53,7 +53,6 @@ describe PuppetX::PuppetLabs::DscLite::PowerShellVersion do
       end
 
       it "should call powershell one registry path" do
-        skip ('Not on Windows platform') unless Puppet::Util::Platform.windows?
         reg_key = mock('bob')
         reg_key.expects(:[]).with('PowerShellVersion').returns('2.0')
         Win32::Registry.any_instance.expects(:open).with('SOFTWARE\Microsoft\PowerShell\3\PowerShellEngine', Win32::Registry::KEY_READ | 0x100).raises(Win32::Registry::Error.new(2), 'nope').once
@@ -69,7 +68,6 @@ describe PuppetX::PuppetLabs::DscLite::PowerShellVersion do
   describe "when powershell is not installed" do
 
     it "should return nil and not throw" do
-      skip ('Not on Windows platform') unless Puppet::Util::Platform.windows?
       #reg_key = mock('bob')
       #reg_key.expects(:[]).with('PowerShellVersion').returns('2.0')
       Win32::Registry.any_instance.expects(:open).with('SOFTWARE\Microsoft\PowerShell\3\PowerShellEngine', Win32::Registry::KEY_READ | 0x100).raises(Win32::Registry::Error.new(2), 'nope').once
