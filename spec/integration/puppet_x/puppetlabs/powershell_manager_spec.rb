@@ -31,7 +31,7 @@ module PuppetX
 end
 
 describe PuppetX::DscLite::PowerShellManager,
-  :if => Puppet::Util::Platform.windows? && PuppetX::DscLite::PowerShellManager.supported? do
+  PuppetX::DscLite::PowerShellManager.supported? do
 
   let (:manager_args) {
     powershell = Puppet::Type.type(:base_dsc_lite).defaultprovider.command(:powershell)
@@ -44,6 +44,10 @@ describe PuppetX::DscLite::PowerShellManager,
   end
 
   let (:manager) { create_manager() }
+
+  before :each do
+    skip ('Not on Windows platform') unless Puppet::Util::Platform.windows?
+  end
 
   describe "when managing the powershell process" do
     describe "the PowerShellManager::instance method" do
