@@ -1,5 +1,8 @@
 ## Unreleased
 
+### Fixed
+- Ensure sensitive values are redacted in debug output ([MODULES-8856](https://tickets.puppetlabs.com/browse/MODULES-8856))
+
 ## 2019-02-07
 ### Summary
 Release fixes sensitive data types to function when master and agent are different major versions of Puppet.
