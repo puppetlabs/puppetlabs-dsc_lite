@@ -1,5 +1,7 @@
 ## Unreleased
 
+## 2019-04-23 - Supported Release 1.2.1
+
 ### Fixed
 - Ensure sensitive values are redacted in debug output ([MODULES-8856](https://tickets.puppetlabs.com/browse/MODULES-8856))
 
