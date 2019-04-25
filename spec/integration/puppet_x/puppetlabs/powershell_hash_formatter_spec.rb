@@ -204,7 +204,7 @@ HERE
 'ensure' = 'present';
 'password' = ([PSCustomObject]@{
 'user' = 'jane-doe';
-'password' = 'password' # PuppetSensitive
+'password' = 'password' <# PuppetSensitive #>
 } | new-pscredential);
 'passwordneverexpires' = $false;
 'disabled' = $true

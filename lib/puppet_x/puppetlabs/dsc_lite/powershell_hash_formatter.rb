@@ -18,7 +18,7 @@ module PuppetX
           when dsc_value.class.name == 'Hash'
             self.format_hash(dsc_value)
           when dsc_value.class.name == 'Puppet::Pops::Types::PSensitiveType::Sensitive'
-            "'#{escape_quotes(dsc_value.unwrap)}' # PuppetSensitive"
+            "'#{escape_quotes(dsc_value.unwrap)}' <# PuppetSensitive #>"
           else
             fail "unsupported type #{dsc_value.class} of value '#{dsc_value}'"
           end
