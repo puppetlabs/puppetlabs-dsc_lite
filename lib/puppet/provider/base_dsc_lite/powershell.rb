@@ -71,7 +71,7 @@ EOT
     PuppetX::DscLite::PowerShellManager.instance(manager_args, debug_output)
   end
 
-  COMMAND_TIMEOUT = 1200000 # 20 minutes
+  DSC_LITE_COMMAND_TIMEOUT = 1200000 # 20 minutes
 
   def exists?
     version = Facter.value(:powershell_version)
@@ -83,7 +83,7 @@ EOT
       self.class.upgrade_message
       output = powershell(self.class.powershell_args, script_content)
     else
-      output = ps_manager.execute(script_content, COMMAND_TIMEOUT)[:stdout]
+      output = ps_manager.execute(script_content, DSC_LITE_COMMAND_TIMEOUT)[:stdout]
     end
     Puppet.debug "Dsc Resource returned: #{output}"
     data = JSON.parse(output)
@@ -103,7 +103,7 @@ EOT
       self.class.upgrade_message
       output = powershell(self.class.powershell_args, script_content)
     else
-      output = ps_manager.execute(script_content, COMMAND_TIMEOUT)[:stdout]
+      output = ps_manager.execute(script_content, DSC_LITE_COMMAND_TIMEOUT)[:stdout]
     end
     Puppet.debug "Create Dsc Resource returned: #{output}"
     data = JSON.parse(output)
