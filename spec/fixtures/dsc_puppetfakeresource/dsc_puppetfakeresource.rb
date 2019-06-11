@@ -1,4 +1,4 @@
-﻿require 'pathname'
+require 'pathname'
 
 Puppet::Type.newtype(:dsc_puppetfakeresource) do
   require Pathname.new(__FILE__).dirname + '../../' + 'puppet/type/base_dsc_lite'
