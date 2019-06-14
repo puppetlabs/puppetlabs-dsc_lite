@@ -1,7 +1,6 @@
 require 'spec_helper_acceptance'
 
 describe 'Custom resource from path' do
-
   fake_name = SecureRandom.uuid
   test_file_contents = SecureRandom.uuid
   dsc_manifest = <<-MANIFEST
@@ -31,30 +30,29 @@ describe 'Custom resource from path' do
 
   context 'Apply generic DSC Manifest to create a puppetfakeresource' do
     it 'Run Puppet Apply' do
-      execute_manifest(dsc_manifest, :catch_failures => true) do |result|
-        assert_no_match(/Error:/, result.stderr, 'Unexpected error was detected!')
+      execute_manifest(dsc_manifest, catch_failures: true) do |result|
+        assert_no_match(%r{Error:}, result.stderr, 'Unexpected error was detected!')
       end
     end
 
     it 'Verify Results' do
       # PuppetFakeResource always overwrites file at this path
-      on(windows_agents, "cat /cygdrive/c/#{fake_name}", :acceptable_exit_codes => [0]) do |result|
-        assert_match(/#{test_file_contents}/, result.stdout, 'PuppetFakeResource File contents incorrect!')
+      on(windows_agents, "cat /cygdrive/c/#{fake_name}", acceptable_exit_codes: [0]) do |result|
+        assert_match(%r{#{test_file_contents}}, result.stdout, 'PuppetFakeResource File contents incorrect!')
       end
     end
   end
 
   it 'Apply Manifest to Remove File' do
-    on(windows_agents, puppet('apply --detailed-exitcodes'), :stdin => dsc_remove_manifest, :acceptable_exit_codes => [0, 2]) do |result|
-      assert_no_match(/Error:/, result.stderr, 'Unexpected error was detected!')
+    on(windows_agents, puppet('apply --detailed-exitcodes'), stdin: dsc_remove_manifest, acceptable_exit_codes: [0, 2]) do |result|
+      assert_no_match(%r{Error:}, result.stderr, 'Unexpected error was detected!')
     end
   end
 
   it 'Verify Results' do
     # if this file exists, 'absent' didn't work
-    on(windows_agents, "test -f /cygdrive/c/#{fake_name}", :acceptable_exit_codes => [1])
+    on(windows_agents, "test -f /cygdrive/c/#{fake_name}", acceptable_exit_codes: [1])
   end
-
 
   before(:all) do
     windows_agents.each do |agent|

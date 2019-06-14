@@ -1,9 +1,9 @@
+# rubocop:disable Style/FileName
 require 'spec_helper_acceptance'
 
 # this scenario works properly with only a single PuppetFakeResource in module path
 describe 'Custom resource from system path' do
-
-# DSC runs in system context / can't use users module path
+  # DSC runs in system context / can't use users module path
   pshome_modules_path = 'Windows/system32/WindowsPowerShell/v1.0/Modules'
 
   fake_name = SecureRandom.uuid
@@ -23,15 +23,15 @@ describe 'Custom resource from system path' do
 
   context 'Loads a custom DSC resource from system PSModulePath by ModuleName' do
     it 'Run Puppet Apply' do
-      execute_manifest(dsc_manifest, :catch_failures => true) do |result|
-        assert_no_match(/Error:/, result.stderr, 'Unexpected error was detected!')
+      execute_manifest(dsc_manifest, catch_failures: true) do |result|
+        assert_no_match(%r{Error:}, result.stderr, 'Unexpected error was detected!')
       end
     end
 
     it 'Verify Results' do
       # PuppetFakeResource always overwrites file at this path
-      on(windows_agents, "cat /cygdrive/c/#{fake_name}", :acceptable_exit_codes => [0]) do |result|
-        assert_match(/^#{test_file_contents}/, result.stdout, 'PuppetFakeResource File contents incorrect!')
+      on(windows_agents, "cat /cygdrive/c/#{fake_name}", acceptable_exit_codes: [0]) do |result|
+        assert_match(%r{^#{test_file_contents}}, result.stdout, 'PuppetFakeResource File contents incorrect!')
       end
     end
   end
@@ -40,14 +40,14 @@ describe 'Custom resource from system path' do
     windows_agents.each do |agent|
       setup_dsc_resource_fixture(agent)
 
-      installed_path = get_dsc_resource_fixture_path(usage = :cygwin)
+      installed_path = get_dsc_resource_fixture_path(:cygwin)
 
       # put PuppetFakeResource in $PSHome\Modules
       # Copy PuppetFakeResource implementation to system PSModulePath
       on(agent, <<-CYGWIN)
         cp --recursive #{installed_path}/1.0 /cygdrive/c/#{pshome_modules_path}/PuppetFakeResource
         # copying from Puppet pluginsync directory includes NULL SID and other wonky perms, so reset
-        icacls "C:\\#{pshome_modules_path.gsub('/', '\\')}\\PuppetFakeResource\\1.0" /reset /T
+        icacls "C:\\#{pshome_modules_path.tr('/', '\\')}\\PuppetFakeResource\\1.0" /reset /T
       CYGWIN
     end
   end
@@ -62,4 +62,3 @@ describe 'Custom resource from system path' do
     end
   end
 end
-

@@ -1,7 +1,6 @@
 require 'spec_helper_acceptance'
 
 describe 'Reboot tests: Autonotify, Explicit' do
-
   skip 'Implementation of this functionality depends on MODULES-6569' do
     context 'MODULES-2843 - Apply DSC Resource that Requires Reboot with Autonotify "reboot" Resource' do
       dsc_manifest = <<-MANIFEST
@@ -20,9 +19,9 @@ describe 'Reboot tests: Autonotify, Explicit' do
 
       windows_agents.each do |agent|
         it 'Run Puppet Apply' do
-          on(agent, puppet('apply --detailed-exitcodes'), :stdin => dsc_manifest, :acceptable_exit_codes => [0, 2]) do |result|
-            assert_no_match(/Error:/, result.stderr, 'Unexpected error was detected!')
-            assert_no_match(/Warning:/, result.stderr, 'Unexpected warning was detected!')
+          on(agent, puppet('apply --detailed-exitcodes'), stdin: dsc_manifest, acceptable_exit_codes: [0, 2]) do |result|
+            assert_no_match(%r{Error:}, result.stderr, 'Unexpected error was detected!')
+            assert_no_match(%r{Warning:}, result.stderr, 'Unexpected warning was detected!')
           end
         end
 
@@ -31,11 +30,8 @@ describe 'Reboot tests: Autonotify, Explicit' do
         end
       end
     end
-  end
 
-  skip 'Implementation of this functionality depends on MODULES-6569' do
     context 'MODULES-2843 - Apply DSC Resource that Requires Reboot with Explicit "reboot" Resource' do
-
       dsc_manifest = <<-MANIFEST
       dsc { 'reboot_test':
         dsc_resource_name       => 'puppetfakeresource',
@@ -52,9 +48,9 @@ describe 'Reboot tests: Autonotify, Explicit' do
       MANIFEST
 
       it 'Run Puppet Apply' do
-        execute_manifest(dsc_manifest, :catch_failures => true) do |result|
-          assert_no_match(/Error:/, result.stderr, 'Unexpected error was detected!')
-          assert_no_match(/Warning:/, result.stderr, 'Unexpected warning was detected!')
+        execute_manifest(dsc_manifest, catch_failures: true) do |result|
+          assert_no_match(%r{Error:}, result.stderr, 'Unexpected error was detected!')
+          assert_no_match(%r{Warning:}, result.stderr, 'Unexpected warning was detected!')
         end
       end
 
