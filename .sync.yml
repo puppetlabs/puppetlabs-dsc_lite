@@ -15,13 +15,19 @@ Gemfile:
         version: '~> 0.4'
       - gem: master_manipulator
 
-# For the moment don't do any rubocop checks.
 .rubocop.yml:
-  include_todos: true
-  selected_profile: off
+   default_configs:
+    inherit_from: .rubocop_todo.yml
+    require:
+      - rubocop-i18n
+      - rubocop-rspec
 
 spec/default_facts.yml:
   unmanaged: true
+
+.gitignore:
+  required:
+    - ---.project
 
 .gitlab-ci.yml:
   delete: true

@@ -1,7 +1,6 @@
 require 'spec_helper_acceptance'
 
 describe 'Reboot - Negative Tests' do
-
   dsc_manifest = <<-MANIFEST
     reboot { 'dsc_reboot':
       when => pending,
@@ -13,11 +12,11 @@ describe 'Reboot - Negative Tests' do
     }
   MANIFEST
 
-  error_message = /Error:.*Found 1 dependency cycle/
+  error_message = %r{Error:.*Found 1 dependency cycle}
   skip 'Implementation of this functionality depends on MODULES-6569' do
     context 'MODULES-2843 - Attempt to Apply DSC Resource that Requires Reboot with Inverse Relationship to a "reboot" Resource' do
       it 'Run Puppet Apply' do
-        execute_manifest(dsc_manifest, :expect_failures => true) do |result|
+        execute_manifest(dsc_manifest, expect_failures: true) do |result|
           assert_match(error_message, result.stderr, 'Expected error was not detected!')
         end
       end

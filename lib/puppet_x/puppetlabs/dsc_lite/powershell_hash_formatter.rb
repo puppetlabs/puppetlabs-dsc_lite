@@ -1,48 +1,52 @@
+# rubocop:disable Style/ClassAndModuleChildren
 module PuppetX
   module PuppetLabs
     module DscLite
+      # Hash formatter
       class PowerShellHashFormatter
-
         def self.format(dsc_value)
-          case
-          when dsc_value.class.name == 'String'
-            self.format_string(dsc_value)
-          when dsc_value.class.ancestors.include?(Numeric)
-            self.format_number(dsc_value)
-          when [:true, :false].include?(dsc_value)
-            self.format_boolean(dsc_value)
-          when ['trueclass','falseclass'].include?(dsc_value.class.name.downcase)
-            "$#{dsc_value.to_s}"
-          when dsc_value.class.name == 'Array'
-            self.format_array(dsc_value)
-          when dsc_value.class.name == 'Hash'
-            self.format_hash(dsc_value)
-          when dsc_value.class.name == 'Puppet::Pops::Types::PSensitiveType::Sensitive'
+          if dsc_value.class.name == 'String'
+            format_string(dsc_value)
+          elsif dsc_value.class.ancestors.include?(Numeric)
+            format_number(dsc_value)
+          elsif [:true, :false].include?(dsc_value)
+            format_boolean(dsc_value)
+          elsif ['trueclass', 'falseclass'].include?(dsc_value.class.name.downcase)
+            "$#{dsc_value}"
+          elsif dsc_value.class.name == 'Array'
+            format_array(dsc_value)
+          elsif dsc_value.class.name == 'Hash'
+            format_hash(dsc_value)
+          elsif dsc_value.class.name == 'Puppet::Pops::Types::PSensitiveType::Sensitive'
             "'#{escape_quotes(dsc_value.unwrap)}' # PuppetSensitive"
           else
-            fail "unsupported type #{dsc_value.class} of value '#{dsc_value}'"
+            raise "unsupported type #{dsc_value.class} of value '#{dsc_value}'"
           end
         end
 
-        private
+        private_class_method
         def self.format_string(value)
           "'#{escape_quotes(value)}'"
         end
 
+        private_class_method
         def self.format_number(value)
-          "#{value}"
+          value.to_s
         end
 
+        private_class_method
         def self.format_boolean(value)
-          "$#{value.to_s}"
+          "$#{value}"
         end
 
+        private_class_method
         def self.format_array(value)
-          "@(" + value.collect{|m| format(m) }.join(', ') + ")"
+          '@(' + value.map { |m| format(m) }.join(', ') + ')'
         end
 
+        private_class_method
         def self.format_hash(value)
-          if !value.has_key?('dsc_type')
+          if !value.key?('dsc_type')
             format_hash_to_string(value)
           else
             case value['dsc_type']
@@ -54,12 +58,14 @@ module PuppetX
           end
         end
 
+        private_class_method
         def self.format_hash_to_string(value)
-          "@{\n" + value.collect{|k, v| format(k) + ' = ' + format(v)}.join(";\n") + "\n" + "}"
+          "@{\n" + value.map { |k, v| format(k) + ' = ' + format(v) }.join(";\n") + "\n" + '}'
         end
 
+        private_class_method
         def self.format_ciminstance(value)
-          type       = value['dsc_type'].gsub('[]','')
+          type       = value['dsc_type'].gsub('[]', '')
           properties = [value['dsc_properties']].flatten
 
           output = properties.map do |p|
@@ -68,17 +74,16 @@ module PuppetX
 
           if value['dsc_type'].end_with?('[]')
             output = output.join(",\n")
-            "[CimInstance[]]@(\n" + output +  "\n)"
+            "[CimInstance[]]@(\n" + output + "\n)"
           else
             "[CimInstance]#{output.first}"
           end
-
         end
 
+        private_class_method
         def self.escape_quotes(text)
           text.gsub("'", "''")
         end
-
       end
     end
   end
