@@ -33,6 +33,8 @@ The Puppet dsc_lite module allows you to manage target nodes using Windows Power
 
 At least PowerShell 5.0, which is included in [Windows Management Framework 5.0][wmf-5.0].
 
+*Note: PowerShell version as obtained from `$PSVersionTable` must be 5.0.10586.117 or greater.*
+
 ## Setup
 
 ~~~bash
