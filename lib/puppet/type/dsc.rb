@@ -1,6 +1,20 @@
 require 'pathname'
 
 Puppet::Type.newtype(:dsc) do
+  desc <<-DOC
+    @summary
+      The `dsc` type allows specifying any DSC Resource declaration as a minimal Puppet declaration.
+
+    @example
+      dsc {'iis':
+        resource_name => 'WindowsFeature',
+        module        => 'PSDesiredStateConfiguration',
+        properties    => {
+          ensure => 'present',
+          name   => 'Web-Server',
+        }
+      }
+  DOC
   require Pathname.new(__FILE__).dirname + '../../' + 'puppet/type/base_dsc_lite'
   require Pathname.new(__FILE__).dirname + '../../puppet_x/puppetlabs/dsc_lite/dsc_type_helpers'
 
@@ -14,11 +28,8 @@ Puppet::Type.newtype(:dsc) do
   end
 
   ensurable do
-    desc <<-HERE
-    An optional property that specifies that the DSC resource should be invoked.
-    This property has only one value of `present`.
-    This property does not need be be set in manifests.
-HERE
+    desc 'An optional property that specifies that the DSC resource should be invoked.'
+
     # Using the default magic of puppet to run exists? to detmine if create should be called
     # means that by default puppet will think of the resource as 'present' if the dsc resource
     # is in the desired state. Setting this to a more semantically correct name, such as
@@ -38,7 +49,7 @@ HERE
   end
 
   newparam(:name, namevar: true) do
-    desc 'Name of the declaration'
+    desc 'Name of the declaration. This has no affect on the DSC Resource declaration and is not used by the DSC Resource.'
     validate do |value|
       if value.nil? || value.empty?
         raise ArgumentError, "A non-empty #{name} must be specified."
@@ -48,7 +59,7 @@ HERE
   end
 
   newparam(:resource_name) do
-    desc 'DSC Resource Name'
+    desc 'Name of the DSC Resource to use. For example, the xRemoteFile DSC Resource.'
     validate do |value|
       if value.nil? || value.empty?
         raise ArgumentError, "A non-empty #{name} must be specified."
@@ -58,7 +69,10 @@ HERE
   end
 
   newparam(:module) do
-    desc 'DSC Resource Module'
+    desc <<-DOC
+      Name of the DSC Resource module to use. For example, the xPSDesiredStateConfiguration DSC Resource module contains
+      the xRemoteFile DSC Resource.
+    DOC
     validate do |value|
       if value.nil? || value.empty?
         raise ArgumentError, "A non-empty #{name} must be specified."
@@ -74,11 +88,15 @@ HERE
   end
 
   newparam(:properties, array_matching: :all) do
-    desc <<-HERE
-    The hash of properties to pass to the DSC Resource.
+    desc <<-DOC
+      Hash of properties to pass to the DSC Resource.
 
-    To express EmbeddedInstances, the properties parameter will reconize any key with a hash value that contains two keys: dsc_type and dsc_properties, as a indication of how to format the data supplied. The dsc_type contains the CimInstance name to use, and the dsc_properties contains a hash or an array of hashes representing the data for the CimInstances. If the CimInstance is an array, we append a [] to the end of the name.
-HERE
+      To express EmbeddedInstances, the `properties` parameter recognizes any key with a hash value that contains two keys — `dsc_type`
+      and `dsc_properties` — as a indication of how to format the data supplied. The `dsc_type` contains the CimInstance name to use,
+      and the `dsc_properties` contains a hash or an array of hashes representing the data for the CimInstances. If the CimInstance is
+      an array, we append a `[]` to the end of the name.
+    DOC
+
     validate do |value|
       if value.nil? || value.empty?
         raise ArgumentError, "A non-empty #{name} must be specified."
@@ -100,6 +118,7 @@ HERE
   end
 end
 
+# Provider for dsc type
 Puppet::Type.type(:dsc).provide :powershell, parent: Puppet::Type.type(:base_dsc_lite).provider(:powershell) do
   confine feature: :dsc_lite
   defaultfor operatingsystem: :windows
