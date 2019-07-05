@@ -1,56 +1,58 @@
 require 'spec_helper_acceptance'
 
-describe 'Puppet apply for file resource ensure present and ensure absent' do
+describe 'PSDesiredStateConfiguration' do
   fake_name = SecureRandom.uuid
   test_file_contents = SecureRandom.uuid
-  dsc_manifest = <<-MANIFEST
-    dsc {'#{fake_name}':
-      resource_name => 'file',
-      module => 'PSDesiredStateConfiguration',
-      properties => {
-        ensure          => 'present',
-        contents  => '#{test_file_contents}',
-        destinationpath => 'C:\\#{fake_name}'
-      }
-    }
-  MANIFEST
 
-  dsc_remove_manifest = <<-MANIFEST
-    dsc {'#{fake_name}':
-      resource_name => 'file',
-      module => 'PSDesiredStateConfiguration',
-      properties => {
-        ensure          => 'absent',
-        contents  => '#{test_file_contents}',
-        destinationpath => 'C:\\#{fake_name}'
+  let(:dsc_manifest) do
+    <<-MANIFEST
+      dsc {'#{fake_name}':
+        resource_name => 'file',
+        module => 'PSDesiredStateConfiguration',
+        properties => {
+          ensure          => 'present',
+          contents  => '#{test_file_contents}',
+          destinationpath => 'C:\\#{fake_name}'
+        }
       }
-    }
-  MANIFEST
+    MANIFEST
+  end
 
-  context 'Apply generic DSC Manifest to create a standard DSC File' do
-    it 'Run puppet apply to create file' do
+  let(:dsc_remove_manifest) do
+    <<-MANIFEST
+      dsc {'#{fake_name}':
+        resource_name => 'file',
+        module => 'PSDesiredStateConfiguration',
+        properties => {
+          ensure          => 'absent',
+          contents  => '#{test_file_contents}',
+          destinationpath => 'C:\\#{fake_name}'
+        }
+      }
+    MANIFEST
+  end
+
+  context 'create a standard DSC File' do
+    it 'applies manifest' do
       execute_manifest(dsc_manifest, catch_failures: true) do |result|
-        assert_no_match(%r{Error:}, result.stderr, 'Unexpected error was detected!')
+        expect(result.stderr).not_to match(%r{Error:})
       end
     end
 
-    it 'Verify Results' do
-      on(windows_agents, "cat /cygdrive/c/#{fake_name}", acceptable_exit_codes: [0]) do |result|
-        assert_match(%r{#{test_file_contents}}, result.stdout, 'File contents incorrect!')
-      end
+    it 'creates file' do
+      expect(file("C:\\#{fake_name}").content).to match(%r{#{test_file_contents}})
     end
   end
 
-  context 'Apply generic DSC Manifest to remove a standard DSC File' do
-    it 'Applies manifest to remove file' do
+  context 'remove a standard DSC File' do
+    it 'applies manifest' do
       execute_manifest(dsc_remove_manifest, catch_failures: true) do |result|
-        assert_no_match(%r{Error:}, result.stderr, 'Unexpected error was detected!')
+        expect(result.stderr).not_to match(%r{Error:})
       end
     end
 
-    it 'Verify results' do
-      # if this file exists, 'absent' didn't work
-      on(windows_agents, "test -f /cygdrive/c/#{fake_name}", acceptable_exit_codes: [1])
+    it 'removes file' do
+      expect(file("C:\\#{fake_name}")).not_to exist
     end
   end
 end
