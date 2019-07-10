@@ -104,21 +104,9 @@ end
 
 # Remove the "PuppetFakeResource" module on target host.
 #
-# ==== Attributes
-#
-# * +host+ - A Beaker host with the DSC module already installed.
-#
-# ==== Returns
-#
-# +nil+
-#
-# ==== Raises
-#
-# +nil+
-#
-# ==== Examples
-#
-# teardown_dsc_resource_fixture(agent)
+# @param [String] host A Beaker host with the DSC module already installed.
+# @example
+#   teardown_dsc_resource_fixture(agent)
 def teardown_dsc_resource_fixture(host)
   # Init
   dsc_resource_target_path = 'lib/puppet_x/dsc_resources/PuppetFakeResource'
@@ -147,23 +135,12 @@ def teardown_dsc_resource_fixture(host)
 end
 
 module Beaker::DSL::Assertions
-  # Verify that a reboot is pending on the system.
+  # Verify that a reboot is pending on the system
   #
-  # ==== Attributes
-  #
-  # * +hosts+ - The target Windows hosts for verification.
-  #
-  # ==== Returns
-  #
-  # +nil+
-  #
-  # ==== Raises
-  #
-  # +Minitest::Assertion+ - Reboot is not pending.
-  #
-  # ==== Examples
-  #
-  # assert_reboot_pending(agents)
+  # @param [String] host A Beaker host.
+  # @raise [Minitest::Assertion] reboot is not pending
+  # @example
+  #   assert_reboot_pending(agents)
   def assert_reboot_pending(host)
     on(host, 'shutdown /a', accept_all_exit_codes: true) do |result|
       assert(result.exit_code == 0, 'Expected reboot is not pending!')

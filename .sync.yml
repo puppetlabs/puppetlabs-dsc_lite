@@ -1,4 +1,11 @@
 ---
+.gitignore:
+  required:
+    - ---.project
+
+.gitlab-ci.yml:
+  delete: true
+
 Gemfile:
   required:
     ':system_tests':
@@ -15,19 +22,9 @@ Gemfile:
         version: '~> 0.4'
       - gem: master_manipulator
 
-.rubocop.yml:
-   default_configs:
-    inherit_from: .rubocop_todo.yml
-    require:
-      - rubocop-i18n
-      - rubocop-rspec
-
 spec/default_facts.yml:
   unmanaged: true
 
-.gitignore:
-  required:
-    - ---.project
-
-.gitlab-ci.yml:
-  delete: true
+spec/spec_helper.rb:
+  mock_with: ':rspec'
+  coverage_report: true

@@ -84,9 +84,9 @@ describe Puppet::Type.type(:dsc) do
     subject { resource.parameters[:module] }
 
     it 'allows a string' do
-      expect do
+      expect {
         resource[:module] = 'foo'
-      end
+      }.not_to raise_error
     end
 
     it 'allows a hash' do

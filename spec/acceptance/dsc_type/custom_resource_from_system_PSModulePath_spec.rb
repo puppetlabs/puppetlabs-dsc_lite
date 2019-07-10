@@ -2,7 +2,7 @@
 require 'spec_helper_acceptance'
 
 # this scenario works properly with only a single PuppetFakeResource in module path
-describe 'Custom resource from system path' do
+describe 'custom resource from system path' do
   # DSC runs in system context / can't use users module path
   pshome_modules_path = 'Windows/system32/WindowsPowerShell/v1.0/Modules'
 
@@ -20,21 +20,6 @@ describe 'Custom resource from system path' do
       }
     }
   MANIFEST
-
-  context 'Loads a custom DSC resource from system PSModulePath by ModuleName' do
-    it 'Run Puppet Apply' do
-      execute_manifest(dsc_manifest, catch_failures: true) do |result|
-        assert_no_match(%r{Error:}, result.stderr, 'Unexpected error was detected!')
-      end
-    end
-
-    it 'Verify Results' do
-      # PuppetFakeResource always overwrites file at this path
-      on(windows_agents, "cat /cygdrive/c/#{fake_name}", acceptable_exit_codes: [0]) do |result|
-        assert_match(%r{^#{test_file_contents}}, result.stdout, 'PuppetFakeResource File contents incorrect!')
-      end
-    end
-  end
 
   before(:all) do
     windows_agents.each do |agent|
@@ -59,6 +44,20 @@ describe 'Custom resource from system path' do
         rm -rf /cygdrive/c/#{pshome_modules_path}/PuppetFakeResource/1.0
         rm -rf /cygdrive/c/#{fake_name}
       CYGWIN
+    end
+  end
+
+  context 'load custom DSC resource from system PSModulePath by ModuleName' do
+    it 'applies manifest' do
+      execute_manifest(dsc_manifest, catch_failures: true) do |result|
+        expect(result.stderr).not_to match(%r{Error:})
+      end
+    end
+
+    it 'verifies results' do
+      # PuppetFakeResource always overwrites file at this path
+      expect(file("C:\\#{fake_name}")).to be_file
+      expect(file("C:\\#{fake_name}").content).to match(%r{^#{test_file_contents}})
     end
   end
 end
