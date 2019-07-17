@@ -3,6 +3,10 @@ module PuppetX
   module DscLite
     # Type helpers
     class TypeHelpers
+      # Returns a boolean based on the supplied value
+      #
+      # @param [String] value A truthy/falsy string value
+      # @return [Bool]
       def self.munge_boolean(value)
         return true if value =~ %r{^(true|t|yes|y|1)$}i
         return false if value.empty? || value =~ %r{^(false|f|no|n|0)$}i
@@ -10,9 +14,11 @@ module PuppetX
         raise ArgumentError, "invalid value: #{value}"
       end
 
-      # This is used to recursively search the hash to find sensitive data
-      # and ensure it is properly represented.
+      # Recursively searches the supplied hash to find sensitive data and ensure it is properly represented.
       # It will modify the values in the hash passed to it.
+      #
+      # @param [Hash] h
+      # @return [Puppet::Pops::Types::PSensitiveType::Sensitive] Supplied hash as a Sensitive data type.
       def self.munge_sensitive_hash(h)
         if h.is_a?(Hash) && h['__pcore_type__'] == 'Sensitive' && h.key?('__pcore_value__')
           Puppet::Pops::Types::PSensitiveType::Sensitive.new(h['__pcore_value__'])
@@ -25,10 +31,19 @@ module PuppetX
         end
       end
 
+      # Munge supplied value into an integer
+      #
+      # @param [Object] value Value to munge into an integer
+      # @return `value` as integer
       def self.munge_integer(value)
         value.is_a?(Array) ? value.map { |v| v.to_i } : value.to_i
       end
 
+      # Munges the supplied embeddedinstance_value hash to the specifed data type.
+      #
+      # @param [Hash] mof_type
+      # @param [Hash] embeddedinstance_value
+      # @return [Hash] Munged `embeddedinstance_value`
       def self.munge_embeddedinstance(mof_type, embeddedinstance_value)
         remapped_value = embeddedinstance_value.map do |key, value|
           if mof_type[key.downcase]
@@ -57,6 +72,11 @@ module PuppetX
         Hash[remapped_value]
       end
 
+      # Validates a supplied MSFT credential hash.
+      # Should any fields be invalid, a raise will be called.
+      #
+      # @param [String] name Name of MSFT credential
+      # @param [Hash] value MSFT credential hash
       def self.validate_MSFT_Credential(name, value) # rubocop:disable Style/MethodName
         unless value.is_a?(Hash)
           raise("Invalid value '#{value}'. Should be a hash")
@@ -82,6 +102,13 @@ module PuppetX
         raise "#{name} includes invalid keys: #{extraneous.join(',')}" unless extraneous.empty?
       end
 
+      # Validates that a given value matches the specifed data type.
+      # A raise will be called should the given value nnot be valid for conversion.
+      #
+      # @param [Hash] mof_type
+      # @param [String] embeddedinstance_name
+      # @param [String] name
+      # @param [String] value
       def self.validate_mof_type(mof_type, embeddedinstance_name, name, value)
         should_be_array = mof_type[:type].end_with?('[]')
         if !should_be_array && value.is_a?(Array)
@@ -149,6 +176,11 @@ module PuppetX
         end
       end
 
+      # Check if a relationship should be made between a given resource and a reboot resource.
+      #
+      # @param [Puppet::Type] resource
+      # @param [Puppet::Type] reboot_resource
+      # @param [Array] pending_relationships Array of Puppet::Relationship
       def self.should_add_reboot_relationship(resource, reboot_resource, pending_relationships)
         return false unless reboot_resource
 
@@ -160,10 +192,13 @@ module PuppetX
         true
       end
 
-      # if an edge already exists from Reboot[dsc_reboot] to this resource
-      # Puppet will recognize the cyclic dependency automatically and fail with:
-      # Error: Failed to apply catalog: Found 1 dependency cycle:
-      # (Dsc_file[foo] => Reboot[dsc_reboot] => Dsc_file[foo])
+      # If an edge already exists from Reboot[dsc_reboot] to this resource, Puppet will recognize the
+      # cyclic dependency automatically and fail with: `Error: Failed to apply catalog: Found 1 dependency cycle:
+      # (Dsc_file[foo] => Reboot[dsc_reboot] => Dsc_file[foo])`
+      #
+      # @param [Puppet::Type] resource
+      # @param [Array] pending_relationships Array of Puppet::Relationship
+      # @return [Array] Array of Puppet::Relationship
       def self.ensure_reboot_relationship(resource, pending_relationships)
         reboot_resource = resource.catalog.resource(:reboot, 'dsc_reboot')
 

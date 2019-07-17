@@ -2,6 +2,7 @@ require 'puppet/util/feature'
 
 if Puppet.features.microsoft_windows?
 
+  # Message used when an invalid PS version is found.
   DSC_LITE_MODULE_POWERSHELL_UPGRADE_MSG = <<-UPGRADE.freeze
   The dsc_lite module requires PowerShell version %{required} - current version %{current}
 

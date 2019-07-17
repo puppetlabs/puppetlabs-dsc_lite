@@ -4,6 +4,9 @@ module PuppetX
     module DscLite
       # Hash formatter
       class PowerShellHashFormatter
+        # Formats a supplied value for dsc
+        #
+        # @return [Object] Formatted value.
         def self.format(dsc_value)
           if dsc_value.class.name == 'String'
             format_string(dsc_value)
@@ -24,28 +27,23 @@ module PuppetX
           end
         end
 
-        private_class_method
-        def self.format_string(value)
+        private_class_method def self.format_string(value)
           "'#{escape_quotes(value)}'"
         end
 
-        private_class_method
-        def self.format_number(value)
+        private_class_method def self.format_number(value)
           value.to_s
         end
 
-        private_class_method
-        def self.format_boolean(value)
+        private_class_method def self.format_boolean(value)
           "$#{value}"
         end
 
-        private_class_method
-        def self.format_array(value)
+        private_class_method def self.format_array(value)
           '@(' + value.map { |m| format(m) }.join(', ') + ')'
         end
 
-        private_class_method
-        def self.format_hash(value)
+        private_class_method def self.format_hash(value)
           if !value.key?('dsc_type')
             format_hash_to_string(value)
           else
@@ -58,13 +56,11 @@ module PuppetX
           end
         end
 
-        private_class_method
-        def self.format_hash_to_string(value)
+        private_class_method def self.format_hash_to_string(value)
           "@{\n" + value.map { |k, v| format(k) + ' = ' + format(v) }.join(";\n") + "\n" + '}'
         end
 
-        private_class_method
-        def self.format_ciminstance(value)
+        private_class_method def self.format_ciminstance(value)
           type       = value['dsc_type'].gsub('[]', '')
           properties = [value['dsc_properties']].flatten
 
@@ -80,8 +76,7 @@ module PuppetX
           end
         end
 
-        private_class_method
-        def self.escape_quotes(text)
+        private_class_method def self.escape_quotes(text)
           text.gsub("'", "''")
         end
       end

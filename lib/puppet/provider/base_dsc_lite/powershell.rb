@@ -9,17 +9,15 @@ Puppet::Type.type(:base_dsc_lite).provide(:powershell) do
   confine operatingsystem: :windows
   defaultfor operatingsystem: :windows
 
-  commands powershell:     if File.exist?("#{ENV['SYSTEMROOT']}\\sysnative\\WindowsPowershell\\v1.0\\powershell.exe")
-                             "#{ENV['SYSTEMROOT']}\\sysnative\\WindowsPowershell\\v1.0\\powershell.exe"
-                           elsif File.exist?("#{ENV['SYSTEMROOT']}\\system32\\WindowsPowershell\\v1.0\\powershell.exe")
-                             "#{ENV['SYSTEMROOT']}\\system32\\WindowsPowershell\\v1.0\\powershell.exe"
-                           else
-                             'powershell.exe'
-                           end
+  commands powershell: (if File.exist?("#{ENV['SYSTEMROOT']}\\sysnative\\WindowsPowershell\\v1.0\\powershell.exe")
+                          "#{ENV['SYSTEMROOT']}\\sysnative\\WindowsPowershell\\v1.0\\powershell.exe"
+                        elsif File.exist?("#{ENV['SYSTEMROOT']}\\system32\\WindowsPowershell\\v1.0\\powershell.exe")
+                          "#{ENV['SYSTEMROOT']}\\system32\\WindowsPowershell\\v1.0\\powershell.exe"
+                        else
+                          'powershell.exe'
+                        end)
 
-  desc <<-EOT
-Applies DSC Resources by generating a configuration file and applying it.
-EOT
+  desc 'Applies DSC Resources by generating a configuration file and applying it.'
 
   DSC_LITE_MODULE_PUPPET_UPGRADE_MSG = <<-UPGRADE.freeze
   Currently, the dsc module has reduced functionality on this agent
