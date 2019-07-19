@@ -1,4 +1,11 @@
 ---
+.gitignore:
+  required:
+    - ---.project
+
+.gitlab-ci.yml:
+  delete: true
+
 Gemfile:
   required:
     ':system_tests':
@@ -15,13 +22,9 @@ Gemfile:
         version: '~> 0.4'
       - gem: master_manipulator
 
-# For the moment don't do any rubocop checks.
-.rubocop.yml:
-  include_todos: true
-  selected_profile: off
-
 spec/default_facts.yml:
   unmanaged: true
 
-.gitlab-ci.yml:
-  delete: true
+spec/spec_helper.rb:
+  mock_with: ':rspec'
+  coverage_report: true

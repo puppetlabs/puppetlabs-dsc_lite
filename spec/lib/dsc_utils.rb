@@ -19,22 +19,22 @@
 # locate_dsc_module(agent)
 def locate_dsc_module(host)
   # Init
-  host = host.kind_of?(Array) ? host[0] : host
+  host = host.is_a?(Array) ? host[0] : host
   module_paths = host.puppet['modulepath'].split(host[:pathseparator])
 
   # Search the available module paths.
   module_paths.each do |module_path|
-    dsc_module_path = "#{module_path}/dsc_lite".gsub('\\', '/')
+    dsc_module_path = "#{module_path}/dsc_lite".tr('\\', '/')
     ps_command = "Test-Path -Type Container -Path #{dsc_module_path}"
 
     if host.is_powershell?
-      on(host, powershell("if ( #{ps_command} ) { exit 0 } else { exit 1 }"), :accept_all_exit_codes => true) do |result|
+      on(host, powershell("if ( #{ps_command} ) { exit 0 } else { exit 1 }"), accept_all_exit_codes: true) do |result|
         if result.exit_code == 0
           return dsc_module_path
         end
       end
     else
-      on(host, "test -d #{dsc_module_path}", :accept_all_exit_codes => true) do |result|
+      on(host, "test -d #{dsc_module_path}", accept_all_exit_codes: true) do |result|
         if result.exit_code == 0
           return dsc_module_path
         end
@@ -43,7 +43,7 @@ def locate_dsc_module(host)
   end
 
   # Return nothing if module is not installed.
-  return ''
+  ''
 end
 
 # Copy the "PuppetFakeResource" module to target host. This resource is used for invoking
@@ -66,9 +66,9 @@ end
 # setup_dsc_resource_fixture(agent, '/dsc/spec/fixtures/reboot')
 def setup_dsc_resource_fixture(host)
   # Init
-  fake_reboot_resource_source_path = "spec/fixtures/dsc_puppetfakeresource/PuppetFakeResource/1.0"
-  fake_reboot_resource_source_path2 = "spec/fixtures/dsc_puppetfakeresource/PuppetFakeResource/2.0"
-  fake_reboot_type_source_path = "spec/fixtures/dsc_puppetfakeresource/dsc_puppetfakeresource.rb"
+  fake_reboot_resource_source_path = 'spec/fixtures/dsc_puppetfakeresource/PuppetFakeResource/1.0'
+  fake_reboot_resource_source_path2 = 'spec/fixtures/dsc_puppetfakeresource/PuppetFakeResource/2.0'
+  fake_reboot_type_source_path = 'spec/fixtures/dsc_puppetfakeresource/dsc_puppetfakeresource.rb'
 
   dsc_resource_target_path = 'lib/puppet_x/dsc_resources/PuppetFakeResource'
   puppet_type_target_path = 'lib/puppet/type'
@@ -86,37 +86,27 @@ def setup_dsc_resource_fixture(host)
   scp_to(host, fake_reboot_type_source_path, dsc_type_path)
 
   # if installing to a master, then agents must pluginsync
-  if (host['roles'].include?('master'))
+  # rubocop:disable Style/GuardClause
+  if host['roles'].include?('master')
     step 'Sync DSC resource implementations from master to agents'
-    on(agents, puppet('agent -t --environment production'), :acceptable_exit_codes => [0,2])
+    on(agents, puppet('agent -t --environment production'), acceptable_exit_codes: [0, 2])
   end
+  # rubocop:enable Style/GuardClause
 end
 
 def get_dsc_resource_fixture_path(usage = :manifest)
-  install_root = usage == :manifest ? 'C:/' : '/cygdrive/c'
+  install_root = (usage == :manifest) ? 'C:/' : '/cygdrive/c'
 
   install_base = "#{install_root}/ProgramData/PuppetLabs/code/modules/dsc_lite"
 
-  return "#{install_base}/lib/puppet_x/dsc_resources/PuppetFakeResource"
+  "#{install_base}/lib/puppet_x/dsc_resources/PuppetFakeResource"
 end
 
 # Remove the "PuppetFakeResource" module on target host.
 #
-# ==== Attributes
-#
-# * +host+ - A Beaker host with the DSC module already installed.
-#
-# ==== Returns
-#
-# +nil+
-#
-# ==== Raises
-#
-# +nil+
-#
-# ==== Examples
-#
-# teardown_dsc_resource_fixture(agent)
+# @param [String] host A Beaker host with the DSC module already installed.
+# @example
+#   teardown_dsc_resource_fixture(agent)
 def teardown_dsc_resource_fixture(host)
   # Init
   dsc_resource_target_path = 'lib/puppet_x/dsc_resources/PuppetFakeResource'
@@ -144,31 +134,16 @@ def teardown_dsc_resource_fixture(host)
   end
 end
 
-module Beaker
-  module DSL
-    module Assertions
-      # Verify that a reboot is pending on the system.
-      #
-      # ==== Attributes
-      #
-      # * +hosts+ - The target Windows hosts for verification.
-      #
-      # ==== Returns
-      #
-      # +nil+
-      #
-      # ==== Raises
-      #
-      # +Minitest::Assertion+ - Reboot is not pending.
-      #
-      # ==== Examples
-      #
-      # assert_reboot_pending(agents)
-      def assert_reboot_pending(host)
-        on(host, 'shutdown /a', :accept_all_exit_codes => true) do |result|
-          assert(0 == result.exit_code, 'Expected reboot is not pending!')
-        end
-      end
+module Beaker::DSL::Assertions
+  # Verify that a reboot is pending on the system
+  #
+  # @param [String] host A Beaker host.
+  # @raise [Minitest::Assertion] reboot is not pending
+  # @example
+  #   assert_reboot_pending(agents)
+  def assert_reboot_pending(host)
+    on(host, 'shutdown /a', accept_all_exit_codes: true) do |result|
+      assert(result.exit_code == 0, 'Expected reboot is not pending!')
     end
   end
 end

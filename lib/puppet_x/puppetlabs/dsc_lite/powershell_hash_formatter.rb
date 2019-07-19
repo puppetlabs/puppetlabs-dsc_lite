@@ -1,8 +1,12 @@
+# rubocop:disable Style/ClassAndModuleChildren
 module PuppetX
   module PuppetLabs
     module DscLite
+      # Hash formatter
       class PowerShellHashFormatter
-
+        # Formats a supplied value for dsc
+        #
+        # @return [Object] Formatted value.
         def self.format(dsc_value)
           case
           when dsc_value.class.name == 'String'
@@ -20,29 +24,28 @@ module PuppetX
           when dsc_value.class.name == 'Puppet::Pops::Types::PSensitiveType::Sensitive'
             "'#{escape_quotes(dsc_value.unwrap)}' <# PuppetSensitive #>"
           else
-            fail "unsupported type #{dsc_value.class} of value '#{dsc_value}'"
+            raise "unsupported type #{dsc_value.class} of value '#{dsc_value}'"
           end
         end
 
-        private
-        def self.format_string(value)
+        private_class_method def self.format_string(value)
           "'#{escape_quotes(value)}'"
         end
 
-        def self.format_number(value)
-          "#{value}"
+        private_class_method def self.format_number(value)
+          value.to_s
         end
 
-        def self.format_boolean(value)
-          "$#{value.to_s}"
+        private_class_method def self.format_boolean(value)
+          "$#{value}"
         end
 
-        def self.format_array(value)
-          "@(" + value.collect{|m| format(m) }.join(', ') + ")"
+        private_class_method def self.format_array(value)
+          '@(' + value.map { |m| format(m) }.join(', ') + ')'
         end
 
-        def self.format_hash(value)
-          if !value.has_key?('dsc_type')
+        private_class_method def self.format_hash(value)
+          if !value.key?('dsc_type')
             format_hash_to_string(value)
           else
             case value['dsc_type']
@@ -54,12 +57,12 @@ module PuppetX
           end
         end
 
-        def self.format_hash_to_string(value)
-          "@{\n" + value.collect{|k, v| format(k) + ' = ' + format(v)}.join(";\n") + "\n" + "}"
+        private_class_method def self.format_hash_to_string(value)
+          "@{\n" + value.map { |k, v| format(k) + ' = ' + format(v) }.join(";\n") + "\n" + '}'
         end
 
-        def self.format_ciminstance(value)
-          type       = value['dsc_type'].gsub('[]','')
+        private_class_method def self.format_ciminstance(value)
+          type       = value['dsc_type'].gsub('[]', '')
           properties = [value['dsc_properties']].flatten
 
           output = properties.map do |p|
@@ -68,17 +71,15 @@ module PuppetX
 
           if value['dsc_type'].end_with?('[]')
             output = output.join(",\n")
-            "[CimInstance[]]@(\n" + output +  "\n)"
+            "[CimInstance[]]@(\n" + output + "\n)"
           else
             "[CimInstance]#{output.first}"
           end
-
         end
 
-        def self.escape_quotes(text)
+        private_class_method def self.escape_quotes(text)
           text.gsub("'", "''")
         end
-
       end
     end
   end

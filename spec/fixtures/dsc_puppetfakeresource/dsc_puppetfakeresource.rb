@@ -20,7 +20,7 @@ Puppet::Type.newtype(:dsc_puppetfakeresource) do
   }
 
   validate do
-      fail('dsc_importantstuff is a required attribute') if self[:dsc_importantstuff].nil?
+      fail(_('dsc_importantstuff is a required attribute')) if self[:dsc_importantstuff].nil?
     end
 
   def dscmeta_resource_friendly_name; 'PuppetFakeResource' end

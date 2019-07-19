@@ -15,7 +15,6 @@
     * [Using EmbeddedInstance or CimInstance](#using-ciminstance)
     * [Handling Reboots with DSC](#handling-reboots-with-dsc)
 5. [Reference - An under-the-hood peek at what the module is doing and how](#reference)
-    * [Types and Providers](#types-and-providers)
 6. [Limitations - OS compatibility, etc.](#limitations)
     * [Known Issues](#known-issues)
     * [Running Puppet and DSC without Administrative Privileges](#running-puppet-and-dsc-without-administrative-privileges)
@@ -32,6 +31,8 @@ The Puppet dsc_lite module allows you to manage target nodes using Windows Power
 ### Windows system prerequisites
 
 At least PowerShell 5.0, which is included in [Windows Management Framework 5.0][wmf-5.0].
+
+*Note: PowerShell version as obtained from `$PSVersionTable` must be 5.0.10586.117 or greater.*
 
 ## Setup
 
@@ -290,37 +291,7 @@ reboot { 'dsc_reboot' :
 
 ## Reference
 
-### Types and Providers
-
-#### dsc
-
-The `dsc` type allows specifying any DSC Resource declaration as a minimal Puppet declaration.
-
-### Properties/Parameters
-
-#### name
-
-The name of the declaration. This has no affect on the DSC Resource declaration and is not used by the DSC Resource.
-
-#### ensure
-
-An optional property that specifies the DSC resource should be invoked.
-This property has only one value of `present`.
-This property does not need be be set in manifests.
-
-#### resource_name
-
-The name of the DSC Resource to use. For example, the xRemoteFile DSC Resource.
-
-#### module
-
-The name of the DSC Resource module to use. For example, the xPSDesiredStateConfiguration DSC Resource module contains the xRemoteFile DSC Resource.
-
-#### properties
-
-The hash of properties to pass to the DSC Resource.
-
-To express EmbeddedInstances, the `properties` parameter recognizes any key with a hash value that contains two keys — `dsc_type` and `dsc_properties` — as a indication of how to format the data supplied. The `dsc_type` contains the CimInstance name to use, and the `dsc_properties` contains a hash or an array of hashes representing the data for the CimInstances. If the CimInstance is an array, we append a `[]` to the end of the name.
+For information on the types, see [REFERENCE.md](https://github.com/puppetlabs/puppetlabs-dsc_lite/blob/master/REFERENCE.md).
 
 ## Limitations
 
@@ -408,9 +379,9 @@ By using the debug logging of a Puppet run, you can troubleshoot the application
 
 Puppet modules on the Puppet Forge are open projects, and community contributions are essential for keeping them great. We can’t access the huge number of platforms and myriad of hardware, software, and deployment configurations that Puppet is intended to serve.
 
-We want to keep it as easy as possible to contribute changes so that our modules work in your environment. There are a few guidelines that we need contributors to follow so that we can have a chance of keeping on top of things.
+If you would like to contribute to this module, please follow the guidelines in [CONTRIBUTING.md](https://github.com/puppetlabs/puppetlabs-dsc_lite/blob/master/CONTRIBUTING.md). 
 
-For more information, see our [module contribution guide.](https://docs.puppet.com/forge/contributing.html)
+For further information, see our [module contribution guide](https://puppet.com/docs/puppet/latest/contributing.html).
 
 ### Contributors
 

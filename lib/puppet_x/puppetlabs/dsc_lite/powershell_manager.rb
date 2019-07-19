@@ -4,44 +4,77 @@ require 'open3'
 require 'base64'
 require 'puppet/feature/dsc_lite'
 
+# rubocop:disable Style/ClassAndModuleChildren
 module PuppetX
+  # Dsclite Puppet module
   module DscLite
+    # Responsible for managing PowerShell
     class PowerShellManager
-      @@instances = {}
+      @@instances = {} # rubocop:disable Style/ClassVars
 
+      # Instantiates new instance of PowerShellManager
       def self.instance(cmd, debug = false)
         key = cmd + debug.to_s
         manager = @@instances[key]
 
         if manager.nil? || !manager.alive?
           # ignore any errors trying to tear down this unusable instance
-          manager.exit if manager rescue nil
+          begin
+            manager.exit if manager
+          rescue
+            nil
+          end
           @@instances[key] = PowerShellManager.new(cmd, debug)
         end
 
-         @@instances[key]
+        @@instances[key]
       end
 
+      # Check if Win32 console is enabled.
+      #
+      # @return [Bool]
       def self.win32console_enabled?
         @win32console_enabled ||= defined?(Win32) &&
-          defined?(Win32::Console) &&
-          Win32::Console.class == Class
+                                  defined?(Win32::Console) &&
+                                  Win32::Console.class == Class
       end
 
+      # Check if installed PowerShell version is compatible with dsc lite
       def self.compatible_version_of_powershell?
         @compatible_powershell_version ||= Puppet.features.dsc_lite?
       end
 
+      # Check if current machine supports use of PowerShell manager
+      #
+      # @return [Bool]
       def self.supported?
         Puppet::Util::Platform.windows? &&
-        compatible_version_of_powershell? &&
-        !win32console_enabled?
+          compatible_version_of_powershell? &&
+          !win32console_enabled?
       end
 
+      # Verify `lib` paths specified in environment variables are valid.
+      #
+      # @return [Bool]
+      def invalid_lib_paths?
+        if ENV['lib'].nil? || ENV['lib'].empty?
+          false
+        else
+          ENV['lib'].split(';').each do |path|
+            unless File.directory?(path)
+              return true
+            end
+          end
+        end
+      end
+
+      # Called on the creation of a new instance of PowershellManager.
       def initialize(cmd, debug)
         @usable = true
 
         named_pipe_name = "#{SecureRandom.uuid}PuppetPsHost"
+
+        raise "Bad configuration for ENV['lib']=#{ENV['lib']} - invalid path" if invalid_lib_paths?
 
         ps_args = ['-File', self.class.init_path, "\"#{named_pipe_name}\""]
         ps_args << '"-EmitDebugOutput"' if debug
@@ -52,10 +85,10 @@ module PuppetX
         Puppet.debug "#{Time.now} #{cmd} is running as pid: #{@ps_process[:pid]}"
 
         pipe_path = "\\\\.\\pipe\\#{named_pipe_name}"
-        # wait for the pipe server to signal ready, and fail if no response in 10 seconds
+        # wait for the pipe server to signal ready, and fail if no response in 180 seconds
 
-        # wait up to 10 seconds in 0.2 second intervals to be able to open the pipe
-        50.times do
+        # wait up to 180 seconds in 0.2 second intervals to be able to open the pipe
+        900.times do
           begin
             # pipe is opened in binary mode and must always
             @pipe = File.open(pipe_path, 'r+b')
@@ -65,73 +98,90 @@ module PuppetX
           end
         end
 
-        fail "Failure waiting for PowerShell process #{@ps_process[:pid]} to start pipe server" if @pipe.nil?
+        raise "Failure waiting for PowerShell process #{@ps_process[:pid]} to start pipe server" if @pipe.nil?
 
         Puppet.debug "#{Time.now} PowerShell initialization complete for pid: #{@ps_process[:pid]}"
 
         at_exit { exit }
       end
 
+      # Check if PS process is still running
+      #
+      # @return [Bool]
       def alive?
         # powershell process running
         @ps_process.alive? &&
           # explicitly set during a read / write failure, like broken pipe EPIPE
           @usable &&
           # an explicit failure state might not have been hit, but IO may be closed
-          self.class.is_stream_valid?(@pipe) &&
-          self.class.is_stream_valid?(@stdout) &&
-          self.class.is_stream_valid?(@stderr)
+          self.class.stream_valid?(@pipe) &&
+          self.class.stream_valid?(@stdout) &&
+          self.class.stream_valid?(@stderr)
       end
 
+      # Executes the given PS code.
+      #
+      # @param [String] powershell_code
+      # @param [Integer] timeout_ms
+      # @param [String] working_dir Specifies the location of the executable file or document that runs in the process.
+      #   The default is the folder for the new process.
       def execute(powershell_code, timeout_ms = nil, working_dir = nil)
         code = make_ps_code(powershell_code, timeout_ms, working_dir)
-
 
         # err is drained stderr pipe (not captured by redirection inside PS)
         # or during a failure, a Ruby callstack array
         out, native_stdout, err = exec_read_result(code)
 
         # an error was caught during execution that has invalidated any results
-        return { :exitcode => -1, :stderr => err } if !@usable && out.nil?
+        return { exitcode: -1, stderr: err } if !@usable && out.nil?
 
-        out[:exitcode] = out[:exitcode].to_i if !out[:exitcode].nil?
+        out[:exitcode] = out[:exitcode].to_i unless out[:exitcode].nil?
         # if err contains data it must be "real" stderr output
         # which should be appended to what PS has already captured
         out[:stderr] = out[:stderr].nil? ? [] : [out[:stderr]]
-        out[:stderr] += err if !err.nil?
+        out[:stderr] += err unless err.nil?
         out[:native_stdout] = native_stdout
 
         out
       end
 
+      # Closes current PS process and associated IO streams.
       def exit
         @usable = false
 
-        Puppet.debug "PowerShellManager exiting..."
+        Puppet.debug 'PowerShellManager exiting...'
         # pipe may still be open, but if stdout / stderr are dead PS process is in trouble
         # and will block forever on a write to the pipe
         # its safer to close pipe on Ruby side, which gracefully shuts down PS side
-        @pipe.close if !@pipe.closed?
-        @stdout.close if !@stdout.closed?
-        @stderr.close if !@stderr.closed?
+        @pipe.close unless @pipe.closed?
+        @stdout.close unless @stdout.closed?
+        @stderr.close unless @stderr.closed?
 
         # wait up to 2 seconds for the watcher thread to fully exit
         @ps_process.join(2)
       end
 
+      # Returns the path to PS init file.
+      #
+      # @return [String] Path to PS init file.
       def self.init_path
-
         # a PowerShell -File compatible path to bootstrap the instance
         path = File.expand_path('../../dsc_lite/templates', __FILE__)
-        path = File.join(path, 'init_ps.ps1').gsub('/', '\\')
+        path = File.join(path, 'init_ps.ps1').tr('/', '\\')
         "\"#{path}\""
       end
 
+      # Generates the given PS code.
+      #
+      # @param [String] powershell_code
+      # @param [Integer] timeout_ms
+      # @param [String] working_dir Specifies the location of the executable file or document that runs in the process.
+      #   The default is the folder for the new process.
       def make_ps_code(powershell_code, timeout_ms = nil, working_dir = nil)
         begin
           timeout_ms = Integer(timeout_ms)
           # Lower bound protection. The polling resolution is only 50ms
-          if (timeout_ms < 50) then timeout_ms = 50 end
+          if timeout_ms < 50 then timeout_ms = 50 end
         rescue
           timeout_ms = 300 * 1000
         end
@@ -149,10 +199,8 @@ Invoke-PowerShellUserCode @params
         CODE
       end
 
-      private
-
-      def self.is_readable?(stream, timeout = 0.5)
-        raise Errno::EPIPE if !is_stream_valid?(stream)
+      def self.readable?(stream, timeout = 0.5)
+        raise Errno::EPIPE unless stream_valid?(stream)
         read_ready = IO.select([stream], [], [], timeout)
         read_ready && stream == read_ready[0][0]
       end
@@ -162,12 +210,12 @@ Invoke-PowerShellUserCode @params
       # the .fileno will still return an int, and calling get_osfhandle against
       # it returns what the CRT thinks is a valid Windows HANDLE value, but
       # that may no longer exist
-      def self.is_stream_valid?(stream)
+      def self.stream_valid?(stream)
         # when a stream is closed, its obviously invalid, but Ruby doesn't always know
         !stream.closed? &&
-        # so calling stat will yield an EBADF when underlying OS handle is bad
-        # as this resolves to a HANDLE and then calls the Windows API
-        !stream.stat.nil?
+          # so calling stat will yield an EBADF when underlying OS handle is bad
+          # as this resolves to a HANDLE and then calls the Windows API
+          !stream.stat.nil?
       # any exceptions mean the stream is dead
       rescue
         false
@@ -184,11 +232,14 @@ Invoke-PowerShellUserCode @params
         newstr.encode!('UTF-16LE')
       end
 
-      # mutates the given bytes, removing the length prefixed vaule
+      # Mutates the supplied bytes, removing the length prefixed value
+      #
+      # @param [String] bytes
+      # @return [String]
       def self.read_length_prefixed_string(bytes)
         # 32-bit integer in Little Endian format
         length = bytes.slice!(0, 4).unpack('V').first
-        return nil if length == 0
+        return nil if length.zero?
         bytes.slice!(0, length).force_encoding(Encoding::UTF_8)
       end
 
@@ -197,16 +248,20 @@ Invoke-PowerShellUserCode @params
       # this method mutates the incoming value
       def self.ps_output_to_hash(bytes)
         hash = {}
-        while !bytes.empty?
+        until bytes.empty?
           hash[read_length_prefixed_string(bytes).to_sym] = read_length_prefixed_string(bytes)
         end
 
         hash
       end
 
-      # 1 byte command identifier
-      #     0 - Exit
-      #     1 - Execute
+      # Returns byte command identifier for exit and execute commands
+      #
+      # @param [Symbol] command Either :exit or :execute
+      #
+      # @return [String] Hex string containing command identifier
+      #   0 will be returned if `command` is :exit
+      #   1 will be returned if `command` is :execute
       def pipe_command(command)
         case command
         when :exit
@@ -216,6 +271,10 @@ Invoke-PowerShellUserCode @params
         end
       end
 
+      # Pipes supplied data into a binary format.
+      #
+      # @param [Object] data
+      # @return
       # Data format is:
       # 4 bytes - Little Endian encoded 32-bit integer length of string
       #           Intel CPUs are little endian, hence the .NET Framework typically is
@@ -226,44 +285,49 @@ Invoke-PowerShellUserCode @params
         [msg.bytes.length].pack('V') + msg.force_encoding(Encoding::BINARY)
       end
 
+      # Writes supplied input to `@pipe`
+      #
+      # @param [String] input
       def write_pipe(input)
         # for compat with Ruby 2.1 and lower, its important to use syswrite and not write
         # otherwise the pipe breaks after writing 1024 bytes
         written = @pipe.syswrite(input)
-        @pipe.flush()
+        @pipe.flush
 
-        if written != input.length
-          msg = "Only wrote #{written} out of #{input.length} expected bytes to PowerShell pipe"
-          raise Errno::EPIPE.new(msg)
-        end
+        raise Errno::EPIPE, "Only wrote #{written} out of #{input.length} expected bytes to PowerShell pipe" if written != input.length
       end
 
-      def read_from_pipe(pipe, timeout = 0.1, &block)
-        if self.class.is_readable?(pipe, timeout)
+      # Read
+      def read_from_pipe(pipe, timeout = 0.1)
+        if self.class.readable?(pipe, timeout)
           l = pipe.readpartial(4096)
           Puppet.debug "#{Time.now} PIPE> #{l}"
           # since readpartial may return a nil at EOF, skip returning that value
-          yield l if !l.nil?
+          yield l unless l.nil?
         end
 
         nil
       end
 
+      # Read in from specified pipe until a signal is no longer locked.
+      #
+      # @return [String] output from pipe
       def drain_pipe_until_signaled(pipe, signal)
         output = []
 
-        read_from_pipe(pipe) { |s| output << s } until !signal.locked?
+        read_from_pipe(pipe) { |s| output << s } while signal.locked?
 
         # there's ultimately a bit of a race here
         # read one more time after signal is received
-        read_from_pipe(pipe, 0) { |s| output << s } until !self.class.is_readable?(pipe)
+        read_from_pipe(pipe, 0) { |s| output << s } while self.class.readable?(pipe)
 
         # string has been binary up to this point, so force UTF-8 now
-        output == [] ?
-          [] :
-          [output.join('').force_encoding(Encoding::UTF_8)]
+        (output == []) ? [] : [output.join('').force_encoding(Encoding::UTF_8)]
       end
 
+      # Reads data coming from stdout/stderr streams.
+      #
+      # @return [String] stream data
       def read_streams
         pipe_done_reading = Mutex.new
         pipe_done_reading.lock
@@ -274,7 +338,7 @@ Invoke-PowerShellUserCode @params
         pipe_reader = Thread.new(@pipe) do |pipe|
           # read a Little Endian 32-bit integer for length of response
           expected_response_length = pipe.sysread(4).unpack('V').first
-          return nil if expected_response_length == 0
+          return nil if expected_response_length.zero?
 
           # reads the expected bytes as a binary string or fails
           pipe.sysread(expected_response_length)
@@ -285,7 +349,7 @@ Invoke-PowerShellUserCode @params
         # block until sysread has completed or errors
         begin
           output = pipe_reader.value
-          output = self.class.ps_output_to_hash(output) if !output.nil?
+          output = self.class.ps_output_to_hash(output) unless output.nil?
         ensure
           # signal stdout / stderr readers via mutex
           # so that Ruby doesn't crash waiting on an invalid event
@@ -297,7 +361,7 @@ Invoke-PowerShellUserCode @params
 
         [
           output,
-          stdout == [] ? nil : stdout.join(''), # native stdout
+          (stdout == []) ? nil : stdout.join(''), # native stdout
           stderr_reader.value # native stderr
         ]
       ensure
@@ -307,10 +371,14 @@ Invoke-PowerShellUserCode @params
         [pipe_reader, stdout_reader, stderr_reader].compact.each(&:join)
       end
 
+      # Reads result of supplied PS code.
+      #
+      # @param [String] powershell_code
+      # @return [String]
       def exec_read_result(powershell_code)
         write_pipe(pipe_command(:execute))
         write_pipe(pipe_data(powershell_code))
-        read_streams()
+        read_streams
       # if any pipes are broken, the manager is totally hosed
       # bad file descriptors mean closed stream handles
       # EOFError is a closed pipe (could be as a result of tearing down process)
@@ -319,11 +387,10 @@ Invoke-PowerShellUserCode @params
         return nil, nil, [e.inspect, e.backtrace].flatten
       # catch closed stream errors specifically
       rescue IOError => ioerror
-        raise if !ioerror.message.start_with?('closed stream')
+        raise unless ioerror.message.start_with?('closed stream')
         @usable = false
         return nil, nil, [ioerror.inspect, ioerror.backtrace].flatten
       end
-
     end
   end
 end
