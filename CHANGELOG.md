@@ -1,6 +1,6 @@
 ## Unreleased
 
-## 2019-08-20 - Supported Release 1.3.0
+## 2019-08-20 - Supported Release 2.0.0
 
 ### Added
 
@@ -9,6 +9,10 @@
 ### Changed
 
 - Increase the named pipe timeout to 180 seconds to prevent runs from failing waiting for a pipe to open ([MODULES-9086](https://tickets.puppetlabs.com/browse/MODULES-9086))
+
+### Removed
+
+- Support for Puppet 4x, raising the minimum supported version of Puppet to 5.5.10 ([MODULES-9336](https://tickets.puppetlabs.com/browse/MODULES-9336))
 
 ## 2019-04-23 - Supported Release 1.2.1
 
