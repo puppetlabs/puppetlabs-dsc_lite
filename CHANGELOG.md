@@ -1,5 +1,7 @@
 ## Unreleased
 
+## 2019-08-20 - Supported Release 1.3.0
+
 ### Added
 
 - Added a note to the readme specifying the exact PowerShell version required for the module to function ([MODULES-7762](https://tickets.puppetlabs.com/browse/MODULES-7762))
