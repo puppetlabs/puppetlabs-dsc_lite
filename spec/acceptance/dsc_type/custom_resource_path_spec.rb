@@ -10,7 +10,7 @@ describe 'custom resource from path' do
       dsc {'#{fake_name}':
         resource_name => 'puppetfakeresource',
         # NOTE: install_fake_reboot_resource installs on master, which pluginsyncs here
-        module => '#{installed_path}/1.0',
+        module => '#{dsc_resource_fixture_path}/1.0',
         properties => {
           ensure          => 'present',
           importantstuff  => '#{test_file_contents}',
@@ -24,7 +24,7 @@ describe 'custom resource from path' do
     <<-MANIFEST
       dsc {'#{fake_name}':
         resource_name => 'puppetfakeresource',
-        module => '#{installed_path}/1.0',
+        module => '#{dsc_resource_fixture_path}/1.0',
         properties => {
           ensure          => 'absent',
           importantstuff  => '#{test_file_contents}',
@@ -35,21 +35,17 @@ describe 'custom resource from path' do
   end
 
   before(:all) do
-    windows_agents.each do |agent|
-      setup_dsc_resource_fixture(agent)
-    end
+    setup_dsc_resource_fixture
   end
 
   after(:all) do
-    windows_agents.each do |agent|
-      teardown_dsc_resource_fixture(agent)
-      on(agent, "rm -rf /cygdrive/c/#{fake_name}")
-    end
+    teardown_dsc_resource_fixture
+    run_shell("powershell.exe -NoProfile -Nologo -Command \"Remove-Item -Recurse -Force 'C:/#{fake_name}'\"", expect_failures: true)
   end
 
   context 'create generic DSC resource' do
     it 'applies manifest' do
-      execute_manifest(dsc_manifest, catch_failures: true) do |result|
+      apply_manifest(dsc_manifest, catch_failures: true) do |result|
         expect(result.stderr).not_to match(%r{Error:})
       end
     end
@@ -63,7 +59,7 @@ describe 'custom resource from path' do
 
   context 'remove generic DSC resource' do
     it 'removes generic DSC resource' do
-      on(windows_agents, puppet('apply --detailed-exitcodes'), stdin: dsc_remove_manifest, acceptable_exit_codes: [0, 2]) do |result|
+      apply_manifest(dsc_remove_manifest, catch_failures: true) do |result|
         expect(result.stderr).not_to match(%r{Error:})
       end
     end

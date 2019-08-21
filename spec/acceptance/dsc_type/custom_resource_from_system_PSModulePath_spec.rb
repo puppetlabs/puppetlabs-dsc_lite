@@ -22,34 +22,24 @@ describe 'custom resource from system path' do
   MANIFEST
 
   before(:all) do
-    windows_agents.each do |agent|
-      setup_dsc_resource_fixture(agent)
+    teardown_dsc_resource_fixture
+    setup_dsc_resource_fixture
 
-      installed_path = get_dsc_resource_fixture_path(:cygwin)
-
-      # put PuppetFakeResource in $PSHome\Modules
-      # Copy PuppetFakeResource implementation to system PSModulePath
-      on(agent, <<-CYGWIN)
-        cp --recursive #{installed_path}/1.0 /cygdrive/c/#{pshome_modules_path}/PuppetFakeResource
-        # copying from Puppet pluginsync directory includes NULL SID and other wonky perms, so reset
-        icacls "C:\\#{pshome_modules_path.tr('/', '\\')}\\PuppetFakeResource\\1.0" /reset /T
-      CYGWIN
-    end
+    # put PuppetFakeResource in $PSHome\Modules
+    # Copy PuppetFakeResource implementation to system PSModulePath
+    run_shell("powershell.exe -NoProfile -Nologo -Command \"Copy-Item '#{dsc_resource_fixture_path}/1.0' 'C:/#{pshome_modules_path}/PuppetFakeResource' -Recurse -Force\"")
+    # copying from Puppet pluginsync directory includes NULL SID and other wonky perms, so reset
+    run_shell("icacls \"C:\\#{pshome_modules_path.tr('/', '\\')}\\PuppetFakeResource\\1.0\" /reset /T")
   end
 
   after(:all) do
-    windows_agents.each do |agent|
-      teardown_dsc_resource_fixture(agent)
-      on(agent, <<-CYGWIN)
-        rm -rf /cygdrive/c/#{pshome_modules_path}/PuppetFakeResource/1.0
-        rm -rf /cygdrive/c/#{fake_name}
-      CYGWIN
-    end
+    teardown_dsc_resource_fixture
+    run_shell("powershell.exe -NoProfile -Nologo -Command \"Remove-Item -Recurse -Path 'C:/#{fake_name}'\"")
   end
 
   context 'load custom DSC resource from system PSModulePath by ModuleName' do
     it 'applies manifest' do
-      execute_manifest(dsc_manifest, catch_failures: true) do |result|
+      apply_manifest(dsc_manifest, catch_failures: true) do |result|
         expect(result.stderr).not_to match(%r{Error:})
       end
     end

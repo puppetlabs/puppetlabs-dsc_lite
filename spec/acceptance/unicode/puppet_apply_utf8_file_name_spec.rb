@@ -16,7 +16,7 @@ describe 'UTF-8' do
     dsc {'some_name':
       resource_name => 'puppetfakeresource',
       # NOTE: install_fake_reboot_resource installs on master, which pluginsyncs here
-      module => '#{installed_path}/1.0',
+      module => '#{dsc_resource_fixture_path}/1.0',
       properties => {
         ensure          => 'present',
         importantstuff  => '#{test_file_contents}',
@@ -28,7 +28,7 @@ describe 'UTF-8' do
   dsc_remove_manifest = <<-MANIFEST
     dsc {'some_name':
       resource_name => 'puppetfakeresource',
-      module => '#{installed_path}/1.0',
+      module => '#{dsc_resource_fixture_path}/1.0',
       properties => {
         ensure          => 'absent',
         importantstuff  => '#{test_file_contents}',
@@ -38,48 +38,41 @@ describe 'UTF-8' do
   MANIFEST
 
   before(:all) do
-    windows_agents.each do |agent|
-      on(agent, powershell("mkdir /#{file_path}"))
-      create_remote_file(agent, "/cygdrive/c/#{file_path}/dsc_create_manifest.pp", dsc_create_manifest)
-      create_remote_file(agent, "/cygdrive/c/#{file_path}/dsc_remove_manifest.pp", dsc_remove_manifest)
-      setup_dsc_resource_fixture(agent)
-    end
+    run_shell("powershell.exe -NoProfile -Nologo -Command \"New-Item -Path /#{file_path}\" -ItemType \"directory\"")
+    setup_dsc_resource_fixture
   end
 
   after(:all) do
-    windows_agents.each do |agent|
-      teardown_dsc_resource_fixture(agent)
-    end
-    on(windows_agents, "rm -rf C:/#{file_path}")
+    teardown_dsc_resource_fixture
+    run_shell("powershell.exe -NoProfile -Nologo -Command \"Remove-Item -Recurse -Force C:/#{file_path}\"")
   end
 
   context 'create DSC resource with ensure present on UTF-8 file name' do
-    windows_agents.each do |agent|
-      it 'applies manifest' do
-        on(agent, puppet("apply C:\\\\#{file_path}\\\\dsc_create_manifest.pp --detailed-exitcodes"), acceptable_exit_codes: [0, 2]) do |result|
-          expect(result.stderr).not_to match(%r{Error:})
-        end
+    it 'applies manifest' do
+      create_manifest_location = create_manifest_file(dsc_create_manifest)
+      apply_manifest(nil, catch_failures: true, manifest_file_location: create_manifest_location) do |result|
+        expect(result.stderr).not_to match(%r{Error:})
       end
+    end
 
-      it 'creates file' do
-        powershell_cmd = "'Write-Host (Get-ChildItem C:\\#{file_path}  -Filter '#{file_name}' | Measure-Object ).Count;'"
-        on(agent, powershell(powershell_cmd)) do |result|
-          expect(result.stdout.to_s.strip).to eq('1')
-        end
+    it 'creates file' do
+      run_shell("powershell.exe -NoProfile -Nologo -Command \"Test-Path 'C:\\#{file_path}\\#{file_name}' -PathType Leaf\"") do |result|
+        expect(result.stdout.to_s).to match(%r{True})
       end
     end
   end
 
   context 'remove DSC resource contains ensure absent on UTF-8 file name' do
-    windows_agents.each do |agent|
-      it 'applies manifest' do
-        on(agent, puppet("apply C:\\\\#{file_path}\\\\dsc_remove_manifest.pp --detailed-exitcodes"), acceptable_exit_codes: [0, 2]) do |result|
-          expect(result.stderr).not_to match(%r{Error:})
-        end
+    it 'applies manifest' do
+      remove_manifest_location = create_manifest_file(dsc_remove_manifest)
+      apply_manifest(nil, catch_failures: true, manifest_file_location: remove_manifest_location) do |result|
+        expect(result.stderr).not_to match(%r{Error:})
       end
+    end
 
-      it 'removes file' do
-        expect(file("C:\\#{file_path}\\#{file_name}")).not_to exist
+    it 'removes file' do
+      run_shell("powershell.exe -NoProfile -Nologo -Command \"Test-Path 'C:\\#{file_path}\\#{file_name}' -PathType Leaf\"") do |result|
+        expect(result.stdout.to_s).to match(%r{False})
       end
     end
   end

@@ -3,15 +3,11 @@ require 'spec_helper_acceptance'
 describe 'reboot using autonotify, explicit' do
   skip 'Implementation of this functionality depends on MODULES-6569' do
     before(:all) do
-      windows_agents.each do |agent|
-        setup_dsc_resource_fixture(agent)
-      end
+      setup_dsc_resource_fixture
     end
 
     after(:all) do
-      windows_agents.each do |agent|
-        teardown_dsc_resource_fixture(agent)
-      end
+      teardown_dsc_resource_fixture
     end
 
     context 'when DSC resource requires reboot with autonotify "reboot" resource' do
@@ -19,7 +15,7 @@ describe 'reboot using autonotify, explicit' do
         <<-MANIFEST
           dsc { 'reboot_test':
             resource_name => 'puppetfakeresource',
-            module => '#{installed_path}/1.0',
+            module => '#{dsc_resource_fixture_path}/1.0',
             properties => {
               importantstuff  => 'reboot',
               requirereboot   => true,
@@ -31,17 +27,15 @@ describe 'reboot using autonotify, explicit' do
         MANIFEST
       end
 
-      windows_agents.each do |agent|
-        it 'applies manifest' do
-          on(agent, puppet('apply --detailed-exitcodes'), stdin: dsc_manifest, acceptable_exit_codes: [0, 2]) do |result|
-            expect(result.stderr).not_to match(%r{Error:})
-            expect(result.stderr).not_to match(%r{Warning:})
-          end
+      it 'applies manifest' do
+        run_shell(puppet('apply --detailed-exitcodes'), stdin: dsc_manifest, acceptable_exit_codes: [0, 2]) do |result|
+          expect(result.stderr).not_to match(%r{Error:})
+          expect(result.stderr).not_to match(%r{Warning:})
         end
+      end
 
-        it 'verifies reboot is pending' do
-          assert_reboot_pending(agent)
-        end
+      it 'verifies reboot is pending' do
+        assert_reboot_pending(agent)
       end
     end
 
@@ -50,7 +44,7 @@ describe 'reboot using autonotify, explicit' do
         <<-MANIFEST
           dsc { 'reboot_test':
             dsc_resource_name       => 'puppetfakeresource',
-            dsc_resource_module     => '#{installed_path}/1.0',
+            dsc_resource_module     => '#{dsc_resource_fixture_path}/1.0',
             dsc_resource_properties => {
               importantstuff => 'reboot',
               requirereboot  => true,
@@ -64,16 +58,14 @@ describe 'reboot using autonotify, explicit' do
       end
 
       it 'applies manifest' do
-        execute_manifest(dsc_manifest, catch_failures: true) do |result|
+        apply_manifest(dsc_manifest, catch_failures: true) do |result|
           expect(result.stderr).not_to match(%r{Error:})
           expect(result.stderr).not_to match(%r{Warning:})
         end
       end
 
       it 'verifies reboot is pending' do
-        windows_agents.each do |agent|
-          assert_reboot_pending(agent)
-        end
+        assert_reboot_pending(agent)
       end
     end
   end

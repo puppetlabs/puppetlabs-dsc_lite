@@ -15,7 +15,7 @@ describe 'puppet apply' do
       ->
       dsc { '#{fake_name}':
         resource_name => 'puppetfakeresource',
-        module => '#{installed_path}/1.0',
+        module => '#{dsc_resource_fixture_path}/1.0',
         properties => {
           ensure          => 'present',
           importantstuff  => '#{test_file_contents}',
@@ -33,7 +33,7 @@ describe 'puppet apply' do
       ->
       dsc { '#{fake_name_b}':
         resource_name => 'puppetfakeresource',
-        module => '#{installed_path}/1.0',
+        module => '#{dsc_resource_fixture_path}/1.0',
         properties => {
           ensure          => 'present',
           importantstuff  => '#{SecureRandom.uuid}',
@@ -44,21 +44,17 @@ describe 'puppet apply' do
   end
 
   before(:all) do
-    windows_agents.each do |agent|
-      setup_dsc_resource_fixture(agent)
-    end
+    setup_dsc_resource_fixture
   end
 
   after(:all) do
-    on(windows_agents, "rm -rf /cygdrive/c/#{test_dir_path}")
-    windows_agents.each do |agent|
-      teardown_dsc_resource_fixture(agent)
-    end
+    run_shell("powershell.exe -NoProfile -Nologo -Command \"Remove-Item -Recurse -Force C:/#{test_dir_path}\"")
+    teardown_dsc_resource_fixture
   end
 
   context 'standard apply' do
     it 'applies manifest' do
-      execute_manifest(dsc_manifest, catch_failures: true) do |result|
+      apply_manifest(dsc_manifest, catch_failures: true) do |result|
         expect(result.stderr).not_to match(%r{Error:})
         expect(result.stdout).to match(%r{Stage\[main\]\/Main\/Dsc\[#{fake_name}\]/ensure\: invoked})
       end
@@ -72,7 +68,7 @@ describe 'puppet apply' do
 
   context 'with "--noop' do
     it 'applies manifest' do
-      on(windows_agents, puppet('apply --noop --detailed-exitcodes'), stdin: dsc_manifest_b, acceptable_exit_codes: [0, 2]) do |result|
+      run_shell('puppet apply --noop --detailed-exitcodes', dsc_manifest_b) do |result|
         expect(result.stderr).not_to match(%r{Error:})
       end
     end
