@@ -1,5 +1,11 @@
 ## Unreleased
 
+## 2019-08-22 - Supported Release 2.0.1
+
+### Fixed
+
+- Fixed regression in guarding of library code which caused facter runs to fail on non-Windows systems.
+
 ## 2019-08-20 - Supported Release 2.0.0
 
 ### Added
