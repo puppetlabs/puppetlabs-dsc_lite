@@ -9,7 +9,7 @@ skip_commits:
 clone_depth: 10
 init:
   - SET
-  - 'mkdir C:\ProgramData\PuppetLabs\code && exit 0'
+  - 'mkdir C:\ProgramData\PuppetLabs\code\environments\production && exit 0'
   - 'mkdir C:\ProgramData\PuppetLabs\facter && exit 0'
   - 'mkdir C:\ProgramData\PuppetLabs\hiera && exit 0'
   - 'mkdir C:\ProgramData\PuppetLabs\puppet\var && exit 0'
@@ -18,14 +18,14 @@ environment:
     -
       RUBY_VERSION: 24-x64
       CHECK: syntax lint metadata_lint check:symlinks check:git_ignore check:dot_underscore check:test_file rubocop
-    -
-      PUPPET_GEM_VERSION: ~> 5.0
-      RUBY_VERSION: 24
-      CHECK: parallel_spec
-    -
-      PUPPET_GEM_VERSION: ~> 5.0
-      RUBY_VERSION: 24-x64
-      CHECK: parallel_spec
+    # -
+    #   PUPPET_GEM_VERSION: ~> 5.0
+    #   RUBY_VERSION: 24
+    #   CHECK: parallel_spec
+    # -
+    #   PUPPET_GEM_VERSION: ~> 5.0
+    #   RUBY_VERSION: 24-x64
+    #   CHECK: parallel_spec
     -
       PUPPET_GEM_VERSION: ~> 6.0
       RUBY_VERSION: 25
