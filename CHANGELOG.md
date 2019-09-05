@@ -1,5 +1,11 @@
 ## Unreleased
 
+## 2019-09-05 - Supported Release 2.0.2
+
+### Fixed
+
+- Fixed function that validates paths in $env:lib variable ([MODULES-9800](https://tickets.puppetlabs.com/browse/MODULES-9800))
+
 ## 2019-08-22 - Supported Release 2.0.1
 
 ### Fixed
