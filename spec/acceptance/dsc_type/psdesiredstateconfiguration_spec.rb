@@ -34,7 +34,7 @@ describe 'PSDesiredStateConfiguration' do
 
   context 'create a standard DSC File' do
     it 'applies manifest' do
-      execute_manifest(dsc_manifest, catch_failures: true) do |result|
+      apply_manifest(dsc_manifest, catch_failures: true) do |result|
         expect(result.stderr).not_to match(%r{Error:})
       end
     end
@@ -46,7 +46,7 @@ describe 'PSDesiredStateConfiguration' do
 
   context 'remove a standard DSC File' do
     it 'applies manifest' do
-      execute_manifest(dsc_remove_manifest, catch_failures: true) do |result|
+      apply_manifest(dsc_remove_manifest, catch_failures: true) do |result|
         expect(result.stderr).not_to match(%r{Error:})
       end
     end
