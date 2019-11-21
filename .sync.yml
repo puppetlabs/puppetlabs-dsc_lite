@@ -16,8 +16,6 @@ Gemfile:
     - gem: beaker-testmode_switcher
       version: "~> 0.4"
     - gem: master_manipulator
-spec/default_facts.yml:
-  unmanaged: true
 spec/spec_helper.rb:
   mock_with: ":rspec"
   coverage_report: true
