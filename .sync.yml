@@ -1,6 +1,10 @@
 ---
 ".gitlab-ci.yml":
   delete: true
+".travis.yml":
+  simplecov: true
+appveyor.yml:
+  simplecov: true
 Gemfile:
   required:
     ":system_tests":
