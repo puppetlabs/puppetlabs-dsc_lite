@@ -1,8 +1,7 @@
 require 'pathname'
 require 'json'
 if Puppet::Util::Platform.windows?
-  require_relative '../../../puppet_x/puppetlabs/dsc_lite/powershell_manager'
-  require_relative '../../../puppet_x/puppetlabs/dsc_lite/powershell_hash_formatter'
+  require 'ruby-pwsh'
 end
 
 Puppet::Type.type(:base_dsc_lite).provide(:powershell) do
@@ -58,14 +57,13 @@ Puppet::Type.type(:base_dsc_lite).provide(:powershell) do
 
   def self.powershell_args
     ps_args = ['-NoProfile', '-NonInteractive', '-NoLogo', '-ExecutionPolicy', 'Bypass']
-    ps_args << '-Command' unless PuppetX::DscLite::PowerShellManager.supported?
+    ps_args << '-Command' unless Pwsh::Manager.pwsh_supported?
     ps_args
   end
 
   def ps_manager
     debug_output = Puppet::Util::Log.level == :debug
-    manager_args = "#{command(:powershell)} #{self.class.powershell_args.join(' ')}"
-    PuppetX::DscLite::PowerShellManager.instance(manager_args, debug_output)
+    Pwsh::Manager.instance(command(:powershell), Pwsh::Manager.powershell_args, debug: debug_output)
   end
 
   DSC_LITE_COMMAND_TIMEOUT = 1_200_000 # 20 minutes
@@ -76,7 +74,7 @@ Puppet::Type.type(:base_dsc_lite).provide(:powershell) do
     script_content = ps_script_content('test')
     Puppet.debug "\n" + self.class.redact_content(script_content)
 
-    if !PuppetX::DscLite::PowerShellManager.supported?
+    if !Pwsh::Manager.pwsh_supported?
       self.class.upgrade_message
       output = powershell(self.class.powershell_args, script_content)
     else
@@ -96,7 +94,7 @@ Puppet::Type.type(:base_dsc_lite).provide(:powershell) do
     script_content = ps_script_content('set')
     Puppet.debug "\n" + self.class.redact_content(script_content)
 
-    if !PuppetX::DscLite::PowerShellManager.supported?
+    if !Pwsh::Manager.pwsh_supported?
       self.class.upgrade_message
       output = powershell(self.class.powershell_args, script_content)
     else
@@ -151,7 +149,7 @@ Puppet::Type.type(:base_dsc_lite).provide(:powershell) do
   end
 
   def self.format_dsc_lite(dsc_value)
-    PuppetX::PuppetLabs::DscLite::PowerShellHashFormatter.format(dsc_value)
+    Pwsh::Util.format_powershell_value(dsc_value)
   end
 
   def self.escape_quotes(text)
