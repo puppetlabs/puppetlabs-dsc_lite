@@ -1,8 +1,6 @@
 require 'pathname'
 require 'json'
-if Puppet::Util::Platform.windows?
-  require 'ruby-pwsh'
-end
+require 'ruby-pwsh'
 
 Puppet::Type.type(:base_dsc_lite).provide(:powershell) do
   confine operatingsystem: :windows
@@ -55,12 +53,6 @@ Puppet::Type.type(:base_dsc_lite).provide(:powershell) do
     File.expand_path(Pathname.new(__FILE__).dirname)
   end
 
-  def self.powershell_args
-    ps_args = ['-NoProfile', '-NonInteractive', '-NoLogo', '-ExecutionPolicy', 'Bypass']
-    ps_args << '-Command' unless Pwsh::Manager.pwsh_supported?
-    ps_args
-  end
-
   def ps_manager
     debug_output = Puppet::Util::Log.level == :debug
     Pwsh::Manager.instance(command(:powershell), Pwsh::Manager.powershell_args, debug: debug_output)
@@ -74,11 +66,11 @@ Puppet::Type.type(:base_dsc_lite).provide(:powershell) do
     script_content = ps_script_content('test')
     Puppet.debug "\n" + self.class.redact_content(script_content)
 
-    if !Pwsh::Manager.pwsh_supported?
-      self.class.upgrade_message
-      output = powershell(self.class.powershell_args, script_content)
-    else
+    if Pwsh::Manager.windows_powershell_supported?
       output = ps_manager.execute(script_content, DSC_LITE_COMMAND_TIMEOUT)[:stdout]
+    else
+      self.class.upgrade_message
+      output = powershell(Pwsh::Manager.powershell_args, script_content)
     end
     Puppet.debug "Dsc Resource returned: #{output}"
     data = JSON.parse(output)
@@ -94,11 +86,11 @@ Puppet::Type.type(:base_dsc_lite).provide(:powershell) do
     script_content = ps_script_content('set')
     Puppet.debug "\n" + self.class.redact_content(script_content)
 
-    if !Pwsh::Manager.pwsh_supported?
-      self.class.upgrade_message
-      output = powershell(self.class.powershell_args, script_content)
-    else
+    if Pwsh::Manager.windows_powershell_supported?
       output = ps_manager.execute(script_content, DSC_LITE_COMMAND_TIMEOUT)[:stdout]
+    else
+      self.class.upgrade_message
+      output = powershell(Pwsh::Manager.powershell_args, script_content)
     end
     Puppet.debug "Create Dsc Resource returned: #{output}"
     data = JSON.parse(output)
