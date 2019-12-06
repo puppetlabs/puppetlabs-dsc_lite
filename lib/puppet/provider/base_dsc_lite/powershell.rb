@@ -1,6 +1,7 @@
 require 'pathname'
 require 'json'
 require 'ruby-pwsh'
+require_relative '../../../puppet_x/puppetlabs/dsc_lite/powershell_hash_formatter'
 
 Puppet::Type.type(:base_dsc_lite).provide(:powershell) do
   confine operatingsystem: :windows
@@ -120,28 +121,8 @@ Puppet::Type.type(:base_dsc_lite).provide(:powershell) do
     end
   end
 
-  def self.format_dsc_value(dsc_value)
-    if dsc_value.class.name == 'String'
-      "'#{escape_quotes(dsc_value)}'"
-    elsif dsc_value.class.ancestors.include?(Numeric)
-      dsc_value.to_s
-    elsif [:true, :false].include?(dsc_value)
-      "$#{dsc_value}"
-    elsif ['trueclass', 'falseclass'].include?(dsc_value.class.name.downcase)
-      "$#{dsc_value}"
-    elsif dsc_value.class.name == 'Array'
-      '@(' + dsc_value.map { |m| format_dsc_value(m) }.join(', ') + ')'
-    elsif dsc_value.class.name == 'Hash'
-      '@{' + dsc_value.map { |k, v| format_dsc_value(k) + ' = ' + format_dsc_value(v) }.join('; ') + '}'
-    elsif dsc_value.class.name == 'Puppet::Pops::Types::PSensitiveType::Sensitive'
-      "'#{escape_quotes(dsc_value.unwrap)}' # PuppetSensitive"
-    else
-      raise "unsupported type #{dsc_value.class} of value '#{dsc_value}'"
-    end
-  end
-
   def self.format_dsc_lite(dsc_value)
-    Pwsh::Util.format_powershell_value(dsc_value)
+    PuppetX::PuppetLabs::DscLite::PowerShellHashFormatter.format(dsc_value)
   end
 
   def self.escape_quotes(text)
