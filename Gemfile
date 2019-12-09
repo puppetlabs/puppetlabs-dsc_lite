@@ -1,5 +1,4 @@
 source ENV['GEM_SOURCE'] || 'https://rubygems.org'
-gem 'pdk', git: 'https://github.com/puppetlabs/pdk.git', branch: 'master'
 
 def location_for(place_or_version, fake_version = nil)
   git_url_regex = %r{\A(?<url>(https?|git)[:@][^#]*)(#(?<branch>.*))?}
@@ -30,7 +29,14 @@ group :development do
   gem "puppet-module-posix-dev-r#{minor_version}", '~> 0.3',     require: false, platforms: [:ruby]
   gem "puppet-module-win-default-r#{minor_version}", '~> 0.3',   require: false, platforms: [:mswin, :mingw, :x64_mingw]
   gem "puppet-module-win-dev-r#{minor_version}", '~> 0.3',       require: false, platforms: [:mswin, :mingw, :x64_mingw]
-  gem 'serverspec'
+  gem "ruby-pwsh",                                               require: false
+end
+group :system_tests do
+  gem "puppet-module-posix-system-r#{minor_version}", require: false, platforms: [:ruby]
+  gem "puppet-module-win-system-r#{minor_version}",   require: false, platforms: [:mswin, :mingw, :x64_mingw]
+  gem "puppet-blacksmith", '~> 3.4',                  require: false
+  gem "beaker-testmode_switcher", '~> 0.4',           require: false
+  gem "master_manipulator",                           require: false
 end
 
 puppet_version = ENV['PUPPET_GEM_VERSION']

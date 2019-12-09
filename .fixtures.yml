@@ -6,5 +6,6 @@ fixtures:
     provision: 'https://github.com/puppetlabs/provision.git'
   forge_modules:
     reboot: "puppetlabs/reboot"
+    pwshlib: "puppetlabs/pwshlib"
   symlinks:
     "dsc_lite": "#{source_dir}"

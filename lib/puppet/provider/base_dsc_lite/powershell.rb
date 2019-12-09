@@ -1,9 +1,7 @@
 require 'pathname'
 require 'json'
-if Puppet::Util::Platform.windows?
-  require_relative '../../../puppet_x/puppetlabs/dsc_lite/powershell_manager'
-  require_relative '../../../puppet_x/puppetlabs/dsc_lite/powershell_hash_formatter'
-end
+require 'ruby-pwsh'
+require_relative '../../../puppet_x/puppetlabs/dsc_lite/powershell_hash_formatter'
 
 Puppet::Type.type(:base_dsc_lite).provide(:powershell) do
   confine operatingsystem: :windows
@@ -56,16 +54,9 @@ Puppet::Type.type(:base_dsc_lite).provide(:powershell) do
     File.expand_path(Pathname.new(__FILE__).dirname)
   end
 
-  def self.powershell_args
-    ps_args = ['-NoProfile', '-NonInteractive', '-NoLogo', '-ExecutionPolicy', 'Bypass']
-    ps_args << '-Command' unless PuppetX::DscLite::PowerShellManager.supported?
-    ps_args
-  end
-
   def ps_manager
     debug_output = Puppet::Util::Log.level == :debug
-    manager_args = "#{command(:powershell)} #{self.class.powershell_args.join(' ')}"
-    PuppetX::DscLite::PowerShellManager.instance(manager_args, debug_output)
+    Pwsh::Manager.instance(command(:powershell), Pwsh::Manager.powershell_args, debug: debug_output)
   end
 
   DSC_LITE_COMMAND_TIMEOUT = 1_200_000 # 20 minutes
@@ -76,11 +67,11 @@ Puppet::Type.type(:base_dsc_lite).provide(:powershell) do
     script_content = ps_script_content('test')
     Puppet.debug "\n" + self.class.redact_content(script_content)
 
-    if !PuppetX::DscLite::PowerShellManager.supported?
-      self.class.upgrade_message
-      output = powershell(self.class.powershell_args, script_content)
-    else
+    if Pwsh::Manager.windows_powershell_supported?
       output = ps_manager.execute(script_content, DSC_LITE_COMMAND_TIMEOUT)[:stdout]
+    else
+      self.class.upgrade_message
+      output = powershell(Pwsh::Manager.powershell_args, script_content)
     end
     Puppet.debug "Dsc Resource returned: #{output}"
     data = JSON.parse(output)
@@ -96,11 +87,11 @@ Puppet::Type.type(:base_dsc_lite).provide(:powershell) do
     script_content = ps_script_content('set')
     Puppet.debug "\n" + self.class.redact_content(script_content)
 
-    if !PuppetX::DscLite::PowerShellManager.supported?
-      self.class.upgrade_message
-      output = powershell(self.class.powershell_args, script_content)
-    else
+    if Pwsh::Manager.windows_powershell_supported?
       output = ps_manager.execute(script_content, DSC_LITE_COMMAND_TIMEOUT)[:stdout]
+    else
+      self.class.upgrade_message
+      output = powershell(Pwsh::Manager.powershell_args, script_content)
     end
     Puppet.debug "Create Dsc Resource returned: #{output}"
     data = JSON.parse(output)
@@ -127,26 +118,6 @@ Puppet::Type.type(:base_dsc_lite).provide(:powershell) do
     else
       Puppet.warning 'Reboot module must be updated, since resource does not have :reboot_required method implemented. Cannot signal reboot to Puppet.'
       return
-    end
-  end
-
-  def self.format_dsc_value(dsc_value)
-    if dsc_value.class.name == 'String'
-      "'#{escape_quotes(dsc_value)}'"
-    elsif dsc_value.class.ancestors.include?(Numeric)
-      dsc_value.to_s
-    elsif [:true, :false].include?(dsc_value)
-      "$#{dsc_value}"
-    elsif ['trueclass', 'falseclass'].include?(dsc_value.class.name.downcase)
-      "$#{dsc_value}"
-    elsif dsc_value.class.name == 'Array'
-      '@(' + dsc_value.map { |m| format_dsc_value(m) }.join(', ') + ')'
-    elsif dsc_value.class.name == 'Hash'
-      '@{' + dsc_value.map { |k, v| format_dsc_value(k) + ' = ' + format_dsc_value(v) }.join('; ') + '}'
-    elsif dsc_value.class.name == 'Puppet::Pops::Types::PSensitiveType::Sensitive'
-      "'#{escape_quotes(dsc_value.unwrap)}' # PuppetSensitive"
-    else
-      raise "unsupported type #{dsc_value.class} of value '#{dsc_value}'"
     end
   end
 
