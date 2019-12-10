@@ -1,3 +1,5 @@
+require 'ruby-pwsh'
+
 # rubocop:disable Style/ClassAndModuleChildren
 module PuppetX
   module PuppetLabs
@@ -8,39 +10,13 @@ module PuppetX
         #
         # @return [Object] Formatted value.
         def self.format(dsc_value)
-          if dsc_value.class.name == 'String'
-            format_string(dsc_value)
-          elsif dsc_value.class.ancestors.include?(Numeric)
-            format_number(dsc_value)
-          elsif [:true, :false].include?(dsc_value)
-            format_boolean(dsc_value)
-          elsif ['trueclass', 'falseclass'].include?(dsc_value.class.name.downcase)
-            "$#{dsc_value}"
-          elsif dsc_value.class.name == 'Array'
-            format_array(dsc_value)
-          elsif dsc_value.class.name == 'Hash'
+          if dsc_value.class.name == 'Hash'
             format_hash(dsc_value)
           elsif dsc_value.class.name == 'Puppet::Pops::Types::PSensitiveType::Sensitive'
             "'#{escape_quotes(dsc_value.unwrap)}' # PuppetSensitive"
           else
-            raise "unsupported type #{dsc_value.class} of value '#{dsc_value}'"
+            Pwsh::Util.format_powershell_value(dsc_value)
           end
-        end
-
-        private_class_method def self.format_string(value)
-          "'#{escape_quotes(value)}'"
-        end
-
-        private_class_method def self.format_number(value)
-          value.to_s
-        end
-
-        private_class_method def self.format_boolean(value)
-          "$#{value}"
-        end
-
-        private_class_method def self.format_array(value)
-          '@(' + value.map { |m| format(m) }.join(', ') + ')'
         end
 
         private_class_method def self.format_hash(value)
