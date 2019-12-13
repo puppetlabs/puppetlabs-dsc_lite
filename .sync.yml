@@ -3,8 +3,8 @@
   delete: true
 ".travis.yml":
   simplecov: true
-appveyor.yml:
-  simplecov: true
+  deploy_to_forge:
+    enabled: false
 Gemfile:
   required:
     ":system_tests":
