@@ -1,9 +1,9 @@
 require 'pathname'
 require 'json'
-require 'ruby-pwsh'
 require_relative '../../../puppet_x/puppetlabs/dsc_lite/powershell_hash_formatter'
 
 Puppet::Type.type(:base_dsc_lite).provide(:powershell) do
+  confine feature: :pwshlib
   confine operatingsystem: :windows
   defaultfor operatingsystem: :windows
 
