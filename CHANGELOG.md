@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file. The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) and this project adheres to [Semantic Versioning](http://semver.org).
 
+## [v3.0.1](https://github.com/puppetlabs/puppetlabs-dsc_lite/tree/v3.0.1) (2020-01-16)
+
+[Full Changelog](https://github.com/puppetlabs/puppetlabs-dsc_lite/compare/v3.0.0...v3.0.1)
+
+### Fixed
+
+- \(MAINT\) Safeguard loading ruby-pwsh [\#143](https://github.com/puppetlabs/puppetlabs-dsc_lite/pull/143) ([michaeltlombardi](https://github.com/michaeltlombardi))
+
 ## [v3.0.0](https://github.com/puppetlabs/puppetlabs-dsc_lite/tree/v3.0.0) (2019-12-13)
 
 [Full Changelog](https://github.com/puppetlabs/puppetlabs-dsc_lite/compare/v2.0.2...v3.0.0)
