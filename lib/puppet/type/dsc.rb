@@ -54,7 +54,7 @@ Puppet::Type.newtype(:dsc) do
       if value.nil? || value.empty?
         raise ArgumentError, "A non-empty #{name} must be specified."
       end
-      raise("#{value} is not a valid #{name}") unless value =~ %r{^[a-zA-Z0-9\.\-\_\'\s]+$}
+      raise("#{value} is not a valid #{name}") unless value.is_a? ::String
     end
   end
 
