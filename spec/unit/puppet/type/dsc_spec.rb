@@ -52,7 +52,7 @@ describe Puppet::Type.type(:dsc) do
     it 'does not allow nil' do
       expect {
         resource[:resource_name] = nil
-      }.to raise_error(Puppet::Error, %r{Got nil value for})
+      }.to raise_error(Puppet::Error, %r{Got nil value for resource_name})
     end
 
     it 'does not allow empty' do
