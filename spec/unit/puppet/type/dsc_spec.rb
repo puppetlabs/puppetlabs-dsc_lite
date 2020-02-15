@@ -39,15 +39,9 @@ describe Puppet::Type.type(:dsc) do
       }.to raise_error(Puppet::ResourceError, %r{A non-empty name must})
     end
 
-    ['value', 'value with spaces', 'UPPER CASE', '0123456789_-', 'With.Period'].each do |value|
+    ['value', 'value with spaces', 'UPPER CASE', '0123456789_-', 'With.Period', 'With=Special,Chars'].each do |value|
       it "should accept '#{value}'" do
         expect { resource[:name] = value }.not_to raise_error
-      end
-    end
-
-    ['*', '()', '[]', '!@'].each do |value|
-      it "should reject '#{value}'" do
-        expect { resource[:name] = value }.to raise_error(Puppet::ResourceError, %r{is not a valid name})
       end
     end
   end
@@ -57,25 +51,19 @@ describe Puppet::Type.type(:dsc) do
 
     it 'does not allow nil' do
       expect {
-        resource[:name] = nil
-      }.to raise_error(Puppet::Error, %r{Got nil value for name})
+        resource[:resource_name] = nil
+      }.to raise_error(Puppet::Error, %r{Got nil value for resource_name})
     end
 
     it 'does not allow empty' do
       expect {
-        resource[:name] = ''
-      }.to raise_error(Puppet::ResourceError, %r{A non-empty name must})
+        resource[:resource_name] = ''
+      }.to raise_error(Puppet::ResourceError, %r{A non-empty resource_name must})
     end
 
     ['value', 'value with spaces', 'UPPER CASE', '0123456789_-', 'With.Period'].each do |value|
       it "should accept '#{value}'" do
-        expect { resource[:name] = value }.not_to raise_error
-      end
-    end
-
-    ['*', '()', '[]', '!@'].each do |value|
-      it "should reject '#{value}'" do
-        expect { resource[:name] = value }.to raise_error(Puppet::ResourceError, %r{is not a valid name})
+        expect { resource[:resource_name] = value }.not_to raise_error
       end
     end
   end
