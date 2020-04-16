@@ -79,3 +79,4 @@ extra_gemfiles.each do |gemfile|
   end
 end
 # vim: syntax=ruby
+gem 'facter', git: 'https://github.com/puppetlabs/facter-ng', branch: 'FACT-2562-2'
