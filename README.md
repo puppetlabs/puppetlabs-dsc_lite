@@ -391,7 +391,7 @@ If you submit a change to this module, be sure to regenerate the reference docum
 ```bash
 puppet strings generate --format markdown --out REFERENCE.md
 ```
-
+Hello my baby
 ### Contributors
 
 To see who's already involved, see the [list of contributors.](https://github.com/puppetlabs/puppetlabs-dsc/graphs/contributors)
