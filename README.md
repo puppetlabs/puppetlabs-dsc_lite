@@ -391,7 +391,7 @@ If you submit a change to this module, be sure to regenerate the reference docum
 ```bash
 puppet strings generate --format markdown --out REFERENCE.md
 ```
-TESTING
+TESTING123
 
 ### Contributors
 
