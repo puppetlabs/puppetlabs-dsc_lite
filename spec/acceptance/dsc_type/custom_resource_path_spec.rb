@@ -9,7 +9,7 @@ describe 'custom resource from path' do
     <<-MANIFEST
       dsc {'#{fake_name}':
         resource_name => 'puppetfakeresource',
-        # NOTE: install_fake_reboot_resource installs on main, which pluginsyncs here
+        # NOTE: install_fake_reboot_resource installs on Puppet Server, which pluginsyncs here
         module => '#{dsc_resource_fixture_path}/1.0',
         properties => {
           ensure          => 'present',

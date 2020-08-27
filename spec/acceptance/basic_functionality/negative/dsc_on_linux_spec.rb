@@ -1,4 +1,4 @@
-# NOTE: this is a main/agent test that does not run with Litmus.
+# NOTE: this is a Puppet Server test that does not run with Litmus.
 # require 'spec_helper_acceptance'
 
 # describe 'use dsc resource on a Linux agent' do
@@ -19,7 +19,7 @@
 
 #   let(:error_msg) { %r{Could not find a suitable provider for dsc} }
 
-#   # NOTE: this test only runs when in a main / agent setup with more than Windows hosts
+#   # NOTE: this test only runs when in a Puppet Server setup with more than Windows hosts
 #   confine_block(:except, platform: 'windows') do
 #     agents.each do |_agent|
 #       it 'applies manifest, raises error' do
