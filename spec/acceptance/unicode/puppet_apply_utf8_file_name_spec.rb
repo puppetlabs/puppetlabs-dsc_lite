@@ -15,7 +15,7 @@ describe 'UTF-8' do
   dsc_create_manifest = <<-MANIFEST
     dsc {'some_name':
       resource_name => 'puppetfakeresource',
-      # NOTE: install_fake_reboot_resource installs on master, which pluginsyncs here
+      # NOTE: install_fake_reboot_resource installs on main, which pluginsyncs here
       module => '#{dsc_resource_fixture_path}/1.0',
       properties => {
         ensure          => 'present',

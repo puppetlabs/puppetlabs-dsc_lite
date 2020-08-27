@@ -54,7 +54,7 @@ You should consider continuing to use the existing Puppet `dsc` module if one or
 
 + You want [earlier feedback about the validity of manifest code](#validation)
 + You're only using Microsoft-provided DSC Resources - i.e., not using custom, community-maintained, or class-based DSC Resources
-+ You've already got a good [workflow for building an internal release of the Puppet `dsc` module with custom resources](https://github.com/puppetlabs/puppetlabs-dsc/blob/master/README_BUILD.md)
++ You've already got a good [workflow for building an internal release of the Puppet `dsc` module with custom resources](https://github.com/puppetlabs/puppetlabs-dsc/blob/main/README_BUILD.md)
 + You don't want to manage installing DSC Resources on your nodes
 + You need the granularity of reporting in the Puppet Enterprise (PE) console which is based on each resource type being different - allowing you to filter and group on DSC Resources
 
@@ -69,9 +69,9 @@ A primary drawback of using `dsc_lite` is that you're responsible for installing
 
 ### Vendoring
 
-The existing Puppet `dsc` module vendors numerous DSC Resources into it - that is, the Puppet `dsc` module includes [many PowerShell DSC Resources](https://github.com/puppetlabs/puppetlabs-dsc/tree/master/lib/puppet_x/dsc_resources) inside it.
+The existing Puppet `dsc` module vendors numerous DSC Resources into it - that is, the Puppet `dsc` module includes [many PowerShell DSC Resources](https://github.com/puppetlabs/puppetlabs-dsc/tree/main/lib/puppet_x/dsc_resources) inside it.
 This means that those DSC Resources are automatically on every machine which has the Puppet `dsc` module without you having to manage them individually.
-However, this means that if there are DSC Resources you do _not_ want to sync, or DSC Resources not vendored in the Puppet `dsc` module, you'll need to [rebuild the module to your own specifications](https://github.com/puppetlabs/puppetlabs-dsc/blob/master/README_BUILD.md).
+However, this means that if there are DSC Resources you do _not_ want to sync, or DSC Resources not vendored in the Puppet `dsc` module, you'll need to [rebuild the module to your own specifications](https://github.com/puppetlabs/puppetlabs-dsc/blob/main/README_BUILD.md).
 
 The `dsc_lite` module does not vendor the DSC Resources for you, but neither does it limit you to only using vendored DSC Resources.
 Any DSC Resource available on the machine can be used by the `dsc_lite` module.

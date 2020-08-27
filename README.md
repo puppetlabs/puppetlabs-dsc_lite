@@ -291,11 +291,11 @@ reboot { 'dsc_reboot' :
 
 ## Reference
 
-For information on the types, see [REFERENCE.md](https://github.com/puppetlabs/puppetlabs-dsc_lite/blob/master/REFERENCE.md).
+For information on the types, see [REFERENCE.md](https://github.com/puppetlabs/puppetlabs-dsc_lite/blob/main/REFERENCE.md).
 
 ## Limitations
 
-* For a list of tradeoffs and improvements in the dsc_lite module compared to the dsc module, see [README_Tradeoffs.md](https://github.com/puppetlabs/puppetlabs-dsc_lite/blob/master/README_Tradeoffs.md)
+* For a list of tradeoffs and improvements in the dsc_lite module compared to the dsc module, see [README_Tradeoffs.md](https://github.com/puppetlabs/puppetlabs-dsc_lite/blob/main/README_Tradeoffs.md)
 * DSC Composite Resources are not supported.
 * DSC requires PowerShell `Execution Policy` for the `LocalMachine` scope to be set to a less restrictive setting than `Restricted`. If you see the error below, see [MODULES-2500](https://tickets.puppet.com/browse/MODULES-2500) for more information.
 
@@ -420,4 +420,4 @@ There are several books available as well. Here are some selected books for refe
 
 * Copyright (c) 2014 Marc Sutter, original author
 * Copyright (c) 2015 - Present Puppet Inc
-* License: [Apache License, Version 2.0](https://github.com/puppetlabs/puppetlabs-dsc/blob/master/LICENSE)
+* License: [Apache License, Version 2.0](https://github.com/puppetlabs/puppetlabs-dsc/blob/main/LICENSE)
