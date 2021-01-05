@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'spec_helper'
 require 'puppet/type'
 require 'puppet/type/dsc'
@@ -40,7 +42,7 @@ describe Puppet::Type.type(:dsc) do
     end
 
     ['value', 'value with spaces', 'UPPER CASE', '0123456789_-', 'With.Period', 'With=Special,Chars'].each do |value|
-      it "should accept '#{value}'" do
+      it "accepts '#{value}'" do
         expect { resource[:name] = value }.not_to raise_error
       end
     end
@@ -62,7 +64,7 @@ describe Puppet::Type.type(:dsc) do
     end
 
     ['value', 'value with spaces', 'UPPER CASE', '0123456789_-', 'With.Period'].each do |value|
-      it "should accept '#{value}'" do
+      it "accepts '#{value}'" do
         expect { resource[:resource_name] = value }.not_to raise_error
       end
     end
@@ -102,7 +104,7 @@ describe Puppet::Type.type(:dsc) do
     end
 
     ['value', 'value with spaces', 'UPPER CASE', '0123456789_-', 'With.Period'].each do |value|
-      it "should accept '#{value}'" do
+      it "accepts '#{value}'" do
         expect { resource[:module] = value }.not_to raise_error
       end
     end

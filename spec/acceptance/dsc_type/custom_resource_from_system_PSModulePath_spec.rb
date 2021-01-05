@@ -1,4 +1,5 @@
-# rubocop:disable Style/FileName
+# frozen_string_literal: true
+
 require 'spec_helper_acceptance'
 
 # this scenario works properly with only a single PuppetFakeResource in module path

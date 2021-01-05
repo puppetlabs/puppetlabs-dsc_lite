@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 # Discover the path to the DSC module on a host.
 def locate_dsc_module
   # Init

@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'lib/dsc_utils'
 require 'securerandom'
 
@@ -17,11 +19,11 @@ Dir['./spec/support/**/*.rb'].sort.each { |f| require f }
 def single_dsc_resource_manifest(dsc_type, dsc_props)
   output = "dsc_#{dsc_type} {'#{dsc_type}_test':\n"
   dsc_props.each do |k, v|
-    output += if v =~ %r{^\[.*\]$}
+    output += if %r{^\[.*\]$}.match?(v)
                 "  #{k} => #{v},\n"
-              elsif v =~ %r{^(true|false)$}
+              elsif %r{^(true|false)$}.match?(v)
                 "  #{k} => #{v},\n"
-              elsif v =~ %r{^{.*}$}
+              elsif %r{^{.*}$}.match?(v)
                 "  #{k} => #{v},\n"
               else
                 "  #{k} => '#{v}',\n"

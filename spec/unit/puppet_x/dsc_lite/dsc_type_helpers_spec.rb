@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 # rubocop:disable RSpec/FilePath
 require 'spec_helper'
 require 'puppet_x/puppetlabs/dsc_lite/dsc_type_helpers'

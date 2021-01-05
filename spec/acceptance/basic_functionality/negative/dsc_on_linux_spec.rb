@@ -1,3 +1,4 @@
+# frozen_string_literal: true
 # NOTE: this is a master/agent test that does not run with Litmus.
 # require 'spec_helper_acceptance'
 
