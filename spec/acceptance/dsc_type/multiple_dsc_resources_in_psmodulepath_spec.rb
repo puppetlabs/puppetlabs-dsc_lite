@@ -1,4 +1,5 @@
-# rubocop:disable Style/FileName
+# frozen_string_literal: true
+
 require 'spec_helper_acceptance'
 
 describe 'multiple versioned resources' do
@@ -77,7 +78,7 @@ describe 'multiple versioned resources' do
       it 'has two PuppetFakeResource resources' do
         # verify DSC shows 2 installed copies of the resource
         check_dsc_resources = 'Get-DscResource PuppetFakeResource | Measure-Object | Select -ExpandProperty Count'
-        run_shell("powershell.exe -NoProfile -Nologo -Command \"#{check_dsc_resources}\"") do |result|
+        run_shell("powershell.exe -NoProfile -Nologo -Command \"#{check_dsc_resources}\"", expect_failures: true) do |result|
           expect(result.stdout).to match(%r{^2})
         end
       end

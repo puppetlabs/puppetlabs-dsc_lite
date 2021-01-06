@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'ruby-pwsh'
 
 Facter.add(:powershell_version) do

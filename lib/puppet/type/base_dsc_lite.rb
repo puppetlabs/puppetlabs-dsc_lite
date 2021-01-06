@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 # This is the base type for dsc.
 # Used to inherit the providers for the generated DSC resources
 Puppet::Type.newtype(:base_dsc_lite) do

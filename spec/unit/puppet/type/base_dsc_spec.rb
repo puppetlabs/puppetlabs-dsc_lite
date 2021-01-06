@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'spec_helper'
 require 'puppet_x'
 describe Puppet::Type.type(:base_dsc_lite) do

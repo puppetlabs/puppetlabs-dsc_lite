@@ -9,7 +9,7 @@ skip_commits:
 clone_depth: 10
 init:
   - SET
-  - 'mkdir C:\ProgramData\PuppetLabs\code\environments\production && exit 0'
+  - 'mkdir C:\ProgramData\PuppetLabs\code && exit 0'
   - 'mkdir C:\ProgramData\PuppetLabs\facter && exit 0'
   - 'mkdir C:\ProgramData\PuppetLabs\hiera && exit 0'
   - 'mkdir C:\ProgramData\PuppetLabs\puppet\var && exit 0'
@@ -19,7 +19,7 @@ environment:
   SIMPLECOV: yes
   matrix:
     -
-      RUBY_VERSION: 24-x64
+      RUBY_VERSION: 25-x64
       CHECK: syntax lint metadata_lint check:symlinks check:git_ignore check:dot_underscore check:test_file rubocop
     -
       PUPPET_GEM_VERSION: ~> 5.0
@@ -37,15 +37,6 @@ environment:
       PUPPET_GEM_VERSION: ~> 6.0
       RUBY_VERSION: 25-x64
       CHECK: parallel_spec
-    -
-      RUBY_VERSION: 25-x64
-      ACCEPTANCE: yes
-      TARGET_HOST: localhost
-    -
-      RUBY_VERSION: 25-x64
-      ACCEPTANCE: yes
-      TARGET_HOST: localhost
-      APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2017
 for:
 -
   matrix:
@@ -53,13 +44,15 @@ for:
       - ACCEPTANCE: yes
   install:
     - set PATH=C:\Ruby%RUBY_VERSION%\bin;%PATH%
-    - bundle install --jobs 4 --retry 2 --without build
+    - bundle install --jobs 4 --retry 2
     - type Gemfile.lock
   test_script:
-     - bundle exec rake spec_prep
-     # The following modulepath is "...dsc-lite..." rather than "...dsc_lite..." because appveyor is dumb about underscores.
-     - ps: Set-Content -Value 'modulepath = C:/projects/puppetlabs-dsc-lite/spec/fixtures/modules' -Path 'C:\ProgramData\PuppetLabs\code\environments\production\environment.conf'
-     - bundle exec rspec spec/acceptance
+    - bundle exec puppet -V
+    - ruby -v
+    - gem -v
+    - bundle -v
+    - bundle exec rake spec_prep
+    - bundle exec rake litmus:acceptance:localhost
 matrix:
   fast_finish: true
 install:

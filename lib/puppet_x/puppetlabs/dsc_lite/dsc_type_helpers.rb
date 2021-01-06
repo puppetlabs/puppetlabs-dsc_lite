@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 # rubocop:disable Style/ClassAndModuleChildren
 module PuppetX
   module DscLite
@@ -8,7 +10,7 @@ module PuppetX
       # @param [String] value A truthy/falsy string value
       # @return [Bool]
       def self.munge_boolean(value)
-        return true if value =~ %r{^(true|t|yes|y|1)$}i
+        return true if %r{^(true|t|yes|y|1)$}i.match?(value)
         return false if value.empty? || value =~ %r{^(false|f|no|n|0)$}i
 
         raise ArgumentError, "invalid value: #{value}"

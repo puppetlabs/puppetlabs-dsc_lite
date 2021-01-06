@@ -1,9 +1,11 @@
+# frozen_string_literal: true
+
 require 'puppet/util/feature'
 
 if Puppet.features.microsoft_windows?
 
   # Message used when an invalid PS version is found.
-  DSC_LITE_MODULE_POWERSHELL_UPGRADE_MSG = <<-UPGRADE.freeze
+  DSC_LITE_MODULE_POWERSHELL_UPGRADE_MSG = <<-UPGRADE
   The dsc_lite module requires PowerShell version %{required} - current version %{current}
 
   The cmdlet Invoke-DscResource was introduced in v5.0, and is necessary for the

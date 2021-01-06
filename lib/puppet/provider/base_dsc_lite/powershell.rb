@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'pathname'
 require 'json'
 require_relative '../../../puppet_x/puppetlabs/dsc_lite/powershell_hash_formatter'
@@ -17,7 +19,7 @@ Puppet::Type.type(:base_dsc_lite).provide(:powershell) do
 
   desc 'Applies DSC Resources by generating a configuration file and applying it.'
 
-  DSC_LITE_MODULE_PUPPET_UPGRADE_MSG = <<-UPGRADE.freeze
+  DSC_LITE_MODULE_PUPPET_UPGRADE_MSG = <<-UPGRADE
   Currently, the dsc module has reduced functionality on this agent
   due to one or more of the following conditions:
   - Puppet 3.x (non-x64 version)
@@ -40,13 +42,13 @@ Puppet::Type.type(:base_dsc_lite).provide(:powershell) do
 
   def dsc_parameters
     resource.parameters_with_value.select do |p|
-      p.name.to_s =~ %r{dsc_}
+      p.name.to_s.include? 'dsc_'
     end
   end
 
   def dsc_property_param
     resource.parameters_with_value.select { |pr| pr.name == :properties }.each do |p|
-      p.name.to_s =~ %r{dsc_}
+      p.name.to_s.include? 'dsc_'
     end
   end
 
@@ -117,7 +119,7 @@ Puppet::Type.type(:base_dsc_lite).provide(:powershell) do
       reboot_resource.provider.reboot_required = true
     else
       Puppet.warning 'Reboot module must be updated, since resource does not have :reboot_required method implemented. Cannot signal reboot to Puppet.'
-      return
+      nil
     end
   end
 
