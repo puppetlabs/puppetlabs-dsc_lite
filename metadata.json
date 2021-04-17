@@ -1,6 +1,6 @@
 {
   "name": "puppetlabs-dsc_lite",
-  "version": "3.1.0",
+  "version": "3.2.0",
   "author": "puppetlabs",
   "summary": "PowerShell Desired State Configuration (DSC) Lite",
   "license": "Apache-2.0",
