@@ -28,7 +28,7 @@ The Puppet `dsc_lite` module allows you to manage target nodes using arbitrary W
 
 ### Warning:
 
-***Using dsc_lite requires advanced experience with DSC and PowerShell, unlike our other modules that are far easier to use. It is an alternative approach to Puppet's family of [DSC modules](http://forge.puppet.com/dsc), providing more flexibility for certain niche use cases. There are many drawbacks to this approach and we highly recommend that you use the existing family of [DSC modules](http://forge.puppet.com/dsc) instead.***
+***Using dsc_lite requires advanced experience with DSC and PowerShell, unlike our other modules that are far easier to use. It is an alternative approach to Puppet's family of [DSC modules](http://forge.puppet.com/dsc), providing more flexibility for certain niche use cases. There are many drawbacks to this approach and we highly recommend that you use the existing family of [DSC modules](http://forge.puppet.com/dsc) instead, where possible.***
 
 The `dsc_lite` module contains a lightweight `dsc` type, which is a streamlined and minimal representation of a DSC Resource declaration in Puppet syntax. This type does not contain any DSC resources itself, but can invoke arbitrary DSC Resources that already exist on the managed node. Much like the `exec` type, it simply passes parameters through to the underlying DSC Resource without any validation.
 
