@@ -46,7 +46,7 @@ You should *only* use the `dsc_lite` module when any of these cases apply to you
 * The upstream DSC Resource's implementation does not match its declared API but is usable otherwise and needed.
   * In this case, `dsc_lite` should be treated as a stop-gap solution until the upstream DSC Resource can be patched to fix the misimplementation.
 * You need to use a DSC Resource that isn't published to the [Puppet Forge](http://forge.puppet.com/dsc).
-    * If you find a DSC Resource that hasn't been automatically imported, it's very likely due to the original DSC Resource failing schema validation. The `dsc_lite` module can get you by, but you should report the error upstream so that the original author can correct their code.
+    * If you find a DSC Resource that hasn't been automatically imported, it's very likely due to an API mismatch as described above.
     * If you have custom DSC Resources, you can use the [Puppet.dsc module builder](https://github.com/puppetlabs/Puppet.Dsc) to build your own Puppet module from it.
 
 ------
