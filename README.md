@@ -40,10 +40,12 @@ This means that you are responsible for:
 
 The existing family of [DSC modules](http://forge.puppet.com/dsc) will manage all the DSC administration for you, meaning that all you need to do is install the module and start writing code. These modules also do parameter validation, meaning that errors surface during development instead of at runtime. And the VS Code integration will show you usage documentation as you write the code. These modules are automatically imported from the PowerShell Gallery on a daily basis, so they're always up to date.
 
-You should *only* use the `dsc_lite` module if either of these cases apply to you:
+You should *only* use the `dsc_lite` module when any of these cases apply to you:
 
 * You need to use multiple versions of the same DSC resource
-* You need to use a DSC resource that isn't published to the [Puppet Forge](http://forge.puppet.com/dsc).
+* The upstream DSC Resource's implementation does not match its declared API but is usable otherwise and needed.
+  * In this case, `dsc_lite` should be treated as a stop-gap solution until the upstream DSC Resource can be patched to fix the misimplementation.
+* You need to use a DSC Resource that isn't published to the [Puppet Forge](http://forge.puppet.com/dsc).
     * If you find a DSC Resource that hasn't been automatically imported, it's very likely due to the original DSC Resource failing schema validation. The `dsc_lite` module can get you by, but you should report the error upstream so that the original author can correct their code.
     * If you have custom DSC Resources, you can use the [Puppet.dsc module builder](https://github.com/puppetlabs/Puppet.Dsc) to build your own Puppet module from it.
 
