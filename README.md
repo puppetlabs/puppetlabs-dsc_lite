@@ -24,9 +24,32 @@
 
 ## Module description
 
-The Puppet dsc_lite module allows you to manage target nodes using Windows PowerShell DSC (Desired State Configuration) Resources.
+The Puppet `dsc_lite` module allows you to manage target nodes using arbitrary Windows PowerShell DSC (Desired State Configuration) Resources.
 
-**Note that using dsc_lite requires previous experience with DSC and PowerShell, unlike our other modules that are easier to get started with. It is an alternative approach to Puppet's dsc module, providing more flexibility for advanced users.**  
+### Warning:
+
+***Using dsc_lite requires advanced experience with DSC and PowerShell, unlike our other modules that are far easier to use. It is an alternative approach to Puppet's family of [DSC modules](http://forge.puppet.com/dsc), providing more flexibility for certain niche use cases. There are many drawbacks to this approach and we highly recommend that you use the existing family of [DSC modules](http://forge.puppet.com/dsc) instead, where possible.***
+
+The `dsc_lite` module contains a lightweight `dsc` type, which is a streamlined and minimal representation of a DSC Resource declaration in Puppet syntax. This type does not contain any DSC resources itself, but can invoke arbitrary DSC Resources that already exist on the managed node. Much like the `exec` type, it simply passes parameters through to the underlying DSC Resource without any validation.
+
+This means that you are responsible for:
+
+1. Distributing the DSC Resources as needed to your managed nodes.
+1. Validating all configuration data for `dsc` declarations to prevent runtime errors.
+1. Troubleshooting all errors without property status reporting.
+
+The existing family of [DSC modules](http://forge.puppet.com/dsc) will manage all the DSC administration for you, meaning that all you need to do is install the module and start writing code. These modules also do parameter validation, meaning that errors surface during development instead of at runtime. And the VS Code integration will show you usage documentation as you write the code. These modules are automatically imported from the PowerShell Gallery on a daily basis, so they're always up to date.
+
+You should *only* use the `dsc_lite` module when any of these cases apply to you:
+
+* You need to use multiple versions of the same DSC resource
+* The upstream DSC Resource's implementation does not match its declared API but is usable otherwise and needed.
+  * In this case, `dsc_lite` should be treated as a stop-gap solution until the upstream DSC Resource can be patched to fix the misimplementation.
+* You need to use a DSC Resource that isn't published to the [Puppet Forge](http://forge.puppet.com/dsc).
+    * If you find a DSC Resource that hasn't been automatically imported, it's very likely due to an API mismatch as described above.
+    * If you have custom DSC Resources, you can use the [Puppet.dsc module builder](https://github.com/puppetlabs/Puppet.Dsc) to build your own Puppet module from it.
+
+------
 
 ### Windows system prerequisites
 
@@ -159,7 +182,7 @@ The module supports configuring repository sources and other `PackageManagement`
 
 #### Chocolatey
 
-Puppet already works well with [chocolatey](https://chocolatey.org/). You can create chocolatey packages that wrap the DSC Resources you need. 
+Puppet already works well with [chocolatey](https://chocolatey.org/). You can create chocolatey packages that wrap the DSC Resources you need.
 
 ~~~puppet
 package { 'xPSDesiredStateConfiguration':
@@ -295,7 +318,6 @@ For information on the types, see [REFERENCE.md](https://github.com/puppetlabs/p
 
 ## Limitations
 
-* For a list of tradeoffs and improvements in the dsc_lite module compared to the dsc module, see [README_Tradeoffs.md](https://github.com/puppetlabs/puppetlabs-dsc_lite/blob/master/README_Tradeoffs.md)
 * DSC Composite Resources are not supported.
 * DSC requires PowerShell `Execution Policy` for the `LocalMachine` scope to be set to a less restrictive setting than `Restricted`. If you see the error below, see [MODULES-2500](https://tickets.puppet.com/browse/MODULES-2500) for more information.
 
