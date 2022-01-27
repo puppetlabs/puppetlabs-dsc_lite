@@ -26,6 +26,7 @@ group :development do
   gem "puppet-module-win-dev-r#{minor_version}", '~> 1.0',       require: false, platforms: [:mswin, :mingw, :x64_mingw]
   gem "github_changelog_generator",                              require: false
   gem "ruby-pwsh",                                               require: false
+  gem "octokit",  "= 4.21.0"
 end
 group :system_tests do
   gem "puppet-module-posix-system-r#{minor_version}", '~> 1.0', require: false, platforms: [:ruby]
