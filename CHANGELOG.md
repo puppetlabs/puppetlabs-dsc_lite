@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file. The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) and this project adheres to [Semantic Versioning](http://semver.org).
 
+## [v3.2.0](https://github.com/puppetlabs/puppetlabs-dsc_lite/tree/v3.2.0) (2022-01-27)
+
+[Full Changelog](https://github.com/puppetlabs/puppetlabs-dsc_lite/compare/v3.1.0...v3.2.0)
+
+### Added
+
+- \(maint\) Add messaging about the differences between this and the dsc modules [\#188](https://github.com/puppetlabs/puppetlabs-dsc_lite/pull/188) ([binford2k](https://github.com/binford2k))
+
 ## [v3.1.0](https://github.com/puppetlabs/puppetlabs-dsc_lite/tree/v3.1.0) (2021-03-31)
 
 [Full Changelog](https://github.com/puppetlabs/puppetlabs-dsc_lite/compare/v3.0.1...v3.1.0)
