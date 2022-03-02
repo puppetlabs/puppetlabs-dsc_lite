@@ -70,7 +70,7 @@ describe 'puppet apply' do
 
   context 'with "--noop' do
     it 'applies manifest' do
-      run_shell('puppet apply --noop --detailed-exitcodes', dsc_manifest_b) do |result|
+      apply_manifest(dsc_manifest_b, catch_failures: true) do |result|
         expect(result.stderr).not_to match(%r{Error:})
       end
     end
