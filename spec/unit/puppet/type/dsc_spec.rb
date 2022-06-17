@@ -4,6 +4,14 @@ require 'spec_helper'
 require 'puppet/type'
 require 'puppet/type/dsc'
 
+# borrowed from
+# https://github.com/puppetlabs/puppet/blob/363f22b2a4125bedb88921d64b277d6f8adbbef2/spec/lib/puppet_spec/compiler.rb#L4-L8
+def compile_to_catalog(string, node = Puppet::Node.new('test'))
+  Puppet[:code] = string
+  # see lib/puppet/indirector/catalog/compiler.rb#filter
+  Puppet::Parser::Compiler.compile(node).filter { |r| r.virtual? }
+end
+
 describe Puppet::Type.type(:dsc) do
   subject { resource }
 
@@ -170,6 +178,19 @@ describe Puppet::Type.type(:dsc) do
       expect(munged[:properties]['bar'].unwrap).to eq value
       expect(munged[:properties]['bar2']['bar3']).to be_a_kind_of Puppet::Pops::Types::PSensitiveType::Sensitive
       expect(munged[:properties]['bar2']['bar3'].unwrap).to eq value
+    end
+
+    it 'compiles references to deferred functions into a catalog' do
+      catalog = compile_to_catalog(<<~END)
+        dsc {'foo':
+          resource_name => 'WindowsFoo',
+          properties    => {
+            password => Deferred("join", [[1,2,3], ':']),
+          }
+        }
+      END
+
+      expect(catalog.resource(:dsc, 'foo')[:properties]['password'].arguments).to eq([[1, 2, 3], ':'])
     end
   end
 end
