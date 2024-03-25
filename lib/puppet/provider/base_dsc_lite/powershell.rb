@@ -150,7 +150,7 @@ Puppet::Type.type(:base_dsc_lite).provide(:powershell) do
     @param_hash = resource
     template_name = resource.generic_dsc ? '/invoke_generic_dsc_resource.ps1.erb' : '/invoke_dsc_resource.ps1.erb'
     file = File.new(template_path + template_name, encoding: Encoding::UTF_8)
-    template = ERB.new(file.read, nil, '-')
+    template = ERB.new(file.read, trim_mode: '-')
     template.result(binding)
   end
 end
