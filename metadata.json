@@ -10,7 +10,7 @@
   "dependencies": [
     {
       "name": "puppetlabs/reboot",
-      "version_requirement": ">= 1.2.1 < 5.0.0"
+      "version_requirement": ">= 1.2.1 < 6.0.0"
     },
     {
       "name": "puppetlabs/pwshlib",
