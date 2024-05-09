@@ -13,7 +13,7 @@ spec/spec_helper.rb:
   coverage_report: true
 .github/workflows/nightly.yml:
   unmanaged: false
-.github/workflows/pr_test.yml:
+.github/workflows/ci.yml:
   unmanaged: false
 .gitpod.Dockerfile:
   unmanaged: false

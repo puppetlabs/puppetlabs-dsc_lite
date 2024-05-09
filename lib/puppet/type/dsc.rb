@@ -120,8 +120,11 @@ Puppet::Type.newtype(:dsc) do
   end
 end
 
-# Provider for dsc type
 Puppet::Type.type(:dsc).provide :powershell, parent: Puppet::Type.type(:base_dsc_lite).provider(:powershell) do
+  desc <<-DOC
+    @summary
+      Provider for dsc type
+  DOC
   confine feature: :dsc_lite
   defaultfor operatingsystem: :windows
 
