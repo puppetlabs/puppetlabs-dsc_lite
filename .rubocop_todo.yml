@@ -234,14 +234,6 @@ Style/HashConversion:
   Exclude:
     - 'lib/puppet_x/puppetlabs/dsc_lite/dsc_type_helpers.rb'
 
-# Offense count: 17
-# This cop supports safe autocorrection (--autocorrect).
-Style/IfUnlessModifier:
-  Exclude:
-    - 'lib/puppet/type/dsc.rb'
-    - 'lib/puppet_x/puppetlabs/dsc_lite/dsc_type_helpers.rb'
-    - 'spec/lib/dsc_utils.rb'
-
 # Offense count: 2
 Style/MixinUsage:
   Exclude:
