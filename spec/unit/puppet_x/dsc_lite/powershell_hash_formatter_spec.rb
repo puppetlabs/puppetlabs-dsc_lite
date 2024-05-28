@@ -42,11 +42,11 @@ describe PuppetX::PuppetLabs::DscLite::PowerShellHashFormatter do
         HERE
 
         result = formatter.format('ensure' => 'Present',
-                                  'name'            => 'foo',
-                                  'state'           => 'Started',
-                                  'physicalpath'    => 'c:/inetpub/wwwroot',
+                                  'name' => 'foo',
+                                  'state' => 'Started',
+                                  'physicalpath' => 'c:/inetpub/wwwroot',
                                   'bindinginfo' => {
-                                    'dsc_type'       => 'MSFT_xWebBindingInformation[]',
+                                    'dsc_type' => 'MSFT_xWebBindingInformation[]',
                                     'dsc_properties' => {
                                       'protocol' => 'HTTP',
                                       'port' => 80
@@ -73,11 +73,11 @@ describe PuppetX::PuppetLabs::DscLite::PowerShellHashFormatter do
         HERE
 
         result = formatter.format('ensure' => 'Present',
-                                  'name'            => 'foo',
-                                  'state'           => 'Started',
-                                  'physicalpath'    => 'c:/inetpub/wwwroot',
+                                  'name' => 'foo',
+                                  'state' => 'Started',
+                                  'physicalpath' => 'c:/inetpub/wwwroot',
                                   'authenticationinfo' => {
-                                    'dsc_type'       => 'MSFT_xWebAuthenticationInformation',
+                                    'dsc_type' => 'MSFT_xWebAuthenticationInformation',
                                     'dsc_properties' => {
                                       'anonymous' => true,
                                       'basic' => false,
@@ -113,21 +113,21 @@ describe PuppetX::PuppetLabs::DscLite::PowerShellHashFormatter do
         HERE
 
         result = formatter.format('ensure' => 'Present',
-                                  'name'         => 'foo',
-                                  'state'        => 'Started',
+                                  'name' => 'foo',
+                                  'state' => 'Started',
                                   'physicalpath' => 'c:/inetpub/wwwroot',
-                                  'bindinginfo'  => {
-                                    'dsc_type'       => 'MSFT_xWebBindingInformation[]',
+                                  'bindinginfo' => {
+                                    'dsc_type' => 'MSFT_xWebBindingInformation[]',
                                     'dsc_properties' => [
                                       {
                                         'protocol' => 'HTTP',
-                                        'port'     => 80
+                                        'port' => 80
                                       },
                                       {
-                                        'protocol'             => 'HTTPS',
-                                        'port'                 => 443,
+                                        'protocol' => 'HTTPS',
+                                        'port' => 443,
                                         'certificatethumbprint' => '5438DC0CB31B1C91B8945C7D91B3338F9C08BEFA',
-                                        'certificatestorename'  => 'My',
+                                        'certificatestorename' => 'My',
                                         'ipaddress' => '*'
                                       },
                                     ]
@@ -152,16 +152,16 @@ describe PuppetX::PuppetLabs::DscLite::PowerShellHashFormatter do
         HERE
         result = formatter.format('username' => 'jane-doe',
                                   'description' => 'Jane Doe user',
-                                  'ensure'      => 'present',
-                                  'password'    => {
+                                  'ensure' => 'present',
+                                  'password' => {
                                     'dsc_type' => 'MSFT_Credential',
                                     'dsc_properties' => {
-                                      'user'     => 'jane-doe',
+                                      'user' => 'jane-doe',
                                       'password' => 'jane-password'
                                     }
                                   },
                                   'passwordneverexpires' => false,
-                                  'disabled'             => true)
+                                  'disabled' => true)
         expect(result).to eq expected.strip
       end
 
@@ -177,9 +177,9 @@ describe PuppetX::PuppetLabs::DscLite::PowerShellHashFormatter do
 }
         HERE
         result = formatter.format('destinationPath' => "c:\fileName.jpg",
-                                  'uri'             => 'http://www.contoso.com/image.jpg',
-                                  'userAgent'       => '[Microsoft.PowerShell.Commands.PSUserAgent]::InternetExplorer',
-                                  'headers'         => {
+                                  'uri' => 'http://www.contoso.com/image.jpg',
+                                  'userAgent' => '[Microsoft.PowerShell.Commands.PSUserAgent]::InternetExplorer',
+                                  'headers' => {
                                     'Accept-Language' => 'en-US'
                                   })
         expect(result).to eq expected.strip
@@ -202,16 +202,16 @@ describe PuppetX::PuppetLabs::DscLite::PowerShellHashFormatter do
         sensitive_pass = Puppet::Pops::Types::PSensitiveType::Sensitive.new('password')
         result = formatter.format('username' => 'jane-doe',
                                   'description' => 'Jane Doe user',
-                                  'ensure'      => 'present',
-                                  'password'    => {
+                                  'ensure' => 'present',
+                                  'password' => {
                                     'dsc_type' => 'MSFT_Credential',
                                     'dsc_properties' => {
-                                      'user'     => 'jane-doe',
+                                      'user' => 'jane-doe',
                                       'password' => sensitive_pass
                                     }
                                   },
                                   'passwordneverexpires' => false,
-                                  'disabled'             => true)
+                                  'disabled' => true)
         expect(result).to eq expected.strip
       end
     end
