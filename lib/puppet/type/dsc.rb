@@ -56,7 +56,7 @@ Puppet::Type.newtype(:dsc) do
       if value.nil? || value.empty?
         raise ArgumentError, "A non-empty #{name} must be specified."
       end
-      raise("#{value} is not a valid #{name}") unless value.is_a? ::String
+      raise("#{value} is not a valid #{name}") unless value.is_a? String
     end
   end
 
@@ -66,7 +66,7 @@ Puppet::Type.newtype(:dsc) do
       if value.nil? || value.empty?
         raise ArgumentError, "A non-empty #{name} must be specified."
       end
-      raise "#{name} should be a String" unless value.is_a? ::String
+      raise "#{name} should be a String" unless value.is_a? String
     end
   end
 
@@ -103,7 +103,7 @@ Puppet::Type.newtype(:dsc) do
       if value.nil? || value.empty?
         raise ArgumentError, "A non-empty #{name} must be specified."
       end
-      raise "#{name} should be a Hash" unless value.is_a? ::Hash
+      raise "#{name} should be a Hash" unless value.is_a? Hash
     end
 
     munge do |value|

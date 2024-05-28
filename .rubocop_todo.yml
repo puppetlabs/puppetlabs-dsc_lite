@@ -254,12 +254,6 @@ Style/NegatedIfElseCondition:
   Exclude:
     - 'lib/puppet_x/puppetlabs/dsc_lite/powershell_hash_formatter.rb'
 
-# Offense count: 3
-# This cop supports safe autocorrection (--autocorrect).
-Style/RedundantConstantBase:
-  Exclude:
-    - 'lib/puppet/type/dsc.rb'
-
 # Offense count: 13
 # This cop supports unsafe autocorrection (--autocorrect-all).
 # Configuration parameters: Mode.
