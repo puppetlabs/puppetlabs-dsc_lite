@@ -248,12 +248,6 @@ Style/MixinUsage:
     - 'spec/spec_helper.rb'
     - 'spec/spec_helper_acceptance.rb'
 
-# Offense count: 1
-# This cop supports safe autocorrection (--autocorrect).
-Style/NegatedIfElseCondition:
-  Exclude:
-    - 'lib/puppet_x/puppetlabs/dsc_lite/powershell_hash_formatter.rb'
-
 # Offense count: 13
 # This cop supports unsafe autocorrection (--autocorrect-all).
 # Configuration parameters: Mode.

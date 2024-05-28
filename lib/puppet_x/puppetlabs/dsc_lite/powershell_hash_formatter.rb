@@ -22,15 +22,15 @@ module PuppetX
         end
 
         private_class_method def self.format_hash(value)
-          if !value.key?('dsc_type')
-            format_hash_to_string(value)
-          else
+          if value.key?('dsc_type')
             case value['dsc_type']
             when 'MSFT_Credential'
               "([PSCustomObject]#{format_hash(value['dsc_properties'])} | new-pscredential)"
             else
               format_ciminstance(value)
             end
+          else
+            format_hash_to_string(value)
           end
         end
 
