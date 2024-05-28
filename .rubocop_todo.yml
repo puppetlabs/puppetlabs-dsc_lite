@@ -212,14 +212,6 @@ Style/CaseLikeIf:
     - 'spec/spec_helper_acceptance_local.rb'
 
 # Offense count: 2
-# This cop supports safe autocorrection (--autocorrect).
-# Configuration parameters: AllowedMethods, AllowedPatterns.
-# AllowedMethods: ==, equal?, eql?
-Style/ClassEqualityComparison:
-  Exclude:
-    - 'lib/puppet_x/puppetlabs/dsc_lite/powershell_hash_formatter.rb'
-
-# Offense count: 2
 Style/MixinUsage:
   Exclude:
     - 'spec/spec_helper.rb'

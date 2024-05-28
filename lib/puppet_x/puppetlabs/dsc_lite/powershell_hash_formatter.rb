@@ -12,9 +12,9 @@ module PuppetX
         #
         # @return [Object] Formatted value.
         def self.format(dsc_value)
-          if dsc_value.class.name == 'Hash'
+          if dsc_value.instance_of?(::Hash)
             format_hash(dsc_value)
-          elsif dsc_value.class.name == 'Puppet::Pops::Types::PSensitiveType::Sensitive'
+          elsif dsc_value.instance_of?(::Puppet::Pops::Types::PSensitiveType::Sensitive)
             "'#{escape_quotes(dsc_value.unwrap)}' # PuppetSensitive"
           else
             Pwsh::Util.format_powershell_value(dsc_value)
