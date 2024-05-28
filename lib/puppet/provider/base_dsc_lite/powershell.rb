@@ -78,6 +78,7 @@ Puppet::Type.type(:base_dsc_lite).provide(:powershell) do
     Puppet.debug "Dsc Resource returned: #{output}"
     data = JSON.parse(output)
     raise(data['errormessage']) unless data['errormessage'].empty?
+
     exists = data['indesiredstate']
     Puppet.debug "Dsc Resource Exists?: #{exists}"
     Puppet.debug "dsc_ensure: #{resource[:dsc_ensure]}" if resource.parameters.key?(:dsc_ensure)

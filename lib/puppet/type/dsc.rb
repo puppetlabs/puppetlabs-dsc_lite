@@ -74,6 +74,7 @@ Puppet::Type.newtype(:dsc) do
     validate do |value|
       raise ArgumentError, "A non-empty #{name} must be specified." if value.nil? || value.empty?
       raise "#{name} should be a Hash or String" unless value.is_a?(Hash) || value.is_a?(String)
+
       if value.is_a?(Hash)
         valid_keys = ['name', 'version']
         raise(_('Must specify name and version if using ModuleSpecification')) unless (value.keys & valid_keys) == value.keys
