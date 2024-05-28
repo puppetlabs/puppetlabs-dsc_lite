@@ -69,7 +69,7 @@ module PuppetX
           [key, value]
         end
 
-        Hash[remapped_value]
+        remapped_value.to_h
       end
 
       # Validates a supplied MSFT credential hash.

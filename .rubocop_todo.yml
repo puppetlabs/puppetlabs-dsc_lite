@@ -227,13 +227,6 @@ Style/FetchEnvVar:
     - 'lib/puppet/provider/base_dsc_lite/powershell.rb'
     - 'spec/spec_helper_acceptance.rb'
 
-# Offense count: 1
-# This cop supports safe autocorrection (--autocorrect).
-# Configuration parameters: AllowSplatArgument.
-Style/HashConversion:
-  Exclude:
-    - 'lib/puppet_x/puppetlabs/dsc_lite/dsc_type_helpers.rb'
-
 # Offense count: 2
 Style/MixinUsage:
   Exclude:
