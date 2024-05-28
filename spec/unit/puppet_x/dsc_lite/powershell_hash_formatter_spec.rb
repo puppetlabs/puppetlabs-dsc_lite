@@ -49,8 +49,8 @@ HERE
                                     'dsc_type'       => 'MSFT_xWebBindingInformation[]',
                                     'dsc_properties' => {
                                       'protocol' => 'HTTP',
-                                      'port' => 80,
-                                    },
+                                      'port' => 80
+                                    }
                                   })
 
         expect(result).to eq expected.strip
@@ -82,8 +82,8 @@ HERE
                                       'anonymous' => true,
                                       'basic' => false,
                                       'windows' => true,
-                                      'digest' => false,
-                                    },
+                                      'digest' => false
+                                    }
                                   })
 
         expect(result).to eq expected.strip
@@ -121,16 +121,16 @@ HERE
                                     'dsc_properties' => [
                                       {
                                         'protocol' => 'HTTP',
-                                        'port'     => 80,
+                                        'port'     => 80
                                       },
                                       {
                                         'protocol'             => 'HTTPS',
                                         'port'                 => 443,
                                         'certificatethumbprint' => '5438DC0CB31B1C91B8945C7D91B3338F9C08BEFA',
                                         'certificatestorename'  => 'My',
-                                        'ipaddress' => '*',
+                                        'ipaddress' => '*'
                                       },
-                                    ],
+                                    ]
                                   })
 
         expect(result).to eq expected.strip
@@ -157,8 +157,8 @@ HERE
                                     'dsc_type' => 'MSFT_Credential',
                                     'dsc_properties' => {
                                       'user'     => 'jane-doe',
-                                      'password' => 'jane-password',
-                                    },
+                                      'password' => 'jane-password'
+                                    }
                                   },
                                   'passwordneverexpires' => false,
                                   'disabled'             => true)
@@ -180,7 +180,7 @@ HERE
                                   'uri'             => 'http://www.contoso.com/image.jpg',
                                   'userAgent'       => '[Microsoft.PowerShell.Commands.PSUserAgent]::InternetExplorer',
                                   'headers'         => {
-                                    'Accept-Language' => 'en-US',
+                                    'Accept-Language' => 'en-US'
                                   })
         expect(result).to eq expected.strip
       end
@@ -207,8 +207,8 @@ HERE
                                     'dsc_type' => 'MSFT_Credential',
                                     'dsc_properties' => {
                                       'user'     => 'jane-doe',
-                                      'password' => sensitive_pass,
-                                    },
+                                      'password' => sensitive_pass
+                                    }
                                   },
                                   'passwordneverexpires' => false,
                                   'disabled'             => true)

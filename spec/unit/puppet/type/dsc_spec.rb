@@ -141,8 +141,8 @@ describe Puppet::Type.type(:dsc) do
         properties: {
           'bar' => { '__ptype' => 'Sensitive', '__pvalue' => value },
           'bar2' => {
-            'bar3' => { '__ptype' => 'Sensitive', '__pvalue' => value },
-          },
+            'bar3' => { '__ptype' => 'Sensitive', '__pvalue' => value }
+          }
         },
         resource_name: 'baz',
         module: 'cat',
@@ -160,8 +160,8 @@ describe Puppet::Type.type(:dsc) do
         properties: {
           'bar' => { '__pcore_type__' => 'Sensitive', '__pcore_value__' => value },
           'bar2' => {
-            'bar3' => { '__pcore_type__' => 'Sensitive', '__pcore_value__' => value },
-          },
+            'bar3' => { '__pcore_type__' => 'Sensitive', '__pcore_value__' => value }
+          }
         },
         resource_name: 'baz',
         module: 'cat',
