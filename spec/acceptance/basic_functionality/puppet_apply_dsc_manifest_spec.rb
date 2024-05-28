@@ -58,7 +58,7 @@ describe 'puppet apply' do
     it 'applies manifest' do
       apply_manifest(dsc_manifest, catch_failures: true) do |result|
         expect(result.stderr).not_to match(%r{Error:})
-        expect(result.stdout).to match(%r{Stage\[main\]\/Main\/Dsc\[#{fake_name}\]/ensure\: invoked})
+        expect(result.stdout).to match(%r{Stage\[main\]/Main/Dsc\[#{fake_name}\]/ensure: invoked})
       end
     end
 

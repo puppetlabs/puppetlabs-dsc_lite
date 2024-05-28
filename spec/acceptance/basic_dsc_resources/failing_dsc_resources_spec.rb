@@ -40,7 +40,7 @@ describe 'dsc exceptions' do
     it 'applies manifest, raises error' do
       apply_manifest(dsc_manifest, expect_failures: true) do |result|
         expect(result.stderr).to match(%r{#{error_msg}})
-        expect(result.stdout).to match(%r{Stage\[main\]\/Main\/Dsc\[good_resource\]\/ensure\: invoked})
+        expect(result.stdout).to match(%r{Stage\[main\]/Main/Dsc\[good_resource\]/ensure: invoked})
       end
     end
   end
