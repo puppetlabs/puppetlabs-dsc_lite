@@ -120,12 +120,6 @@ RSpec/ExampleLength:
   Max: 73
 
 # Offense count: 1
-# This cop supports safe autocorrection (--autocorrect).
-RSpec/HooksBeforeExamples:
-  Exclude:
-    - 'spec/unit/puppet/type/base_dsc_spec.rb'
-
-# Offense count: 1
 RSpec/LeakyConstantDeclaration:
   Exclude:
     - 'spec/acceptance/unicode/puppet_apply_utf8_file_name_spec.rb'
