@@ -121,8 +121,8 @@ module PuppetX
 
           # signed values reserve 1 bit for sign
           signed = !mof_type[:type].start_with?('u')
-          min = (signed ? eval('-0b' + '1' * (width - 1)) - 1 : 0) # rubocop:disable Security/Eval
-          max = (signed ? eval('0b' + '1' * (width - 1)) : eval('0b' + '1' * width)) # rubocop:disable Security/Eval
+          min = (signed ? eval('-0b' + ('1' * (width - 1))) - 1 : 0) # rubocop:disable Security/Eval
+          max = (signed ? eval('0b' + ('1' * (width - 1))) : eval('0b' + ('1' * width))) # rubocop:disable Security/Eval
 
           # munging has not yet occurred to convert these values prior to validation
           values = Array(value)
