@@ -19,7 +19,7 @@ describe PuppetX::PuppetLabs::DscLite::PowerShellHashFormatter do
 'ensure' = 'present';
 'name' = 'Web-WebServer'
 }
-HERE
+        HERE
         result = formatter.format('ensure' => 'present',
                                   'name' => 'Web-WebServer')
         expect(result).to eq expected.strip
@@ -39,7 +39,7 @@ HERE
 })
 )
 }
-HERE
+        HERE
 
         result = formatter.format('ensure' => 'Present',
                                   'name'            => 'foo',
@@ -70,7 +70,7 @@ HERE
 'digest' = $false
 })
 }
-HERE
+        HERE
 
         result = formatter.format('ensure' => 'Present',
                                   'name'            => 'foo',
@@ -110,7 +110,7 @@ HERE
 })
 )
 }
-HERE
+        HERE
 
         result = formatter.format('ensure' => 'Present',
                                   'name'         => 'foo',
@@ -149,7 +149,7 @@ HERE
 'passwordneverexpires' = $false;
 'disabled' = $true
 }
-HERE
+        HERE
         result = formatter.format('username' => 'jane-doe',
                                   'description' => 'Jane Doe user',
                                   'ensure'      => 'present',
@@ -175,7 +175,7 @@ HERE
 'Accept-Language' = 'en-US'
 }
 }
-HERE
+        HERE
         result = formatter.format('destinationPath' => "c:\fileName.jpg",
                                   'uri'             => 'http://www.contoso.com/image.jpg',
                                   'userAgent'       => '[Microsoft.PowerShell.Commands.PSUserAgent]::InternetExplorer',
@@ -198,7 +198,7 @@ HERE
 'passwordneverexpires' = $false;
 'disabled' = $true
 }
-HERE
+        HERE
         sensitive_pass = Puppet::Pops::Types::PSensitiveType::Sensitive.new('password')
         result = formatter.format('username' => 'jane-doe',
                                   'description' => 'Jane Doe user',
