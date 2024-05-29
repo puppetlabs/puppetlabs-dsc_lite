@@ -16,7 +16,7 @@ describe Puppet::Type.type(:dsc) do
     )
   end
 
-  it { is_expected.to be_a_kind_of Puppet::Type::Dsc }
+  it { is_expected.to be_a Puppet::Type::Dsc }
 
   describe 'type' do
     it 'is built dynamically from parameter :resource_name' do
@@ -141,15 +141,15 @@ describe Puppet::Type.type(:dsc) do
         properties: {
           'bar' => { '__ptype' => 'Sensitive', '__pvalue' => value },
           'bar2' => {
-            'bar3' => { '__ptype' => 'Sensitive', '__pvalue' => value },
-          },
+            'bar3' => { '__ptype' => 'Sensitive', '__pvalue' => value }
+          }
         },
         resource_name: 'baz',
         module: 'cat',
       )
-      expect(munged[:properties]['bar']).to be_a_kind_of Puppet::Pops::Types::PSensitiveType::Sensitive
+      expect(munged[:properties]['bar']).to be_a Puppet::Pops::Types::PSensitiveType::Sensitive
       expect(munged[:properties]['bar'].unwrap).to eq value
-      expect(munged[:properties]['bar2']['bar3']).to be_a_kind_of Puppet::Pops::Types::PSensitiveType::Sensitive
+      expect(munged[:properties]['bar2']['bar3']).to be_a Puppet::Pops::Types::PSensitiveType::Sensitive
       expect(munged[:properties]['bar2']['bar3'].unwrap).to eq value
     end
 
@@ -160,15 +160,15 @@ describe Puppet::Type.type(:dsc) do
         properties: {
           'bar' => { '__pcore_type__' => 'Sensitive', '__pcore_value__' => value },
           'bar2' => {
-            'bar3' => { '__pcore_type__' => 'Sensitive', '__pcore_value__' => value },
-          },
+            'bar3' => { '__pcore_type__' => 'Sensitive', '__pcore_value__' => value }
+          }
         },
         resource_name: 'baz',
         module: 'cat',
       )
-      expect(munged[:properties]['bar']).to be_a_kind_of Puppet::Pops::Types::PSensitiveType::Sensitive
+      expect(munged[:properties]['bar']).to be_a Puppet::Pops::Types::PSensitiveType::Sensitive
       expect(munged[:properties]['bar'].unwrap).to eq value
-      expect(munged[:properties]['bar2']['bar3']).to be_a_kind_of Puppet::Pops::Types::PSensitiveType::Sensitive
+      expect(munged[:properties]['bar2']['bar3']).to be_a Puppet::Pops::Types::PSensitiveType::Sensitive
       expect(munged[:properties]['bar2']['bar3'].unwrap).to eq value
     end
   end

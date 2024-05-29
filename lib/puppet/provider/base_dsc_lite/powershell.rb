@@ -9,10 +9,10 @@ Puppet::Type.type(:base_dsc_lite).provide(:powershell) do
   confine operatingsystem: :windows
   defaultfor operatingsystem: :windows
 
-  commands powershell: (if File.exist?("#{ENV['SYSTEMROOT']}\\sysnative\\WindowsPowershell\\v1.0\\powershell.exe")
-                          "#{ENV['SYSTEMROOT']}\\sysnative\\WindowsPowershell\\v1.0\\powershell.exe"
-                        elsif File.exist?("#{ENV['SYSTEMROOT']}\\system32\\WindowsPowershell\\v1.0\\powershell.exe")
-                          "#{ENV['SYSTEMROOT']}\\system32\\WindowsPowershell\\v1.0\\powershell.exe"
+  commands powershell: (if File.exist?("#{ENV.fetch('SYSTEMROOT', nil)}\\sysnative\\WindowsPowershell\\v1.0\\powershell.exe")
+                          "#{ENV.fetch('SYSTEMROOT', nil)}\\sysnative\\WindowsPowershell\\v1.0\\powershell.exe"
+                        elsif File.exist?("#{ENV.fetch('SYSTEMROOT', nil)}\\system32\\WindowsPowershell\\v1.0\\powershell.exe")
+                          "#{ENV.fetch('SYSTEMROOT', nil)}\\system32\\WindowsPowershell\\v1.0\\powershell.exe"
                         else
                           'powershell.exe'
                         end)
@@ -78,6 +78,7 @@ Puppet::Type.type(:base_dsc_lite).provide(:powershell) do
     Puppet.debug "Dsc Resource returned: #{output}"
     data = JSON.parse(output)
     raise(data['errormessage']) unless data['errormessage'].empty?
+
     exists = data['indesiredstate']
     Puppet.debug "Dsc Resource Exists?: #{exists}"
     Puppet.debug "dsc_ensure: #{resource[:dsc_ensure]}" if resource.parameters.key?(:dsc_ensure)

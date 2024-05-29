@@ -53,20 +53,16 @@ Puppet::Type.newtype(:dsc) do
   newparam(:name, namevar: true) do
     desc 'Name of the declaration. This has no affect on the DSC Resource declaration and is not used by the DSC Resource.'
     validate do |value|
-      if value.nil? || value.empty?
-        raise ArgumentError, "A non-empty #{name} must be specified."
-      end
-      raise("#{value} is not a valid #{name}") unless value.is_a? ::String
+      raise ArgumentError, "A non-empty #{name} must be specified." if value.nil? || value.empty?
+      raise("#{value} is not a valid #{name}") unless value.is_a? String
     end
   end
 
   newparam(:resource_name) do
     desc 'Name of the DSC Resource to use. For example, the xRemoteFile DSC Resource.'
     validate do |value|
-      if value.nil? || value.empty?
-        raise ArgumentError, "A non-empty #{name} must be specified."
-      end
-      raise "#{name} should be a String" unless value.is_a? ::String
+      raise ArgumentError, "A non-empty #{name} must be specified." if value.nil? || value.empty?
+      raise "#{name} should be a String" unless value.is_a? String
     end
   end
 
@@ -76,15 +72,12 @@ Puppet::Type.newtype(:dsc) do
       the xRemoteFile DSC Resource.
     DOC
     validate do |value|
-      if value.nil? || value.empty?
-        raise ArgumentError, "A non-empty #{name} must be specified."
-      end
+      raise ArgumentError, "A non-empty #{name} must be specified." if value.nil? || value.empty?
       raise "#{name} should be a Hash or String" unless value.is_a?(Hash) || value.is_a?(String)
+
       if value.is_a?(Hash)
         valid_keys = ['name', 'version']
-        unless (value.keys & valid_keys) == value.keys
-          raise(_('Must specify name and version if using ModuleSpecification'))
-        end
+        raise(_('Must specify name and version if using ModuleSpecification')) unless (value.keys & valid_keys) == value.keys
       end
     end
   end
@@ -100,10 +93,8 @@ Puppet::Type.newtype(:dsc) do
     DOC
 
     validate do |value|
-      if value.nil? || value.empty?
-        raise ArgumentError, "A non-empty #{name} must be specified."
-      end
-      raise "#{name} should be a Hash" unless value.is_a? ::Hash
+      raise ArgumentError, "A non-empty #{name} must be specified." if value.nil? || value.empty?
+      raise "#{name} should be a Hash" unless value.is_a? Hash
     end
 
     munge do |value|

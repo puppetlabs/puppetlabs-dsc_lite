@@ -60,9 +60,7 @@ module PuppetX
               'int8[]', 'int16[]', 'int32[]', 'int64[]',
               'sint8[]', 'sint16[]', 'sint32[]', 'sint64[]'
 
-              unless Array(value).all? { |v| v.is_a?(Numeric) || v =~ %r{^[-+]?\d+$} }
-                raise "#{key} should only include numeric values: invalid value #{value}"
-              end
+              raise "#{key} should only include numeric values: invalid value #{value}" unless Array(value).all? { |v| v.is_a?(Numeric) || v =~ %r{^[-+]?\d+$} }
 
               value = value.is_a?(Array) ? value.map { |v| v.to_i } : value.to_i
             end
@@ -71,7 +69,7 @@ module PuppetX
           [key, value]
         end
 
-        Hash[remapped_value]
+        remapped_value.to_h
       end
 
       # Validates a supplied MSFT credential hash.
@@ -80,25 +78,19 @@ module PuppetX
       # @param [String] name Name of MSFT credential
       # @param [Hash] value MSFT credential hash
       def self.validate_MSFT_Credential(name, value) # rubocop:disable Style/MethodName
-        unless value.is_a?(Hash)
-          raise("Invalid value '#{value}'. Should be a hash")
-        end
+        raise("Invalid value '#{value}'. Should be a hash") unless value.is_a?(Hash)
 
         required = ['user', 'password']
         required.each do |key|
           next unless value[key]
-          unless (value[key].is_a? String) || (value[key].is_a? Puppet::Pops::Types::PSensitiveType::Sensitive)
-            raise "#{key} for #{name} should be a String or Sensitive value"
-          end
+          raise "#{key} for #{name} should be a String or Sensitive value" unless (value[key].is_a? String) || (value[key].is_a? Puppet::Pops::Types::PSensitiveType::Sensitive)
           raise "#{key} must not be empty" if value[key].to_s.empty?
         end
 
         specified_keys = value.keys.map(&:to_s)
 
         missing = required - specified_keys
-        unless missing.empty?
-          raise "#{name} is missing the following required keys: #{missing.join(',')}"
-        end
+        raise "#{name} is missing the following required keys: #{missing.join(',')}" unless missing.empty?
 
         extraneous = specified_keys - required
         raise "#{name} includes invalid keys: #{extraneous.join(',')}" unless extraneous.empty?
@@ -113,9 +105,7 @@ module PuppetX
       # @param [String] value
       def self.validate_mof_type(mof_type, embeddedinstance_name, name, value)
         should_be_array = mof_type[:type].end_with?('[]')
-        if !should_be_array && value.is_a?(Array)
-          raise "#{name} of #{embeddedinstance_name} should not be an Array: invalid value #{value}"
-        end
+        raise "#{name} of #{embeddedinstance_name} should not be an Array: invalid value #{value}" if !should_be_array && value.is_a?(Array)
 
         case mof_type[:type]
         when 'bool', 'boolean'
@@ -131,41 +121,29 @@ module PuppetX
 
           # signed values reserve 1 bit for sign
           signed = !mof_type[:type].start_with?('u')
-          min = (signed ? eval('-0b' + '1' * (width - 1)) - 1 : 0) # rubocop:disable Security/Eval
-          max = (signed ? eval('0b' + '1' * (width - 1)) : eval('0b' + '1' * width)) # rubocop:disable Security/Eval
+          min = (signed ? eval('-0b' + ('1' * (width - 1))) - 1 : 0) # rubocop:disable Security/Eval
+          max = (signed ? eval('0b' + ('1' * (width - 1))) : eval('0b' + ('1' * width))) # rubocop:disable Security/Eval
 
           # munging has not yet occurred to convert these values prior to validation
           values = Array(value)
-          unless values.all? { |v| v.is_a?(Numeric) || v =~ %r{^[-+]?\d+$} }
-            raise "#{name} of #{embeddedinstance_name} is not a numeric value: invalid value #{value}"
-          end
+          raise "#{name} of #{embeddedinstance_name} is not a numeric value: invalid value #{value}" unless values.all? { |v| v.is_a?(Numeric) || v =~ %r{^[-+]?\d+$} }
 
           values = values.map { |v| v.to_i }
-          unless values.all? { |v| (min <= v) && (v <= max) }
-            raise "#{name} of #{embeddedinstance_name} is outside the valid range of values: #{min} to #{max}: invalid value #{value}"
-          end
+          raise "#{name} of #{embeddedinstance_name} is outside the valid range of values: #{min} to #{max}: invalid value #{value}" unless values.all? { |v| (min <= v) && (v <= max) }
 
-          if mof_type[:values] && !values.all? { |v| mof_type[:values].include?(v) }
-            raise("Invalid value #{value}. Valid values are #{mof_type[:values].join(', ')}")
-          end
+          raise("Invalid value #{value}. Valid values are #{mof_type[:values].join(', ')}") if mof_type[:values] && !values.all? { |v| mof_type[:values].include?(v) }
         when 'string', 'string[]'
           values = Array(value)
-          unless values.all? { |v| v.is_a? String }
-            raise "#{name} of #{embeddedinstance_name} should be an Array: invalid value #{value}"
-          end
+          raise "#{name} of #{embeddedinstance_name} should be an Array: invalid value #{value}" unless values.all? { |v| v.is_a? String }
           if mof_type[:values] && !values.all? { |v| mof_type[:values].any? { |allowed_v| v.casecmp(allowed_v).zero? } }
             raise("Invalid value #{value}. Valid values are #{mof_type[:values].join(', ')}")
           end
         when 'MSFT_Credential', 'MSFT_Credential[]'
           validate_MSFT_Credential(name, value)
         when 'MSFT_KeyValuePair'
-          unless (value.is_a? Hash) && (value.length == 1)
-            raise "#{name} of #{embeddedinstance_name} should be a Hash with 1 item: invalid value #{value}"
-          end
+          raise "#{name} of #{embeddedinstance_name} should be a Hash with 1 item: invalid value #{value}" unless (value.is_a? Hash) && (value.length == 1)
         when 'MSFT_KeyValuePair[]'
-          unless value.is_a? Hash
-            raise "#{name} of #{embeddedinstance_name} should be a Hash: invalid value #{value}"
-          end
+          raise "#{name} of #{embeddedinstance_name} should be a Hash: invalid value #{value}" unless value.is_a? Hash
         else
           validation_method = "validate_#{mof_type[:type]}"
           # rubocop:disable Style/GuardClause

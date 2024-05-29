@@ -41,7 +41,7 @@ describe 'reboot with no invoke, warning' do
           # assert_match(%r{Stage\[main\]\/Main\/Dsc\[#{fake_name}\]\/ensure\: created}, result.stdout, 'DSC Resource missing!')
           # assert_no_match(%r{Error:}, result.stderr, 'Unexpected error was detected!')
           # assert_no_match(%r{Warning:}, result.stderr, 'Unexpected warning was detected!')
-          expect(result.stdout).to match(%r{Stage\[main\]\/Main\/Dsc\[#{fake_name}\]\/ensure\: created})
+          expect(result.stdout).to match(%r{Stage\[main\]/Main/Dsc\[#{fake_name}\]/ensure: created})
           expect(result.stderr).not_to match(%r{Error:})
           expect(result.stderr).not_to match(%r{Warning:})
         end

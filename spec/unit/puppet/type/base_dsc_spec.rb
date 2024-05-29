@@ -16,12 +16,12 @@ describe Puppet::Type.type(:base_dsc_lite) do
   # Configuration PROVIDER TESTS
 
   describe 'powershell provider tests' do
-    it 'successfully instantiate the provider' do
-      described_class.provider(:powershell).new(base_dsc_lite)
-    end
-
     before(:each) do
       @provider = described_class.provider(:powershell).new(base_dsc_lite)
+    end
+
+    it 'successfully instantiate the provider' do
+      described_class.provider(:powershell).new(base_dsc_lite)
     end
   end
 end

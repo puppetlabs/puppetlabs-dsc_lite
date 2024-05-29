@@ -35,13 +35,13 @@ end
 
 def create_windows_file(folder_path, file_name, content)
   content = content.tr('"', "'")
-  manifest = <<-FileManifest
+  manifest = <<-FILEMANIFEST
     file{"#{folder_path}":
       ensure => directory,
     }
     file { "#{folder_path}/#{file_name}":
       content => "#{content}",
     }
-  FileManifest
+  FILEMANIFEST
   apply_manifest(manifest)
 end

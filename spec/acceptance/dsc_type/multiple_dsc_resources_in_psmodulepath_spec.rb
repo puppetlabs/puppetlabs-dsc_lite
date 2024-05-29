@@ -73,7 +73,7 @@ describe 'multiple versioned resources' do
   context 'load a DSC resource from PSModulePath by ModuleName when multiple versions exist' do
     context 'when multiple versions exist' do
       # NOTE: regex includes Node\[default\]\/ when run via agent rather than apply
-      let(:error_msg) { %r{Stage\[main\]\/Main\/Dsc\[#{fake_name}\]\: Could not evaluate\: Resource PuppetFakeResource was not found\.} }
+      let(:error_msg) { %r{Stage\[main\]/Main/Dsc\[#{fake_name}\]: Could not evaluate: Resource PuppetFakeResource was not found\.} }
 
       it 'has two PuppetFakeResource resources' do
         # verify DSC shows 2 installed copies of the resource

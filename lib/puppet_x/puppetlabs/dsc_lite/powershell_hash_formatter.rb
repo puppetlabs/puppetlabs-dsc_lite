@@ -12,9 +12,9 @@ module PuppetX
         #
         # @return [Object] Formatted value.
         def self.format(dsc_value)
-          if dsc_value.class.name == 'Hash'
+          if dsc_value.instance_of?(::Hash)
             format_hash(dsc_value)
-          elsif dsc_value.class.name == 'Puppet::Pops::Types::PSensitiveType::Sensitive'
+          elsif dsc_value.instance_of?(::Puppet::Pops::Types::PSensitiveType::Sensitive)
             "'#{escape_quotes(dsc_value.unwrap)}' # PuppetSensitive"
           else
             Pwsh::Util.format_powershell_value(dsc_value)
@@ -22,15 +22,15 @@ module PuppetX
         end
 
         private_class_method def self.format_hash(value)
-          if !value.key?('dsc_type')
-            format_hash_to_string(value)
-          else
+          if value.key?('dsc_type')
             case value['dsc_type']
             when 'MSFT_Credential'
               "([PSCustomObject]#{format_hash(value['dsc_properties'])} | new-pscredential)"
             else
               format_ciminstance(value)
             end
+          else
+            format_hash_to_string(value)
           end
         end
 

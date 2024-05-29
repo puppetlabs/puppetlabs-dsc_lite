@@ -9,9 +9,7 @@ def locate_dsc_module
     dsc_module_path = "#{module_path}/dsc_lite".tr('\\', '/')
     ps_command = "Test-Path -Type Container -Path #{dsc_module_path}"
     run_shell("powershell.exe -NoProfile -Nologo -Command \"if ( #{ps_command} ) { exit 0 } else { exit 1 }\"", expect_failures: true) do |result|
-      if result.exit_code == 0
-        return dsc_module_path
-      end
+      return dsc_module_path if result.exit_code == 0
     end
   end
   # Return nothing if module is not installed.
