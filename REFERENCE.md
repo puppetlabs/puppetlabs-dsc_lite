@@ -20,16 +20,16 @@ Do not use this directly.
 
 The following parameters are available in the `base_dsc_lite` type.
 
-* [`name`](#name)
-* [`provider`](#provider)
+* [`name`](#-base_dsc_lite--name)
+* [`provider`](#-base_dsc_lite--provider)
 
-##### <a name="name"></a>`name`
+##### <a name="-base_dsc_lite--name"></a>`name`
 
 namevar
 
 A name to describe your resource, used for uniqueness.
 
-##### <a name="provider"></a>`provider`
+##### <a name="-base_dsc_lite--provider"></a>`provider`
 
 The specific backend to use for this `base_dsc_lite` resource. You will seldom need to specify this --- Puppet will
 usually discover the appropriate provider for your platform.
@@ -67,24 +67,24 @@ An optional property that specifies that the DSC resource should be invoked.
 
 The following parameters are available in the `dsc` type.
 
-* [`module`](#module)
-* [`name`](#name)
-* [`properties`](#properties)
-* [`provider`](#provider)
-* [`resource_name`](#resource_name)
+* [`module`](#-dsc--module)
+* [`name`](#-dsc--name)
+* [`properties`](#-dsc--properties)
+* [`provider`](#-dsc--provider)
+* [`resource_name`](#-dsc--resource_name)
 
-##### <a name="module"></a>`module`
+##### <a name="-dsc--module"></a>`module`
 
 Name of the DSC Resource module to use. For example, the xPSDesiredStateConfiguration DSC Resource module contains
 the xRemoteFile DSC Resource.
 
-##### <a name="name"></a>`name`
+##### <a name="-dsc--name"></a>`name`
 
 namevar
 
 Name of the declaration. This has no affect on the DSC Resource declaration and is not used by the DSC Resource.
 
-##### <a name="properties"></a>`properties`
+##### <a name="-dsc--properties"></a>`properties`
 
 Hash of properties to pass to the DSC Resource.
 
@@ -96,12 +96,12 @@ and the `dsc_properties` contains a hash or an array of hashes representing the 
 CimInstance is
 an array, we append a `[]` to the end of the name.
 
-##### <a name="provider"></a>`provider`
+##### <a name="-dsc--provider"></a>`provider`
 
 The specific backend to use for this `dsc` resource. You will seldom need to specify this --- Puppet will usually
 discover the appropriate provider for your platform.
 
-##### <a name="resource_name"></a>`resource_name`
+##### <a name="-dsc--resource_name"></a>`resource_name`
 
 Name of the DSC Resource to use. For example, the xRemoteFile DSC Resource.
 

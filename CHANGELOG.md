@@ -2,6 +2,22 @@
 
 All notable changes to this project will be documented in this file. The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) and this project adheres to [Semantic Versioning](http://semver.org).
 
+## [v4.0.0](https://github.com/puppetlabs/puppetlabs-dsc_lite/tree/v4.0.0) - 2024-05-29
+
+[Full Changelog](https://github.com/puppetlabs/puppetlabs-dsc_lite/compare/v3.2.0...v4.0.0)
+
+### Changed
+
+- (CAT-1861) Puppet 8 upgrade / Drop Puppet 6 support [#209](https://github.com/puppetlabs/puppetlabs-dsc_lite/pull/209) ([LukasAud](https://github.com/LukasAud))
+
+### Added
+
+- pdksync - (FM-8922) - Add Support for Windows 2022 [#196](https://github.com/puppetlabs/puppetlabs-dsc_lite/pull/196) ([david22swan](https://github.com/david22swan))
+
+### Fixed
+
+- Fix ERB.new depracation notices [#204](https://github.com/puppetlabs/puppetlabs-dsc_lite/pull/204) ([Fabian1976](https://github.com/Fabian1976))
+
 ## [v3.2.0](https://github.com/puppetlabs/puppetlabs-dsc_lite/tree/v3.2.0) (2022-01-27)
 
 [Full Changelog](https://github.com/puppetlabs/puppetlabs-dsc_lite/compare/v3.1.0...v3.2.0)
