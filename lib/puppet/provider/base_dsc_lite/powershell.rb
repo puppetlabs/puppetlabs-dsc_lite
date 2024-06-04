@@ -56,25 +56,39 @@ Puppet::Type.type(:base_dsc_lite).provide(:powershell) do
     File.expand_path(Pathname.new(__FILE__).dirname)
   end
 
+  def set_timeout
+    resource[:dsc_timeout] ? resource[:dsc_timeout] * 1000 : 1_200_000
+  end
+
+  def compile_timeout_msg(timeout)
+    "The DSC Resource did not respond within the timeout limit of #{timeout} milliseconds. \
+    This can occur if the DSC Resource is stuck in an infinite loop, or if the DSC Resource is waiting for user input. \
+    Please check the DSC Resource for any prompts that may require user input, and ensure that the DSC Resource does not contain any infinite loops. \
+    If the DSC Resource is functioning correctly, you may need to increase the timeout limit using the 'dsc_timeout' parameter"
+  end
+
   def ps_manager
     debug_output = Puppet::Util::Log.level == :debug
     Pwsh::Manager.instance(command(:powershell), Pwsh::Manager.powershell_args, debug: debug_output)
   end
 
-  DSC_LITE_COMMAND_TIMEOUT = 1_200_000 # 20 minutes
-
   def exists?
+    timeout = set_timeout
+    Puppet.debug "Dsc Timeout: #{timeout} milliseconds"
     version = Facter.value(:powershell_version)
     Puppet.debug "PowerShell Version: #{version}"
     script_content = ps_script_content('test')
     Puppet.debug "\n" + self.class.redact_content(script_content)
 
     if Pwsh::Manager.windows_powershell_supported?
-      output = ps_manager.execute(script_content, DSC_LITE_COMMAND_TIMEOUT)[:stdout]
+      output = ps_manager.execute(script_content, timeout)[:stdout]
     else
       self.class.upgrade_message
       output = powershell(Pwsh::Manager.powershell_args, script_content)
     end
+
+    raise Puppet::Error, compile_timeout_msg(timeout) if output.nil?
+
     Puppet.debug "Dsc Resource returned: #{output}"
     data = JSON.parse(output)
     raise(data['errormessage']) unless data['errormessage'].empty?
@@ -87,15 +101,20 @@ Puppet::Type.type(:base_dsc_lite).provide(:powershell) do
   end
 
   def create
+    timeout = set_timeout
+    Puppet.debug "Dsc Timeout: #{timeout} milliseconds"
     script_content = ps_script_content('set')
     Puppet.debug "\n" + self.class.redact_content(script_content)
 
     if Pwsh::Manager.windows_powershell_supported?
-      output = ps_manager.execute(script_content, DSC_LITE_COMMAND_TIMEOUT)[:stdout]
+      output = ps_manager.execute(script_content, timeout)[:stdout]
     else
       self.class.upgrade_message
       output = powershell(Pwsh::Manager.powershell_args, script_content)
     end
+
+    raise Puppet::Error, compile_timeout_msg(timeout) if output.nil?
+
     Puppet.debug "Create Dsc Resource returned: #{output}"
     data = JSON.parse(output)
 

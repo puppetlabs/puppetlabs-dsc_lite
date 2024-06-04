@@ -67,11 +67,16 @@ An optional property that specifies that the DSC resource should be invoked.
 
 The following parameters are available in the `dsc` type.
 
+* [`dsc_timeout`](#-dsc--dsc_timeout)
 * [`module`](#-dsc--module)
 * [`name`](#-dsc--name)
 * [`properties`](#-dsc--properties)
 * [`provider`](#-dsc--provider)
 * [`resource_name`](#-dsc--resource_name)
+
+##### <a name="-dsc--dsc_timeout"></a>`dsc_timeout`
+
+Specify a timeout for Invoke-DscResource.
 
 ##### <a name="-dsc--module"></a>`module`
 
