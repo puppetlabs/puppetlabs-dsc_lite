@@ -1,6 +1,17 @@
-# Change log
+<!-- markdownlint-disable MD024 -->
+# Changelog
 
-All notable changes to this project will be documented in this file. The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) and this project adheres to [Semantic Versioning](http://semver.org).
+All notable changes to this project will be documented in this file.
+
+The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) and this project adheres to [Semantic Versioning](http://semver.org).
+
+## [v4.0.1](https://github.com/puppetlabs/puppetlabs-dsc_lite/tree/v4.0.1) - 2024-06-06
+
+[Full Changelog](https://github.com/puppetlabs/puppetlabs-dsc_lite/compare/v4.0.0...v4.0.1)
+
+### Fixed
+
+- (bug) - Update readme for release on forge [#211](https://github.com/puppetlabs/puppetlabs-dsc_lite/pull/211) ([jordanbreen28](https://github.com/jordanbreen28))
 
 ## [v4.0.0](https://github.com/puppetlabs/puppetlabs-dsc_lite/tree/v4.0.0) - 2024-05-29
 
@@ -18,195 +29,172 @@ All notable changes to this project will be documented in this file. The format 
 
 - Fix ERB.new depracation notices [#204](https://github.com/puppetlabs/puppetlabs-dsc_lite/pull/204) ([Fabian1976](https://github.com/Fabian1976))
 
-## [v3.2.0](https://github.com/puppetlabs/puppetlabs-dsc_lite/tree/v3.2.0) (2022-01-27)
+## [v3.2.0](https://github.com/puppetlabs/puppetlabs-dsc_lite/tree/v3.2.0) - 2022-01-27
 
 [Full Changelog](https://github.com/puppetlabs/puppetlabs-dsc_lite/compare/v3.1.0...v3.2.0)
 
 ### Added
 
-- \(maint\) Add messaging about the differences between this and the dsc modules [\#188](https://github.com/puppetlabs/puppetlabs-dsc_lite/pull/188) ([binford2k](https://github.com/binford2k))
+- (maint) Add messaging about the differences between this and the dsc modules [#188](https://github.com/puppetlabs/puppetlabs-dsc_lite/pull/188) ([binford2k](https://github.com/binford2k))
 
-## [v3.1.0](https://github.com/puppetlabs/puppetlabs-dsc_lite/tree/v3.1.0) (2021-03-31)
+## [v3.1.0](https://github.com/puppetlabs/puppetlabs-dsc_lite/tree/v3.1.0) - 2021-03-31
 
 [Full Changelog](https://github.com/puppetlabs/puppetlabs-dsc_lite/compare/v3.0.1...v3.1.0)
 
 ### Added
 
-- \(MODULES-10985\) - Raise Reboot upper bound to 5 [\#175](https://github.com/puppetlabs/puppetlabs-dsc_lite/pull/175) ([david22swan](https://github.com/david22swan))
-- pdksync - \(feat\) - Add support for Puppet 7 [\#171](https://github.com/puppetlabs/puppetlabs-dsc_lite/pull/171) ([daianamezdrea](https://github.com/daianamezdrea))
+- (MODULES-10985) - Raise Reboot upper bound to 5 [#175](https://github.com/puppetlabs/puppetlabs-dsc_lite/pull/175) ([david22swan](https://github.com/david22swan))
+- pdksync - (feat) - Add support for Puppet 7 [#171](https://github.com/puppetlabs/puppetlabs-dsc_lite/pull/171) ([daianamezdrea](https://github.com/daianamezdrea))
 
 ### Fixed
 
-- \(MODULES-10471\) Allow namevar to have special chars [\#148](https://github.com/puppetlabs/puppetlabs-dsc_lite/pull/148) ([jarretlavallee](https://github.com/jarretlavallee))
+- (MODULES-10471) Allow namevar to have special chars [#148](https://github.com/puppetlabs/puppetlabs-dsc_lite/pull/148) ([jarretlavallee](https://github.com/jarretlavallee))
 
-## [v3.0.1](https://github.com/puppetlabs/puppetlabs-dsc_lite/tree/v3.0.1) (2020-01-16)
+## [v3.0.1](https://github.com/puppetlabs/puppetlabs-dsc_lite/tree/v3.0.1) - 2020-01-16
 
 [Full Changelog](https://github.com/puppetlabs/puppetlabs-dsc_lite/compare/v3.0.0...v3.0.1)
 
 ### Fixed
 
-- \(MAINT\) Safeguard loading ruby-pwsh [\#143](https://github.com/puppetlabs/puppetlabs-dsc_lite/pull/143) ([michaeltlombardi](https://github.com/michaeltlombardi))
+- (MAINT) Safeguard loading ruby-pwsh [#143](https://github.com/puppetlabs/puppetlabs-dsc_lite/pull/143) ([michaeltlombardi](https://github.com/michaeltlombardi))
 
-## [v3.0.0](https://github.com/puppetlabs/puppetlabs-dsc_lite/tree/v3.0.0) (2019-12-13)
+## [v3.0.0](https://github.com/puppetlabs/puppetlabs-dsc_lite/tree/v3.0.0) - 2019-12-13
 
 [Full Changelog](https://github.com/puppetlabs/puppetlabs-dsc_lite/compare/v2.0.2...v3.0.0)
 
 ### Changed
 
-- \(FM 8425\) - Replace Library Code [\#134](https://github.com/puppetlabs/puppetlabs-dsc_lite/pull/134) ([david22swan](https://github.com/david22swan))
+- (FM 8425) - Replace Library Code [#134](https://github.com/puppetlabs/puppetlabs-dsc_lite/pull/134) ([david22swan](https://github.com/david22swan))
 
-## v2.0.2 (2019-09-05) (Supported Release 2.0.2)
+## [v2.0.2](https://github.com/puppetlabs/puppetlabs-dsc_lite/tree/v2.0.2) - 2019-09-05
 
-### Fixed
-
-- Fixed function that validates paths in $env:lib variable ([MODULES-9800](https://tickets.puppetlabs.com/browse/MODULES-9800))
-
-## 2019-08-22 - Supported Release 2.0.1
+[Full Changelog](https://github.com/puppetlabs/puppetlabs-dsc_lite/compare/v2.0.1...v2.0.2)
 
 ### Fixed
 
-- Fixed regression in guarding of library code which caused facter runs to fail on non-Windows systems.
+- (MODULES-9800) Fix Lib Environment Variable Check [#126](https://github.com/puppetlabs/puppetlabs-dsc_lite/pull/126) ([RandomNoun7](https://github.com/RandomNoun7))
 
-## 2019-08-20 - Supported Release 2.0.0
+## [v2.0.1](https://github.com/puppetlabs/puppetlabs-dsc_lite/tree/v2.0.1) - 2019-08-22
+
+[Full Changelog](https://github.com/puppetlabs/puppetlabs-dsc_lite/compare/v2.0.0...v2.0.1)
+
+### Fixed
+
+- (MAINT) Fix powershell_version OS guard [#122](https://github.com/puppetlabs/puppetlabs-dsc_lite/pull/122) ([michaeltlombardi](https://github.com/michaeltlombardi))
+
+## [v2.0.0](https://github.com/puppetlabs/puppetlabs-dsc_lite/tree/v2.0.0) - 2019-08-20
+
+[Full Changelog](https://github.com/puppetlabs/puppetlabs-dsc_lite/compare/1.2.1...v2.0.0)
 
 ### Added
 
-- Added a note to the readme specifying the exact PowerShell version required for the module to function ([MODULES-7762](https://tickets.puppetlabs.com/browse/MODULES-7762))
-
-### Changed
-
-- Increase the named pipe timeout to 180 seconds to prevent runs from failing waiting for a pipe to open ([MODULES-9086](https://tickets.puppetlabs.com/browse/MODULES-9086))
-
-### Removed
-
-- Support for Puppet 4x, raising the minimum supported version of Puppet to 5.5.10 ([MODULES-9336](https://tickets.puppetlabs.com/browse/MODULES-9336))
-
-## 2019-04-23 - Supported Release 1.2.1
-
-### Fixed
-- Ensure sensitive values are redacted in debug output ([MODULES-8856](https://tickets.puppetlabs.com/browse/MODULES-8856))
-
-## 2019-02-07
-### Summary
-Release fixes sensitive data types to function when master and agent are different major versions of Puppet.
-
-### Changed
-- Updated README.md to prevent daily unwanted reboots when handling reboots with dsc_lite [MODULES-7716](https://tickets.puppetlabs.com/browse/MODULES-7716)
-- PDK update to version 1.8.0 [MODULES-8532](https://tickets.puppetlabs.com/browse/MODULES-8532)
-
-### Fixed
-- Ensure that using sensitive values in dsc_lite resource declarations functions when the master and agent are different major versions [MODULES-8175](https://tickets.puppetlabs.com/browse/MODULES-8175)
-
-## 2018-11-20
-### Changed
-Updated metadata for Puppet version 6.x
-
-## 2018-08-30 - Supported Release 1.0.0
-
-### Changed
-
-- Clarify target user for dsc_lite in README ([MODULES-7556](https://tickets.puppetlabs.com/browse/MODULES-7556))
-- General README improvements
-
-## 2018-08-02 - Unsupported Release 0.6.0
-
-### Summary
-
-Small release with bug fixes and a reporting improvement.
-
-### Changed
-
-- Ensure the output report for resources prefixes type names with `dsc_lite_#{resource_name}` for improved reporting ([MODULES-7178](https://tickets.puppetlabs.com/browse/MODULES-7178))
+- (MODULES-9343) Add Puppet Strings docs [#116](https://github.com/puppetlabs/puppetlabs-dsc_lite/pull/116) ([eimlav](https://github.com/eimlav))
+- (MODULES-9086) Increase pipe timeout to 180 [#108](https://github.com/puppetlabs/puppetlabs-dsc_lite/pull/108) ([michaeltlombardi](https://github.com/michaeltlombardi))
 
 ### Fixed
 
-- Fix validation for required parameters ([MODULES-7485](https://tickets.puppetlabs.com/browse/MODULES-7485))
-- Fix crash on Puppet 4 / WMF < 5 ([MODULES-7554](https://tickets.puppetlabs.com/browse/MODULES-7554))
+- (MODULES-8171) Run fails if paths in $env:lib don't exist [#109](https://github.com/puppetlabs/puppetlabs-dsc_lite/pull/109) ([carabasdaniel](https://github.com/carabasdaniel))
+- (MODULES-8602) Resolved declaration conflict between DSC/DSC_Lite [#85](https://github.com/puppetlabs/puppetlabs-dsc_lite/pull/85) ([AnthonieSmitASR](https://github.com/AnthonieSmitASR))
 
-## 2018-07-10 - Unsupported Release 0.5.0
+## [1.2.1](https://github.com/puppetlabs/puppetlabs-dsc_lite/tree/1.2.1) - 2019-04-22
 
-### Summary
-
-[MODULES-7253](https://tickets.puppetlabs.com/browse/MODULES-7253) introduced a breaking change, where the repetitive use of `dsc_resource_...` was removed.
-
-### Changed
-
-- **BREAKING:**  Renamed all parameters for resource declarations, will require manifest modifications. ([MODULES-7253](https://tickets.puppetlabs.com/browse/MODULES-7253))
-- Refactor acceptance tests into beaker rpsec ([MODULES-6572](https://tickets.puppetlabs.com/browse/MODULES-6572), [MODULES-6751](https://tickets.puppetlabs.com/browse/MODULES-6751), [MODULES-6517](https://tickets.puppetlabs.com/browse/MODULES-6517))
-- Changed `created` event to `invoked` ([MODULES-7179](https://tickets.puppetlabs.com/browse/MODULES-7179))
-
-### Removed
-
-- Removed unused ensurable values ([MODULES-7197](https://tickets.puppetlabs.com/browse/MODULES-7197))
-- Removed redundant acceptance tests ([MODULES-7041](https://tickets.puppetlabs.com/browse/MODULES-7041))
-
-## 2018-06-07 - Unsupported Release 0.4.0
-
-### Summary
-
-Small release with bug fixes.
-
-### Fixed
-
-- Support for `Sensitive` data type ([MODULES-7141](https://tickets.puppetlabs.com/browse/MODULES-7141))
-- UTF-8 support in ERB template creation ([MODULES-7143](https://tickets.puppetlabs.com/browse/MODULES-7143))
-
-## 2018-05-23 - Unsupported Release 0.3.0
-
-### Summary
-
-Small release with documentation and minor bug fixes.
+[Full Changelog](https://github.com/puppetlabs/puppetlabs-dsc_lite/compare/1.2.0...1.2.1)
 
 ### Added
 
-- Added Server 2016 to metadata ([MODULES-4271](https://tickets.puppetlabs.com/browse/MODULES-4271))
+- (MODULES-8856) Redact debug [#104](https://github.com/puppetlabs/puppetlabs-dsc_lite/pull/104) ([michaeltlombardi](https://github.com/michaeltlombardi))
+- (WIN-280) add skip() unless pattern to tests [#102](https://github.com/puppetlabs/puppetlabs-dsc_lite/pull/102) ([ThoughtCrhyme](https://github.com/ThoughtCrhyme))
 
-### Changed
+## [1.2.0](https://github.com/puppetlabs/puppetlabs-dsc_lite/tree/1.2.0) - 2019-02-05
 
-- Bump the puppetlabs-reboot module dependancy to reflect that the new version is 2.0.0 ([MODULES-6678](https://tickets.puppetlabs.com/browse/MODULES-6678))
-- Documented null username PSCredential ([MODULES-6992](https://tickets.puppetlabs.com/browse/MODULES-6992))
-- Emit a better message when PowerShell version is unsuitable for provider ([MODULES-6860](https://tickets.puppetlabs.com/browse/MODULES-6860))
-- Documented the DSC Resource Distribution process ([MODULES-7105](https://tickets.puppetlabs.com/browse/MODULES-7105))
-
-### Fixed
-
-- Fixed Named Pipes Server on Windows Server 2008r2 ([MODULES-6930](https://tickets.puppetlabs.com/browse/MODULES-6930))
-
-
-## 2018-02-02 - Unsupported Release 0.2.0
-
-### Summary
-
-Small release with breaking change to support for DSC Versions.
-
-### Changed
-
-- Implement DSC resource version support ([MODULES-5845](https://tickets.puppetlabs.com/browse/MODULES-5845))
-
-
-## 2018-01-11 - Unsupported Release 0.1.0
-
-### Summary
-
-Initial unsupported release of the dsc_lite module.
+[Full Changelog](https://github.com/puppetlabs/puppetlabs-dsc_lite/compare/1.1.0...1.2.0)
 
 ### Added
 
-- Implement generic DSC resource ([MODULES-5842](https://tickets.puppetlabs.com/browse/MODULES-5842))
-- Update generic dsc resource invoker to support CIM Instances ([MODULES-6323](https://tickets.puppetlabs.com/browse/MODULES-6323))
-- Copy Powershell manager from existing DSC module ([MODULES-5844](https://tickets.puppetlabs.com/browse/MODULES-5844))
-- Document tradeoffs between generic DSC and current DSC ([MODULES-5847](https://tickets.puppetlabs.com/browse/MODULES-5847))
+- (FM-7693) Add Windows Server 2019 [#98](https://github.com/puppetlabs/puppetlabs-dsc_lite/pull/98) ([glennsarti](https://github.com/glennsarti))
+- (MODULES-8175) Munge Properties Hash for Sensitive [#92](https://github.com/puppetlabs/puppetlabs-dsc_lite/pull/92) ([michaeltlombardi](https://github.com/michaeltlombardi))
+- (MODULES-8175) Add safety to new-pscredential helper [#91](https://github.com/puppetlabs/puppetlabs-dsc_lite/pull/91) ([michaeltlombardi](https://github.com/michaeltlombardi))
+
+### Fixed
+
+- (MODULES-7716) Fix Readme Reboot Snippet [#95](https://github.com/puppetlabs/puppetlabs-dsc_lite/pull/95) ([RandomNoun7](https://github.com/RandomNoun7))
+- (MODULES-8397) PDK Sync module to fix Travis [#94](https://github.com/puppetlabs/puppetlabs-dsc_lite/pull/94) ([RandomNoun7](https://github.com/RandomNoun7))
+- Revert "(MODULES-8175) Add safety to new-pscredential helper" [#93](https://github.com/puppetlabs/puppetlabs-dsc_lite/pull/93) ([michaeltlombardi](https://github.com/michaeltlombardi))
+
+## [1.1.0](https://github.com/puppetlabs/puppetlabs-dsc_lite/tree/1.1.0) - 2018-11-26
+
+[Full Changelog](https://github.com/puppetlabs/puppetlabs-dsc_lite/compare/1.0.0...1.1.0)
+
+### Added
+
+- (MODULES-7831) Add Puppet 6 version to metadata. [#88](https://github.com/puppetlabs/puppetlabs-dsc_lite/pull/88) ([ThoughtCrhyme](https://github.com/ThoughtCrhyme))
+
+## [1.0.0](https://github.com/puppetlabs/puppetlabs-dsc_lite/tree/1.0.0) - 2018-08-27
+
+[Full Changelog](https://github.com/puppetlabs/puppetlabs-dsc_lite/compare/0.6.0...1.0.0)
+
+## [0.6.0](https://github.com/puppetlabs/puppetlabs-dsc_lite/tree/0.6.0) - 2018-08-02
+
+[Full Changelog](https://github.com/puppetlabs/puppetlabs-dsc_lite/compare/0.5.0...0.6.0)
+
+### Added
+
+- (MODULES-7178) Report types dynamically [#69](https://github.com/puppetlabs/puppetlabs-dsc_lite/pull/69) ([Iristyle](https://github.com/Iristyle))
+
+### Fixed
+
+- (MODULES-7554) Fix crash on Puppet 4 / WMF < 5 [#72](https://github.com/puppetlabs/puppetlabs-dsc_lite/pull/72) ([Iristyle](https://github.com/Iristyle))
+- (MODULES-7485) Fix validation for required parameters [#71](https://github.com/puppetlabs/puppetlabs-dsc_lite/pull/71) ([jpogran](https://github.com/jpogran))
+
+## [0.5.0](https://github.com/puppetlabs/puppetlabs-dsc_lite/tree/0.5.0) - 2018-07-10
+
+[Full Changelog](https://github.com/puppetlabs/puppetlabs-dsc_lite/compare/0.4.0...0.5.0)
 
 ### Changed
 
-- Rename assets named DSC in the module to the new name of DSC_Lite ([MODULES-5843](https://tickets.puppetlabs.com/browse/MODULES-5843))
-- Use dsc_puppetfakeresource in acceptance tests ([MODULES-6132](https://tickets.puppetlabs.com/browse/MODULES-6132))
-- Update readme for dsc_lite changes ([MODULES-6378](https://tickets.puppetlabs.com/browse/MODULES-6378))
+- (MODULES-7197) Remove unused ensurable values [#55](https://github.com/puppetlabs/puppetlabs-dsc_lite/pull/55) ([michaeltlombardi](https://github.com/michaeltlombardi))
 
-### Removed
+### Added
 
-- Remove generated types and vendored code from module ([MODULES-5968](https://tickets.puppetlabs.com/browse/MODULES-5968))
-- Remove build tasks and assets from module ([MODULES-6019](https://tickets.puppetlabs.com/browse/MODULES-6019))
+- (MODULES-6517) add --detailed-exitcodes  [#61](https://github.com/puppetlabs/puppetlabs-dsc_lite/pull/61) ([ThoughtCrhyme](https://github.com/ThoughtCrhyme))
+- (MODULES-7179) Change created to invoked [#59](https://github.com/puppetlabs/puppetlabs-dsc_lite/pull/59) ([RandomNoun7](https://github.com/RandomNoun7))
 
+### Fixed
 
-\* *This Changelog was automatically generated by [github_changelog_generator](https://github.com/github-changelog-generator/github-changelog-generator)*
+- (MODULES-7253) Replace verbose parameter names [#58](https://github.com/puppetlabs/puppetlabs-dsc_lite/pull/58) ([michaeltlombardi](https://github.com/michaeltlombardi))
+
+## [0.4.0](https://github.com/puppetlabs/puppetlabs-dsc_lite/tree/0.4.0) - 2018-06-08
+
+[Full Changelog](https://github.com/puppetlabs/puppetlabs-dsc_lite/compare/0.3.0...0.4.0)
+
+### Added
+
+- (MODULES-7143) add UTF-8 encoding to ERB templates. [#51](https://github.com/puppetlabs/puppetlabs-dsc_lite/pull/51) ([ThoughtCrhyme](https://github.com/ThoughtCrhyme))
+- (MODULES-7141) Support Sensitive data type [#49](https://github.com/puppetlabs/puppetlabs-dsc_lite/pull/49) ([jpogran](https://github.com/jpogran))
+
+## [0.3.0](https://github.com/puppetlabs/puppetlabs-dsc_lite/tree/0.3.0) - 2018-05-22
+
+[Full Changelog](https://github.com/puppetlabs/puppetlabs-dsc_lite/compare/0.2.0...0.3.0)
+
+### Added
+
+- (MODULES-4271) Add Server 2016 to metadata [#43](https://github.com/puppetlabs/puppetlabs-dsc_lite/pull/43) ([glennsarti](https://github.com/glennsarti))
+- (MODULES-6860) Add `dsc_lite` feature for confines [#41](https://github.com/puppetlabs/puppetlabs-dsc_lite/pull/41) ([Iristyle](https://github.com/Iristyle))
+
+### Fixed
+
+- Fix rocket alignment. [#46](https://github.com/puppetlabs/puppetlabs-dsc_lite/pull/46) ([RandomNoun7](https://github.com/RandomNoun7))
+- (MODULES-6930) Fix Pipes Server On windows2008r2 [#42](https://github.com/puppetlabs/puppetlabs-dsc_lite/pull/42) ([RandomNoun7](https://github.com/RandomNoun7))
+
+## [0.2.0](https://github.com/puppetlabs/puppetlabs-dsc_lite/tree/0.2.0) - 2018-02-02
+
+[Full Changelog](https://github.com/puppetlabs/puppetlabs-dsc_lite/compare/0.1.0...0.2.0)
+
+### Added
+
+- (MODULES-6548) Re-add empty file to "integration" [#32](https://github.com/puppetlabs/puppetlabs-dsc_lite/pull/32) ([Iristyle](https://github.com/Iristyle))
+- (MODULES-5845) Add DSC Resource ModuleSpecification support [#29](https://github.com/puppetlabs/puppetlabs-dsc_lite/pull/29) ([jpogran](https://github.com/jpogran))
+
+## [0.1.0](https://github.com/puppetlabs/puppetlabs-dsc_lite/tree/0.1.0) - 2018-01-10
+
+[Full Changelog](https://github.com/puppetlabs/puppetlabs-dsc_lite/compare/ce53659dd4a376c0347c429040772ee7cf0f00dc...0.1.0)
