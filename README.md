@@ -28,7 +28,7 @@ The Puppet `dsc_lite` module allows you to manage target nodes using arbitrary W
 
 ### Warning:
 
-***Using dsc_lite requires advanced experience with DSC and PowerShell, unlike our other modules that are far easier to use. It is an alternative approach to Puppet's family of [DSC modules](http://forge.puppet.com/dsc), providing more flexibility for certain niche use cases. There are many drawbacks to this approach and we highly recommend that you use the existing family of [DSC modules](http://forge.puppet.com/dsc) instead, where possible.***
+***Using dsc_lite requires advanced experience with DSC and PowerShell, unlike our other modules that are far easier to use. It is an alternative approach to Puppet's family of [DSC modules](http://forge.puppet.com/dsc), providing more flexibility for certain niche use cases.***
 
 The `dsc_lite` module contains a lightweight `dsc` type, which is a streamlined and minimal representation of a DSC Resource declaration in Puppet syntax. This type does not contain any DSC resources itself, but can invoke arbitrary DSC Resources that already exist on the managed node. Much like the `exec` type, it simply passes parameters through to the underlying DSC Resource without any validation.
 
@@ -38,15 +38,13 @@ This means that you are responsible for:
 1. Validating all configuration data for `dsc` declarations to prevent runtime errors.
 1. Troubleshooting all errors without property status reporting.
 
-The existing family of [DSC modules](http://forge.puppet.com/dsc) will manage all the DSC administration for you, meaning that all you need to do is install the module and start writing code. These modules also do parameter validation, meaning that errors surface during development instead of at runtime. And the VS Code integration will show you usage documentation as you write the code. These modules are automatically imported from the PowerShell Gallery on a daily basis, so they're always up to date.
+The existing family of [DSC modules](http://forge.puppet.com/dsc) will manage all the DSC administration for you, meaning that all you need to do is install the module and start writing code. These modules also do parameter validation, meaning that errors surface during development instead of at runtime. And the VS Code integration will show you usage documentation as you write the code. These modules are automatically imported from the PowerShell Gallery on a daily basis, so they're always up to date. Although these modules are approved for use, they *are not* officially supported.
 
-You should *only* use the `dsc_lite` module when any of these cases apply to you:
+You should use the `dsc_lite` module when any of these cases apply to you:
 
+* You want to use the officially supported Puppet DSC Integration
 * You need to use multiple versions of the same DSC resource
-* The upstream DSC Resource's implementation does not match its declared API but is usable otherwise and needed.
-  * In this case, `dsc_lite` should be treated as a stop-gap solution until the upstream DSC Resource can be patched to fix the misimplementation.
 * You need to use a DSC Resource that isn't published to the [Puppet Forge](http://forge.puppet.com/dsc).
-    * If you find a DSC Resource that hasn't been automatically imported, it's very likely due to an API mismatch as described above.
     * If you have custom DSC Resources, you can use the [Puppet.dsc module builder](https://github.com/puppetlabs/Puppet.Dsc) to build your own Puppet module from it.
 
 ------
@@ -319,7 +317,7 @@ For information on the types, see [REFERENCE.md](https://github.com/puppetlabs/p
 ## Limitations
 
 * DSC Composite Resources are not supported.
-* DSC requires PowerShell `Execution Policy` for the `LocalMachine` scope to be set to a less restrictive setting than `Restricted`. If you see the error below, see [MODULES-2500](https://tickets.puppet.com/browse/MODULES-2500) for more information.
+* DSC requires PowerShell `Execution Policy` for the `LocalMachine` scope to be set to a less restrictive setting than `Restricted`. Because of this, you may encounter the error below:
 
   ~~~
   Error: /Stage[main]/Main/Dsc_xgroup[testgroup]: Could not evaluate: Importing module MSFT_xGroupResource failed with
@@ -329,12 +327,11 @@ For information on the types, see [REFERENCE.md](https://github.com/puppetlabs/p
   information, see about_Execution_Policies at http://go.microsoft.com/fwlink/?LinkID=135170.
   ~~~
 
-* You cannot use forward slashes for the MSI `Path` property for the `Package` DSC Resource. The underlying implementation does not accept forward slashes instead of backward slashes in paths, and it throws a misleading error that it could not find a Package with the Name and ProductId provided. See [MODULES-2486](https://tickets.puppet.com/browse/MODULES-2486) for more examples and information on this subject.
-* Using this module with the 3.8.x x86 version of Puppet is highly discouraged, though it is supported.  Normally, this module employs a technique to dramatically improve performance by reusing a PowerShell process to execute DSC related commands.  However, due to the Ruby 1.9.3 runtime used with the 3.8.x x86 version of Puppet, this technique must be disabled, resulting in at least a 2x slowdown.
+* You cannot use forward slashes for the MSI `Path` property for the `Package` DSC Resource. The underlying implementation does not accept forward slashes instead of backward slashes in paths, and it throws a misleading error that it could not find a Package with the Name and ProductId provided.
 
 ### Known Issues
 
-`--noop` mode, `puppet resource` and property change notifications are currently not implemented. See [MODULES-2270](https://tickets.puppet.com/browse/MODULES-2270) for details.
+`--noop` mode, `puppet resource` and property change notifications are currently not implemented.
 
 ### Running Puppet and DSC without administrative privileges
 
@@ -400,10 +397,10 @@ By using the debug logging of a Puppet run, you can troubleshoot the application
 ## Development
 
 Acceptance tests for this module leverage [puppet_litmus](https://github.com/puppetlabs/puppet_litmus).
-To run the acceptance tests follow the instructions [here](https://github.com/puppetlabs/puppet_litmus/wiki/Tutorial:-use-Litmus-to-execute-acceptance-tests-with-a-sample-module-(MoTD)#install-the-necessary-gems-for-the-module).
+To run the acceptance tests follow the instructions [here](https://puppetlabs.github.io/content-and-tooling-team/docs/litmus/).
 You can also find a tutorial and walkthrough of using Litmus and the PDK on [YouTube](https://www.youtube.com/watch?v=FYfR7ZEGHoE).
 
-If you run into an issue with this module, or if you would like to request a feature, please [file a ticket](https://tickets.puppetlabs.com/browse/MODULES/).
+If you run into an issue with this module, or if you would like to request a feature, please [raise an issue](https://github.com/puppetlabs/puppetlabs-dsc_lite/issues).
 Every Monday the Puppet IA Content Team has [office hours](https://puppet.com/community/office-hours) in the [Puppet Community Slack](http://slack.puppet.com/), alternating between an EMEA friendly time (1300 UTC) and an Americas friendly time (0900 Pacific, 1700 UTC).
 
 If you have problems getting this module up and running, please [contact Support](http://puppetlabs.com/services/customer-support).
