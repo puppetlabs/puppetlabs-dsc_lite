@@ -58,6 +58,13 @@ Puppet::Type.newtype(:dsc) do
     end
   end
 
+  newparam(:dsc_timeout) do
+    desc 'Specify a timeout for Invoke-DscResource.'
+    validate do |value|
+      raise "#{name} should be an Integer" unless value.is_a? Integer
+    end
+  end
+
   newparam(:resource_name) do
     desc 'Name of the DSC Resource to use. For example, the xRemoteFile DSC Resource.'
     validate do |value|
