@@ -66,14 +66,16 @@ describe 'PSDesiredStateConfiguration' do
       apply_manifest(dsc_timeout_manifest, expect_failures: true) do |result|
         expect(result.stderr).to match(%r{The DSC Resource did not respond within the timeout limit of 1000 milliseconds})
       end
-      sleep(15) # Wait for the DSC Resource to finish execution
     end
   end
 
   context 'remove a standard DSC File' do
     it 'applies manifest' do
-      apply_manifest(dsc_remove_manifest, catch_failures: true) do |result|
-        expect(result.stderr).not_to match(%r{Error:})
+      # necessary because the DSC resource may still be running from previous test, so we need to wait for it to finish
+      retry_on_error_matching(10, 5, %r{The Invoke-DscResource cmdlet is in progress and must return before Invoke-DscResource can be invoked}) do
+        apply_manifest(dsc_remove_manifest, catch_failures: true) do |result|
+          expect(result.stderr).not_to match(%r{Error:})
+        end
       end
     end
 
