@@ -64,7 +64,7 @@ describe 'PSDesiredStateConfiguration' do
   context 'times out when execution time is greater than dsc_timeout' do
     it 'applies manifest' do
       apply_manifest(dsc_timeout_manifest, expect_failures: true) do |result|
-        expect(result.stderr).to match(%r{The DSC Resource did not respond within the timeout limit of 1000 milliseconds})
+        expect(result.stderr).to match(%r{Catastrophic failure: PowerShell module timeout \(1000 ms\) exceeded while executing})
       end
     end
   end
