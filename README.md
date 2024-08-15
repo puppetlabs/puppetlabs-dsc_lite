@@ -329,6 +329,8 @@ For information on the types, see [REFERENCE.md](https://github.com/puppetlabs/p
 
 * You cannot use forward slashes for the MSI `Path` property for the `Package` DSC Resource. The underlying implementation does not accept forward slashes instead of backward slashes in paths, and it throws a misleading error that it could not find a Package with the Name and ProductId provided.
 
+* When PowerShell [Script Block Logging](https://learn.microsoft.com/en-us/powershell/module/microsoft.powershell.core/about/about_logging_windows?view=powershell-7.4#enabling-script-block-logging) is enabled, data marked as sensitive in your manifest may appear in these logs as plain text. It is **highly recommended**, by both Puppet and Microsoft, that you also enable [Protected Event Logging](https://learn.microsoft.com/en-us/powershell/module/microsoft.powershell.core/about/about_logging_windows?view=powershell-7.4#protected-event-logging) alongside this to encrypt the logs to protect this information.
+
 ### Known Issues
 
 `--noop` mode, `puppet resource` and property change notifications are currently not implemented.
