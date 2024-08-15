@@ -5,6 +5,19 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) and this project adheres to [Semantic Versioning](http://semver.org).
 
+## [v4.1.0](https://github.com/puppetlabs/puppetlabs-dsc_lite/tree/v4.1.0) - 2024-08-15
+
+[Full Changelog](https://github.com/puppetlabs/puppetlabs-dsc_lite/compare/v4.0.1...v4.1.0)
+
+### Added
+
+- (CAT-1869) - Add configurable dsc_timeout param for dsc type [#213](https://github.com/puppetlabs/puppetlabs-dsc_lite/pull/213) ([jordanbreen28](https://github.com/jordanbreen28))
+
+### Fixed
+
+- (Bug) - Fix timeout matcher [#219](https://github.com/puppetlabs/puppetlabs-dsc_lite/pull/219) ([jordanbreen28](https://github.com/jordanbreen28))
+- (CAT-1927) - Remove Windows 7, 8.x and 2008 R2 Support [#218](https://github.com/puppetlabs/puppetlabs-dsc_lite/pull/218) ([jordanbreen28](https://github.com/jordanbreen28))
+
 ## [v4.0.1](https://github.com/puppetlabs/puppetlabs-dsc_lite/tree/v4.0.1) - 2024-06-06
 
 [Full Changelog](https://github.com/puppetlabs/puppetlabs-dsc_lite/compare/v4.0.0...v4.0.1)
