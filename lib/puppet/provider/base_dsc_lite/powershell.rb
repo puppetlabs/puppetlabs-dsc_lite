@@ -6,8 +6,8 @@ require_relative '../../../puppet_x/puppetlabs/dsc_lite/powershell_hash_formatte
 
 Puppet::Type.type(:base_dsc_lite).provide(:powershell) do
   confine feature: :pwshlib
-  confine 'os.name' => :debian
-  # defaultfor 'os.name' => :debian
+  confine 'os.name' => Debian
+  defaultfor 'os.name' => Debian
 
   commands powershell: (if File.exist?("#{ENV.fetch('SYSTEMROOT', nil)}\\sysnative\\WindowsPowershell\\v1.0\\powershell.exe")
                           "#{ENV.fetch('SYSTEMROOT', nil)}\\sysnative\\WindowsPowershell\\v1.0\\powershell.exe"
