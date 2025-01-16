@@ -127,7 +127,7 @@ end
 
 Puppet::Type.type(:dsc_puppetfakeresource).provide :powershell, :parent => Puppet::Type.type(:base_dsc_lite).provider(:powershell) do
   confine :feature => :dsc_lite
-  defaultfor :operatingsystem => :windows
+  defaultfor 'os.name' => :windows
 
   mk_resource_methods
 end

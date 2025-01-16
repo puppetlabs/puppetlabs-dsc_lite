@@ -124,7 +124,7 @@ Puppet::Type.type(:dsc).provide :powershell, parent: Puppet::Type.type(:base_dsc
       Provider for dsc type
   DOC
   confine feature: :dsc_lite
-  defaultfor operatingsystem: :windows
+  defaultfor 'os.name' => :windows
 
   mk_resource_methods
 end
