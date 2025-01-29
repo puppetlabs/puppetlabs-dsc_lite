@@ -14,3 +14,23 @@ jobs:
     needs: Spec
     uses: "puppetlabs/cat-github-actions/.github/workflows/module_acceptance.yml@main"
     secrets: "inherit"
+
+  on-failure-workflow-restarter-proxy:
+    # (1) run this job after the "acceptance" job and...
+    needs: [Acceptance, Spec]
+    # (2) continue ONLY IF "acceptance" fails
+    if: always() && needs.Acceptance.result == 'failure' || needs.Spec.result == 'failure'
+    runs-on: ubuntu-latest
+    steps:
+      # (3) checkout this repository in order to "see" the following custom action
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      # (4) "use" the custom action to retrigger the failed "acceptance job" above
+      - name: Trigger reusable workflow
+        uses: "puppetlabs/cat-github-actions/.github/actions/workflow-restarter-proxy@main"
+        env:
+          SOURCE_GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          repository: ${{ github.repository }}
+          run_id: ${{ github.run_id }}
