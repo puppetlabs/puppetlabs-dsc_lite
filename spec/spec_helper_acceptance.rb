@@ -47,9 +47,9 @@ else
     endpoint = "http://#{ENV.fetch('TARGET_HOST', nil)}:5985/wsman"
 
     opts = {
-      user: user,
+      user:,
       password: pass,
-      endpoint: endpoint,
+      endpoint:,
       operation_timeout: 300
     }
 
