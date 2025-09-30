@@ -1,7 +1,10 @@
 ---
-require:
-- rubocop-performance
-- rubocop-rspec
+plugins: 
+  - rubocop-rspec
+  - rubocop-rspec_rails
+  - rubocop-performance
+  - rubocop-factory_bot
+  - rubocop-capybara
 AllCops:
   NewCops: enable
   DisplayCopNames: true
@@ -294,7 +297,7 @@ Performance/UriDefaultParser:
   Enabled: false
 RSpec/Be:
   Enabled: false
-RSpec/Capybara/FeatureMethods:
+RSpec/Dialect:
   Enabled: false
 RSpec/ContainExactly:
   Enabled: false
@@ -320,11 +323,11 @@ RSpec/ExpectChange:
   Enabled: false
 RSpec/ExpectInHook:
   Enabled: false
-RSpec/FactoryBot/AttributeDefinedStatically:
+FactoryBot/AttributeDefinedStatically:
   Enabled: false
-RSpec/FactoryBot/CreateList:
+FactoryBot/CreateList:
   Enabled: false
-RSpec/FactoryBot/FactoryClassName:
+FactoryBot/FactoryClassName:
   Enabled: false
 RSpec/HooksBeforeExamples:
   Enabled: false
@@ -600,11 +603,11 @@ RSpec/DuplicatedMetadata:
   Enabled: false
 RSpec/ExcessiveDocstringSpacing:
   Enabled: false
-RSpec/FactoryBot/ConsistentParenthesesStyle:
+FactoryBot/ConsistentParenthesesStyle:
   Enabled: false
-RSpec/FactoryBot/FactoryNameStyle:
+FactoryBot/FactoryNameStyle:
   Enabled: false
-RSpec/FactoryBot/SyntaxMethods:
+FactoryBot/SyntaxMethods:
   Enabled: false
 RSpec/IdenticalEqualityAssertion:
   Enabled: false
@@ -612,15 +615,15 @@ RSpec/NoExpectationExample:
   Enabled: false
 RSpec/PendingWithoutReason:
   Enabled: false
-RSpec/Rails/AvoidSetupHook:
+RSpecRails/AvoidSetupHook:
   Enabled: false
-RSpec/Rails/HaveHttpStatus:
+RSpecRails/HaveHttpStatus:
   Enabled: false
-RSpec/Rails/InferredSpecType:
+RSpecRails/InferredSpecType:
   Enabled: false
-RSpec/Rails/MinitestAssertions:
+RSpecRails/MinitestAssertions:
   Enabled: false
-RSpec/Rails/TravelAround:
+RSpecRails/TravelAround:
   Enabled: false
 RSpec/RedundantAround:
   Enabled: false
