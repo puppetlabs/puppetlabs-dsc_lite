@@ -45,7 +45,7 @@ Puppet::Type.newtype(:dsc) do
       if currentvalue == :absent || currentvalue.nil?
         _("invoked #{resource.parameters[:module].value}\\#{resource.parameters[:resource_name].value}")
       else
-        super(currentvalue, newvalue)
+        super
       end
     end
   end
