@@ -72,7 +72,7 @@ describe 'deferred values with dsc_lite' do
   # NEW 02c: inline Deferred on the DSC property (no variable intermediary)
   it '02c: passing a Deferred inline while calling an epp' do
     apply = apply_manifest(dsc_deferred_epp_inline)
-    out   = read_win_file_if_exists('C:/Temp/from_dsc_inline.txt')
+    out   = read_win_file_if_exists('C:/Temp/from_dsc.txt')
     content = out[:content].strip
     if out[:exists] && content == 'hello-dsc-epp'
       expect(true).to be(true)
