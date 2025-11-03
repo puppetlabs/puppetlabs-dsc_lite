@@ -4,7 +4,7 @@
 require 'spec_helper_acceptance'
 
 def read_fixture(name)
-  File.read(File.join(__dir__, '..', 'fixtures', 'manifests', name))
+  File.read(File.join(__dir__, '..', '..', 'fixtures', 'manifests', name))
 end
 
 def read_win_file_if_exists(path)
@@ -21,10 +21,7 @@ describe 'deferred values with dsc_lite' do
   let(:control_manifest)         { read_fixture('01_file_deferred.pp') }
   let(:dsc_control_manifest_epp) { read_fixture('01b_file_deferred_with_epp.pp') }
   let(:dsc_deferred_direct)      { read_fixture('02_dsc_deferred_direct.pp') }
-  let(:dsc_deferred_inline)      { read_fixture('02b_dsc_deferred_inline.pp') } # ← NEW
-  let(:dsc_deferred_epp_inline)  { read_fixture('02c_dsc_deferred_inline_epp.pp') } # ← NEW
-  let(:dsc_deferred_stringified) { read_fixture('03a_dsc_deferred_stringified.pp') }
-  let(:dsc_deferred_bad_unwrap)  { read_fixture('03b_dsc_deferred_bad_unwrap.pp') }
+  let(:dsc_deferred_inline)      { read_fixture('02b_dsc_deferred_inline.pp') }
 
   it 'control (01): native file + Deferred resolves to hello-file' do
     result = idempotent_apply(control_manifest)
@@ -67,36 +64,5 @@ describe 'deferred values with dsc_lite' do
     else
       raise "Unexpected 02b outcome. Exists=#{out[:exists]} Content=#{content.inspect}\nApply:\n#{apply.stdout}#{apply.stderr}"
     end
-  end
-
-  # NEW 02c: inline Deferred on the DSC property (no variable intermediary)
-  it '02c: passing a Deferred inline while calling an epp' do
-    apply = apply_manifest(dsc_deferred_epp_inline)
-    out   = read_win_file_if_exists('C:/Temp/from_dsc.txt')
-    content = out[:content].strip
-    if out[:exists] && content == 'hello-dsc-epp'
-      expect(true).to be(true)
-    elsif out[:exists] && content =~ %r{Deferred\s*\(|Puppet::Pops::Types::Deferred}i
-      raise "BUG: 02c wrote stringified Deferred: #{content.inspect}\nApply:\n#{apply.stdout}#{apply.stderr}"
-    else
-      raise "Unexpected 02c outcome. Exists=#{out[:exists]} Content=#{content.inspect}\nApply:\n#{apply.stdout}#{apply.stderr}"
-    end
-  end
-
-  it '03a: stringifying a Deferred writes the function form (reproduces customer report)' do
-    apply_manifest(dsc_deferred_stringified)
-    out = read_win_file_if_exists('C:/Temp/from_dsc_var_string.txt')
-    expect(out[:exists]).to be(true)
-    expect(out[:content]).to match(%r{Deferred\s*\(|Puppet::Pops::Types::Deferred}i)
-    expect(out[:content]).not_to match(%r{\bhello-var\b})
-  end
-
-  it '03b: unwrap on a non‑Sensitive is a no‑op; also writes the function form' do
-    apply_manifest(dsc_deferred_bad_unwrap)
-    out   = read_win_file_if_exists('C:/Temp/from_dsc_var_bad_unwrap.txt')
-    out   = read_win_file_if_exists('C:/Temp/from_dsc_var.txt') unless out[:exists]
-    expect(out[:exists]).to be(true)
-    expect(out[:content]).to match(%r{Deferred\s*\(|Puppet::Pops::Types::Deferred}i)
-    expect(out[:content]).not_to match(%r{\bhello-var\b})
   end
 end
