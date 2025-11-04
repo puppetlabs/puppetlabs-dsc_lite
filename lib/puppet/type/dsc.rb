@@ -17,6 +17,7 @@ Puppet::Type.newtype(:dsc) do
         }
       }
   DOC
+
   require Pathname.new(__FILE__).dirname + '../../' + 'puppet/type/base_dsc_lite'
   require Pathname.new(__FILE__).dirname + '../../puppet_x/puppetlabs/dsc_lite/dsc_type_helpers'
 
