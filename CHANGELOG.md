@@ -5,6 +5,20 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) and this project adheres to [Semantic Versioning](http://semver.org).
 
+## [v5.0.0](https://github.com/puppetlabs/puppetlabs-dsc_lite/tree/v5.0.0) - 2025-11-04
+
+[Full Changelog](https://github.com/puppetlabs/puppetlabs-dsc_lite/compare/v4.1.1...v5.0.0)
+
+### Changed
+
+- (CAT-2455) Puppetcore upgrade [#234](https://github.com/puppetlabs/puppetlabs-dsc_lite/pull/234) ([LukasAud](https://github.com/LukasAud))
+- (CAT-2281) Remove puppet 7 infrastructure [#230](https://github.com/puppetlabs/puppetlabs-dsc_lite/pull/230) ([LukasAud](https://github.com/LukasAud))
+
+### Fixed
+
+- (CAT-2432) Fix deferred resource resolution in DSC [#235](https://github.com/puppetlabs/puppetlabs-dsc_lite/pull/235) ([LukasAud](https://github.com/LukasAud))
+- (MAINT) Addresing pwshlib dependency error [#231](https://github.com/puppetlabs/puppetlabs-dsc_lite/pull/231) ([LukasAud](https://github.com/LukasAud))
+
 ## [v4.1.1](https://github.com/puppetlabs/puppetlabs-dsc_lite/tree/v4.1.1) - 2025-01-17
 
 [Full Changelog](https://github.com/puppetlabs/puppetlabs-dsc_lite/compare/v4.1.0...v4.1.1)
