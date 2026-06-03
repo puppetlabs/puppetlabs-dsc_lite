@@ -442,3 +442,5 @@ There are several books available as well. Here are some selected books for refe
 * Copyright (c) 2014 Marc Sutter, original author
 * Copyright (c) 2015 - Present Puppet Inc
 * License: [Apache License, Version 2.0](https://github.com/puppetlabs/puppetlabs-dsc/blob/master/LICENSE)
+
+<!-- CI trigger: non-fork backwards-compat test (CAT-2632) -->
