@@ -78,7 +78,6 @@ group :system_tests do
 end
 
 gems = {}
-bolt_version = ENV.fetch('BOLT_GEM_VERSION', nil)
 puppet_version = ENV.fetch('PUPPET_GEM_VERSION', nil)
 facter_version = ENV.fetch('FACTER_GEM_VERSION', nil)
 hiera_version = ENV.fetch('HIERA_GEM_VERSION', nil)
@@ -92,7 +91,6 @@ else
   gemsource_default
 end
 
-gems['bolt'] = location_for(bolt_version, nil, { source: gemsource_puppetcore })
 gems['puppet'] = location_for(puppet_version, nil, { source: gemsource_puppetcore })
 gems['facter'] = location_for(facter_version, nil, { source: gemsource_facter })
 gems['hiera'] = location_for(hiera_version, nil, {}) if hiera_version
