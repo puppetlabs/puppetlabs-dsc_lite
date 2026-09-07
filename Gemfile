@@ -70,11 +70,17 @@ group :development, :release_prep do
   gem "puppetlabs_spec_helper", '>= 8.0', '< 10.0', require: false
   gem "puppet-blacksmith", '>= 7.0', '< 10.0',      require: false
 end
-group :system_tests do
-  gem "puppet_litmus", '~> 2.5',   require: false
-  gem "faraday", '~> 2.5',         require: false
-  gem "CFPropertyList", '< 3.0.7', require: false if RUBY_PLATFORM.include?('darwin')
-  gem "serverspec", '~> 2.41',     require: false
+# puppet_litmus's bolt/r10k/puppet_forge dependency chain isn't Ruby-4.0-compatible yet
+# (r10k's Ruby 4.0 support is still an open upstream PR). Unit specs never touch this
+# group, and acceptance's litmus/bolt controller always runs under Ruby 3.2 regardless
+# of which puppet collection is under test, so scoping it to Ruby < 4.0 costs nothing.
+if Gem.ruby_version < Gem::Version.new('4.0')
+  group :system_tests do
+    gem "puppet_litmus", '~> 2.5',   require: false
+    gem "faraday", '~> 2.5',         require: false
+    gem "CFPropertyList", '< 3.0.7', require: false if RUBY_PLATFORM.include?('darwin')
+    gem "serverspec", '~> 2.41',     require: false
+  end
 end
 
 gems = {}
