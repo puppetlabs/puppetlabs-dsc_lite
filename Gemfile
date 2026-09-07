@@ -38,9 +38,10 @@ end
 group :development do
   gem "json", '= 2.6.1',                         require: false if Gem::Requirement.create(['>= 3.1.0', '< 3.1.3']).satisfied_by?(Gem::Version.new(RUBY_VERSION.dup))
   gem "json", '= 2.6.3',                         require: false if Gem::Requirement.create(['>= 3.2.0', '< 4.0.0']).satisfied_by?(Gem::Version.new(RUBY_VERSION.dup))
+  gem "json", '= 2.18.0',                        require: false if Gem::Requirement.create(['>= 4.0.0', '< 5.0.0']).satisfied_by?(Gem::Version.new(RUBY_VERSION.dup))
   gem "racc", '~> 1.4.0',                        require: false if Gem::Requirement.create(['>= 2.7.0', '< 3.0.0']).satisfied_by?(Gem::Version.new(RUBY_VERSION.dup))
   gem "deep_merge", '~> 1.2.2',                  require: false
-  gem "voxpupuli-puppet-lint-plugins", '~> 5.0', require: false
+  gem "voxpupuli-puppet-lint-plugins", '~> 7.0', require: false
   gem "facterdb", '~> 2.1',                      require: false if Gem::Requirement.create(['< 3.0.0']).satisfied_by?(Gem::Version.new(RUBY_VERSION.dup))
   gem "facterdb", '~> 3.0',                      require: false if Gem::Requirement.create(['>= 3.0.0']).satisfied_by?(Gem::Version.new(RUBY_VERSION.dup))
   gem "metadata-json-lint", '~> 4.0',            require: false
@@ -58,29 +59,42 @@ group :development do
   gem "rubocop-rspec_rails", '~> 2.31.0',        require: false
   gem "rubocop-factory_bot", '~> 2.27.0',        require: false
   gem "rubocop-capybara", '~> 2.22.0',           require: false
-  gem "rb-readline", '= 0.5.5',                  require: false, platforms: [:mswin, :mingw, :x64_mingw]
-  gem "bigdecimal", '< 3.2.2',                   require: false, platforms: [:mswin, :mingw, :x64_mingw]
+  gem "rb-readline", '= 0.5.5',                  require: false, platforms: [:windows]
+  gem "bigdecimal", '< 3.2.2',                   require: false, platforms: [:windows]
+  gem "ffi",                                     require: false, platforms: [:windows]
   gem "github_changelog_generator",              require: false
   gem "ruby-pwsh",                               require: false
 end
 group :development, :release_prep do
-  gem "puppet-strings", '~> 4.0',         require: false
-  gem "puppetlabs_spec_helper", '~> 8.0', require: false
-  gem "puppet-blacksmith", '~> 7.0',      require: false
+  gem "puppet-strings", '>= 4.0', '< 6.0',          require: false
+  gem "puppetlabs_spec_helper", '>= 8.0', '< 10.0', require: false
+  gem "puppet-blacksmith", '>= 7.0', '< 10.0',      require: false
 end
 group :system_tests do
-  gem 'puppet_litmus', '~> 2.5',   require: false
-  gem "CFPropertyList", '< 3.0.7', require: false, platforms: [:mswin, :mingw, :x64_mingw]
+  gem "puppet_litmus", '~> 2.5',   require: false
+  gem "faraday", '~> 2.5',         require: false
+  gem "CFPropertyList", '< 3.0.7', require: false if RUBY_PLATFORM.include?('darwin')
   gem "serverspec", '~> 2.41',     require: false
 end
 
 gems = {}
+bolt_version = ENV.fetch('BOLT_GEM_VERSION', nil)
 puppet_version = ENV.fetch('PUPPET_GEM_VERSION', nil)
 facter_version = ENV.fetch('FACTER_GEM_VERSION', nil)
 hiera_version = ENV.fetch('HIERA_GEM_VERSION', nil)
 
+# facter has no Ruby-4.0-compatible build on public RubyGems, so Ruby4 lanes must source it
+# from puppetcore. Kept conditional so older Ruby lanes keep pulling facter's public build
+# rather than puppetcore's latest (possibly untested for that lane).
+gemsource_facter = if Gem.ruby_version >= Gem::Version.new('4.0')
+  gemsource_puppetcore
+else
+  gemsource_default
+end
+
+gems['bolt'] = location_for(bolt_version, nil, { source: gemsource_puppetcore })
 gems['puppet'] = location_for(puppet_version, nil, { source: gemsource_puppetcore })
-gems['facter'] = location_for(facter_version, nil, { source: gemsource_puppetcore })
+gems['facter'] = location_for(facter_version, nil, { source: gemsource_facter })
 gems['hiera'] = location_for(hiera_version, nil, {}) if hiera_version
 
 # Generate the gem definitions
