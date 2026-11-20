@@ -23,7 +23,7 @@ Puppet::Type.newtype(:dsc) do
 
   def type
     name = parameters[:resource_name].value.downcase
-    "Dsc_lite_#{name}".to_sym
+    :"Dsc_lite_#{name}"
   end
 
   def generic_dsc

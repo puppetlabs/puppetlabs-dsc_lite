@@ -89,7 +89,7 @@ Puppet::Type.type(:base_dsc_lite).provide(:powershell) do
       else
         Puppet.notice('DSC PROVIDER → All deferred values resolved successfully')
       end
-    rescue => e
+    rescue StandardError => e
       Puppet.warning("DSC PROVIDER → Error resolving deferred values: #{e.class}: #{e.message}")
       Puppet.debug("DSC PROVIDER → Error backtrace: #{e.backtrace.join("\n")}")
       # Continue with unresolved values - they will be stringified but at least won't crash
@@ -124,7 +124,7 @@ Puppet::Type.type(:base_dsc_lite).provide(:powershell) do
         if value.respond_to?(:name)
           begin
             return Puppet::Pops::Evaluator::DeferredResolver.resolve(value.name, nil, {})
-          rescue => e
+          rescue StandardError => e
             Puppet.debug("DSC PROVIDER → Failed to resolve Deferred object: #{e.message}")
             return value.to_s
           end
@@ -194,6 +194,7 @@ Puppet::Type.type(:base_dsc_lite).provide(:powershell) do
     if Pwsh::Manager.windows_powershell_supported?
       output = ps_manager.execute(script_content, timeout)
       raise Puppet::Error, output[:errormessage] if output[:errormessage]&.match?(%r{PowerShell module timeout \(\d+ ms\) exceeded while executing})
+
       output = output[:stdout]
     else
       self.class.upgrade_message
@@ -224,6 +225,7 @@ Puppet::Type.type(:base_dsc_lite).provide(:powershell) do
     if Pwsh::Manager.windows_powershell_supported?
       output = ps_manager.execute(script_content, timeout)
       raise Puppet::Error, output[:errormessage] if output[:errormessage]&.match?(%r{PowerShell module timeout \(\d+ ms\) exceeded while executing})
+
       output = output[:stdout]
     else
       self.class.upgrade_message
@@ -234,6 +236,7 @@ Puppet::Type.type(:base_dsc_lite).provide(:powershell) do
     data = JSON.parse(output)
 
     raise(data['errormessage']) unless data['errormessage'].empty?
+
     notify_reboot_pending if data['rebootrequired'] == true
 
     data
