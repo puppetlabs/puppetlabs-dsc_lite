@@ -8,6 +8,9 @@ Gemfile:
     ":development":
     - gem: github_changelog_generator
     - gem: ruby-pwsh
+    - gem: ffi
+      platforms:
+      - windows
 spec/spec_helper.rb:
   mock_with: ":rspec"
   coverage_report: true
@@ -26,3 +29,11 @@ spec/spec_helper.rb:
   unmanaged: false
 .github/workflows/release.yml:
   unmanaged: false
+.rubocop.yml:
+  # the module has a .rubocop_todo.yml (MODULES-11997 pdk update)
+  include_todos: true
+.gitignore:
+  # spec/fixtures/manifests/*.pp are committed fixtures for the deferred-resource
+  # specs (CAT-2432); the template ignores that path, which fails check:git_ignore
+  required:
+    - '---/spec/fixtures/manifests/'
